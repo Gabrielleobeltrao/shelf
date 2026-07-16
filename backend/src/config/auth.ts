@@ -12,11 +12,17 @@ const client = new MongoClient(uri);
 await client.connect();
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:4000",
+  baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:4001",
   secret: process.env.BETTER_AUTH_SECRET,
   database: mongodbAdapter(client.db()),
   emailAndPassword: {
     enabled: true,
   },
-  trustedOrigins: [process.env.CLIENT_URL ?? "http://localhost:5173"],
+  trustedOrigins: [process.env.CLIENT_URL ?? "http://localhost:5183"],
+  advanced: {
+    // Cookies aren't scoped by port, only by host — without a distinct
+    // prefix this collides with any other "localhost" Better Auth app
+    // (e.g. comunicacaoAI), each overwriting the other's session cookie.
+    cookiePrefix: "shelf",
+  },
 });
