@@ -12,12 +12,15 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { name, quantity, unit, category, barcode } = req.body;
+  const { name, quantity, unit, category, brand, packageSize, imageUrl, barcode } = req.body;
   const item = await Item.create({
     name,
     quantity,
     unit,
     category,
+    brand,
+    packageSize,
+    imageUrl,
     barcode,
     userId: req.userId,
   });
@@ -25,10 +28,10 @@ router.post("/", async (req, res) => {
 });
 
 router.patch("/:id", async (req, res) => {
-  const { name, quantity, unit, category } = req.body;
+  const { name, quantity, unit, category, brand, packageSize, imageUrl, barcode } = req.body;
   const item = await Item.findOneAndUpdate(
     { _id: req.params.id, userId: req.userId },
-    { $set: { name, quantity, unit, category } },
+    { $set: { name, quantity, unit, category, brand, packageSize, imageUrl, barcode } },
     { new: true, omitUndefined: true },
   );
 

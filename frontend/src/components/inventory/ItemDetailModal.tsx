@@ -1,0 +1,178 @@
+import { useState } from "react";
+
+export type ItemFormData = {
+  name: string;
+  brand: string;
+  category: string;
+  packageSize: string;
+  quantity: string;
+  unit: string;
+  barcode: string;
+};
+
+type Props = {
+  title: string;
+  initial: Partial<ItemFormData>;
+  imageUrl?: string;
+  onClose: () => void;
+  onSave: (data: ItemFormData) => Promise<void>;
+  onDelete?: () => Promise<void>;
+};
+
+const CATEGORY_SUGGESTIONS = [
+  "Laticínios",
+  "Grãos e Cereais",
+  "Bebidas",
+  "Temperos e Condimentos",
+  "Limpeza",
+  "Higiene",
+  "Congelados",
+  "Enlatados e Conservas",
+  "Hortifruti",
+  "Padaria",
+  "Carnes",
+  "Doces e Sobremesas",
+  "Outros",
+];
+
+export function ItemDetailModal({ title, initial, imageUrl, onClose, onSave, onDelete }: Props) {
+  const [name, setName] = useState(initial.name ?? "");
+  const [brand, setBrand] = useState(initial.brand ?? "");
+  const [category, setCategory] = useState(initial.category ?? "");
+  const [packageSize, setPackageSize] = useState(initial.packageSize ?? "");
+  const [quantity, setQuantity] = useState(initial.quantity ?? "1");
+  const [unit, setUnit] = useState(initial.unit ?? "un");
+  const [barcode, setBarcode] = useState(initial.barcode ?? "");
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!name.trim()) return;
+
+    setSaving(true);
+    await onSave({ name, brand, category, packageSize, quantity, unit, barcode });
+    setSaving(false);
+  }
+
+  async function handleDelete() {
+    if (!onDelete) return;
+    setDeleting(true);
+    await onDelete();
+    setDeleting(false);
+  }
+
+  return (
+    <div className="fixed inset-0 z-30 flex items-end bg-black/50" onClick={onClose}>
+      <form
+        onClick={(e) => e.stopPropagation()}
+        onSubmit={handleSubmit}
+        className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-white p-4 dark:bg-gray-950"
+      >
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{title}</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-sm text-gray-500 dark:text-gray-400"
+          >
+            Fechar
+          </button>
+        </div>
+
+        {imageUrl && (
+          <img
+            src={imageUrl}
+            alt=""
+            className="h-32 w-32 rounded-lg object-cover"
+          />
+        )}
+
+        <input
+          type="text"
+          placeholder="Nome do item*"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+        />
+
+        <input
+          type="text"
+          placeholder="Marca"
+          value={brand}
+          onChange={(e) => setBrand(e.target.value)}
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+        />
+
+        <input
+          type="text"
+          list="category-suggestions"
+          placeholder="Categoria"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+        />
+        <datalist id="category-suggestions">
+          {CATEGORY_SUGGESTIONS.map((c) => (
+            <option key={c} value={c} />
+          ))}
+        </datalist>
+
+        <input
+          type="text"
+          placeholder="Tamanho da embalagem (ex: 500g, 1L)"
+          value={packageSize}
+          onChange={(e) => setPackageSize(e.target.value)}
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+        />
+
+        <div className="flex gap-2">
+          <input
+            type="number"
+            min={0}
+            placeholder="Qtd."
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            className="w-1/2 rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          />
+          <input
+            type="text"
+            placeholder="Unidade"
+            value={unit}
+            onChange={(e) => setUnit(e.target.value)}
+            className="w-1/2 rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          />
+        </div>
+
+        <input
+          type="text"
+          placeholder="Código de barras"
+          value={barcode}
+          onChange={(e) => setBarcode(e.target.value)}
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+        />
+
+        <div className="flex gap-2 pt-2">
+          {onDelete && (
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deleting}
+              className="flex-1 rounded-lg border border-red-600 py-2.5 font-medium text-red-600 disabled:opacity-60"
+            >
+              {deleting ? "Excluindo..." : "Excluir"}
+            </button>
+          )}
+          <button
+            type="submit"
+            disabled={saving}
+            className="flex-1 rounded-lg bg-emerald-600 py-2.5 font-medium text-white disabled:opacity-60"
+          >
+            {saving ? "Salvando..." : "Salvar"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
