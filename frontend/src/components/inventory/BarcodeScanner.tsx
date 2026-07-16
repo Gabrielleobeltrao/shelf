@@ -11,20 +11,51 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
   const onDetectedRef = useRef(onDetected);
   onDetectedRef.current = onDetected;
   const [error, setError] = useState<string | null>(null);
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+  const [deviceIndex, setDeviceIndex] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
+
+    BrowserMultiFormatReader.listVideoInputDevices()
+      .then((found) => {
+        if (cancelled) return;
+
+        if (found.length === 0) {
+          setError("Nenhuma câmera encontrada.");
+          return;
+        }
+
+        setDevices(found);
+        const backIndex = found.findIndex((d) => /back|traseira|rear|environment/i.test(d.label));
+        if (backIndex >= 0) setDeviceIndex(backIndex);
+      })
+      .catch(() => setError("Não foi possível acessar a câmera."));
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (devices.length === 0) return;
+
     const reader = new BrowserMultiFormatReader();
     let controls: { stop: () => void } | undefined;
     let cancelled = false;
     let detected = false;
 
     reader
-      .decodeFromVideoDevice(undefined, videoRef.current ?? undefined, (result) => {
-        if (cancelled || detected || !result) return;
-        detected = true;
-        controls?.stop();
-        onDetectedRef.current(result.getText());
-      })
+      .decodeFromVideoDevice(
+        devices[deviceIndex].deviceId,
+        videoRef.current ?? undefined,
+        (result) => {
+          if (cancelled || detected || !result) return;
+          detected = true;
+          controls?.stop();
+          onDetectedRef.current(result.getText());
+        },
+      )
       .then((c) => {
         if (cancelled) {
           c.stop();
@@ -40,7 +71,7 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
       cancelled = true;
       controls?.stop();
     };
-  }, []);
+  }, [devices, deviceIndex]);
 
   return (
     <div className="fixed inset-0 z-20 flex flex-col bg-black">
@@ -52,12 +83,25 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
         </p>
       )}
 
-      <button
-        onClick={onClose}
-        className="absolute right-4 top-4 rounded-full bg-white/90 px-4 py-2 text-sm font-medium"
-      >
-        Fechar
-      </button>
+      <div className="absolute inset-x-0 top-4 flex justify-between px-4">
+        {devices.length > 1 ? (
+          <button
+            onClick={() => setDeviceIndex((i) => (i + 1) % devices.length)}
+            className="rounded-full bg-white/90 px-4 py-2 text-sm font-medium"
+          >
+            Trocar câmera
+          </button>
+        ) : (
+          <span />
+        )}
+
+        <button
+          onClick={onClose}
+          className="rounded-full bg-white/90 px-4 py-2 text-sm font-medium"
+        >
+          Fechar
+        </button>
+      </div>
     </div>
   );
 }
