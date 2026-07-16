@@ -46,8 +46,14 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
     let detected = false;
 
     reader
-      .decodeFromVideoDevice(
-        devices[deviceIndex].deviceId,
+      .decodeFromConstraints(
+        {
+          video: {
+            deviceId: { exact: devices[deviceIndex].deviceId },
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+          },
+        },
         videoRef.current ?? undefined,
         (result) => {
           if (cancelled || detected || !result) return;
@@ -76,6 +82,15 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
   return (
     <div className="fixed inset-0 z-20 flex flex-col bg-black">
       <video ref={videoRef} className="flex-1 object-cover" muted playsInline />
+
+      {!error && (
+        <div className="pointer-events-none absolute inset-x-8 top-1/2 -translate-y-1/2">
+          <div className="aspect-2/1 rounded-lg border-4 border-white/80" />
+          <p className="mt-3 text-center text-sm text-white/90">
+            Aproxime o código de barras dessa área
+          </p>
+        </div>
+      )}
 
       {error && (
         <p className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-6 text-center text-sm text-white">
