@@ -9,27 +9,21 @@ Organização de cozinha: estoque e receitas, mobile first.
 
 ## Como rodar
 
-### Backend
+Instale as dependências em `frontend/` e `backend/`, copie os `.env.example` para `.env`
+em cada pasta (preenchendo `MONGODB_URI` e `BETTER_AUTH_SECRET` no backend) e, na raiz:
 
 ```bash
-cd backend
-cp .env.example .env   # preencher MONGODB_URI e BETTER_AUTH_SECRET
 npm install
 npm run dev
 ```
 
-Servidor sobe em `http://localhost:4000`.
+Isso sobe frontend e backend juntos:
 
-### Frontend
+- Backend: `http://localhost:4001`
+- Frontend: `http://localhost:5183`
 
-```bash
-cd frontend
-cp .env.example .env
-npm install
-npm run dev
-```
-
-App sobe em `http://localhost:5173`.
+Portas escolhidas de propósito fora dos defaults comuns (4000/5173) para não
+conflitar com outros projetos rodando na mesma máquina.
 
 ## Status
 
