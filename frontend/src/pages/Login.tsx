@@ -8,6 +8,7 @@ export function Login() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -18,7 +19,7 @@ export function Login() {
 
     const { error: authError } =
       mode === "signin"
-        ? await signIn.email({ email, password })
+        ? await signIn.email({ email, password, rememberMe })
         : await signUp.email({ name, email, password });
 
     setLoading(false);
@@ -70,6 +71,18 @@ export function Login() {
           minLength={8}
           className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
         />
+
+        {mode === "signin" && (
+          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 dark:border-gray-700"
+            />
+            Manter conectado
+          </label>
+        )}
 
         {error && <p className="text-sm text-red-600">{error}</p>}
 
