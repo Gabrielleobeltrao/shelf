@@ -12,15 +12,27 @@ export function Login() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    // Lê os valores reais do formulário: se o navegador preencheu os
+    // campos via autofill sem disparar onChange, o estado do React ainda
+    // estaria vazio e o próximo render "limparia" os inputs visualmente.
+    const formData = new FormData(e.currentTarget);
+    const nameValue = String(formData.get("name") ?? "");
+    const emailValue = String(formData.get("email") ?? "");
+    const passwordValue = String(formData.get("password") ?? "");
+
+    setName(nameValue);
+    setEmail(emailValue);
+    setPassword(passwordValue);
     setError(null);
     setLoading(true);
 
     const { error: authError } =
       mode === "signin"
-        ? await signIn.email({ email, password, rememberMe })
-        : await signUp.email({ name, email, password });
+        ? await signIn.email({ email: emailValue, password: passwordValue, rememberMe })
+        : await signUp.email({ name: nameValue, email: emailValue, password: passwordValue });
 
     setLoading(false);
 
@@ -45,6 +57,8 @@ export function Login() {
         {mode === "signup" && (
           <input
             type="text"
+            name="name"
+            autoComplete="name"
             placeholder="Nome"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -55,6 +69,8 @@ export function Login() {
 
         <input
           type="email"
+          name="email"
+          autoComplete="email"
           placeholder="E-mail"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -64,6 +80,8 @@ export function Login() {
 
         <input
           type="password"
+          name="password"
+          autoComplete={mode === "signin" ? "current-password" : "new-password"}
           placeholder="Senha"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
