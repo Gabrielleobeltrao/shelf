@@ -1,5 +1,10 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { api } from "../lib/api";
+import { lookupProductName } from "../lib/openFoodFacts";
+
+const BarcodeScanner = lazy(() =>
+  import("../components/inventory/BarcodeScanner").then((m) => ({ default: m.BarcodeScanner })),
+);
 
 type Item = {
   _id: string;
@@ -7,6 +12,7 @@ type Item = {
   quantity: number;
   unit: string;
   category?: string;
+  barcode?: string;
 };
 
 export function Inventory() {
@@ -15,6 +21,8 @@ export function Inventory() {
   const [quantity, setQuantity] = useState("1");
   const [unit, setUnit] = useState("un");
   const [loading, setLoading] = useState(true);
+  const [scanning, setScanning] = useState(false);
+  const [scannedBarcode, setScannedBarcode] = useState<string | null>(null);
 
   useEffect(() => {
     api
@@ -31,11 +39,13 @@ export function Inventory() {
       name: name.trim(),
       quantity: Number(quantity) || 1,
       unit,
+      barcode: scannedBarcode ?? undefined,
     });
 
     setItems((prev) => [item, ...prev]);
     setName("");
     setQuantity("1");
+    setScannedBarcode(null);
   }
 
   async function handleDelete(id: string) {
@@ -43,9 +53,39 @@ export function Inventory() {
     setItems((prev) => prev.filter((item) => item._id !== id));
   }
 
+  async function handleDetected(code: string) {
+    setScanning(false);
+
+    const existing = items.find((item) => item.barcode === code);
+    if (existing) {
+      const updated = await api.patch<Item>(`/api/items/${existing._id}`, {
+        quantity: existing.quantity + 1,
+      });
+      setItems((prev) => prev.map((item) => (item._id === updated._id ? updated : item)));
+      return;
+    }
+
+    setScannedBarcode(code);
+    const productName = await lookupProductName(code);
+    if (productName) setName(productName);
+  }
+
   return (
     <div className="space-y-4">
       <h1 className="text-lg font-semibold">Estoque</h1>
+
+      <button
+        onClick={() => setScanning(true)}
+        className="w-full rounded-lg border border-emerald-600 py-2.5 font-medium text-emerald-600"
+      >
+        Escanear código de barras
+      </button>
+
+      {scannedBarcode && (
+        <p className="text-sm text-gray-500">
+          Código {scannedBarcode} escaneado — confirme os dados abaixo para adicionar.
+        </p>
+      )}
 
       <form onSubmit={handleAdd} className="flex gap-2">
         <input
@@ -99,6 +139,12 @@ export function Inventory() {
             </li>
           ))}
         </ul>
+      )}
+
+      {scanning && (
+        <Suspense fallback={null}>
+          <BarcodeScanner onDetected={handleDetected} onClose={() => setScanning(false)} />
+        </Suspense>
       )}
     </div>
   );

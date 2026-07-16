@@ -12,9 +12,32 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { name, quantity, unit, category } = req.body;
-  const item = await Item.create({ name, quantity, unit, category, userId: req.userId });
+  const { name, quantity, unit, category, barcode } = req.body;
+  const item = await Item.create({
+    name,
+    quantity,
+    unit,
+    category,
+    barcode,
+    userId: req.userId,
+  });
   res.status(201).json(item);
+});
+
+router.patch("/:id", async (req, res) => {
+  const { name, quantity, unit, category } = req.body;
+  const item = await Item.findOneAndUpdate(
+    { _id: req.params.id, userId: req.userId },
+    { $set: { name, quantity, unit, category } },
+    { new: true, omitUndefined: true },
+  );
+
+  if (!item) {
+    res.status(404).json({ error: "Item não encontrado" });
+    return;
+  }
+
+  res.json(item);
 });
 
 router.delete("/:id", async (req, res) => {
