@@ -222,27 +222,27 @@ export function Inventory() {
                     initial: toFormData(item),
                   })
                 }
-                className="flex cursor-pointer items-stretch gap-3 py-2"
+                className="flex cursor-pointer flex-col gap-1 py-2"
               >
-                {item.imageUrl && (
-                  <img
-                    src={item.imageUrl}
-                    alt=""
-                    className="h-16 w-16 shrink-0 rounded-lg object-cover"
-                  />
-                )}
+                <p className="truncate">{item.name}</p>
 
-                <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
-                  <p className="truncate">{item.name}</p>
+                <div className="flex items-stretch gap-3">
+                  {item.imageUrl && (
+                    <img
+                      src={item.imageUrl}
+                      alt=""
+                      className="h-14 w-14 shrink-0 rounded-lg object-cover"
+                    />
+                  )}
 
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
                     <span className="min-w-0 truncate text-xs text-gray-500">
                       {secondaryInfo}
                     </span>
 
                     <div
                       onClick={(e) => e.stopPropagation()}
-                      className="flex shrink-0 items-center gap-2"
+                      className="flex items-center gap-2"
                     >
                       <button
                         onClick={() => handleStep(item, -1)}
