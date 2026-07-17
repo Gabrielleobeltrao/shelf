@@ -57,10 +57,23 @@ export function RecipeDetailModal({
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  const usedItemIds = new Set(ingredients.map((row) => row.itemId));
+  const hasAvailableItem = stockItems.some((item) => !usedItemIds.has(item._id));
+
+  function availableItemsFor(index: number) {
+    const usedElsewhere = new Set(
+      ingredients.filter((_, i) => i !== index).map((row) => row.itemId),
+    );
+    return stockItems.filter((item) => !usedElsewhere.has(item._id));
+  }
+
   function addIngredient() {
+    const nextItem = stockItems.find((item) => !usedItemIds.has(item._id));
+    if (!nextItem) return;
+
     setIngredients((prev) => [
       ...prev,
-      { itemId: stockItems[0]?._id ?? "", quantity: "1", unit: stockItems[0]?.unit ?? "un" },
+      { itemId: nextItem._id, quantity: "1", unit: nextItem.unit },
     ]);
   }
 
@@ -158,7 +171,7 @@ export function RecipeDetailModal({
                     }}
                     className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
                   >
-                    {stockItems.map((item) => (
+                    {availableItemsFor(index).map((item) => (
                       <option key={item._id} value={item._id}>
                         {item.name}
                       </option>
@@ -195,13 +208,19 @@ export function RecipeDetailModal({
                 </div>
               ))}
 
-              <button
-                type="button"
-                onClick={addIngredient}
-                className="text-sm font-medium text-emerald-600"
-              >
-                + Adicionar ingrediente
-              </button>
+              {hasAvailableItem ? (
+                <button
+                  type="button"
+                  onClick={addIngredient}
+                  className="text-sm font-medium text-emerald-600"
+                >
+                  + Adicionar ingrediente
+                </button>
+              ) : (
+                <p className="text-sm text-gray-500">
+                  Todos os itens do estoque já foram adicionados.
+                </p>
+              )}
             </>
           )}
         </div>
