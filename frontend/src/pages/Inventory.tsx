@@ -45,6 +45,7 @@ export function Inventory() {
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     api
@@ -176,28 +177,83 @@ export function Inventory() {
       </div>
 
       {items.length > 0 && (
-        <div className="flex gap-2">
+        <div className="relative">
           <input
             type="text"
             placeholder="Buscar por nome ou marca"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+            className="w-full rounded-lg border border-gray-300 py-2 pl-3 pr-10 text-base dark:border-gray-700 dark:bg-gray-900"
           />
           {categories.length > 0 && (
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-36 shrink-0 rounded-lg border border-gray-300 px-2 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+            <button
+              type="button"
+              onClick={() => setFiltersOpen(true)}
+              aria-label="Abrir filtros"
+              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-gray-500 dark:text-gray-400"
             >
-              <option value="">Todas categorias</option>
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
+              <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5">
+                <path
+                  d="M3 4.5h14l-5.5 6.5v5l-3 1.5v-6.5L3 4.5z"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                />
+              </svg>
+              {categoryFilter && (
+                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-emerald-600" />
+              )}
+            </button>
           )}
+        </div>
+      )}
+
+      {filtersOpen && (
+        <div
+          className="fixed inset-0 z-30 flex items-end bg-black/50"
+          onClick={() => setFiltersOpen(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full space-y-3 rounded-t-2xl bg-white p-4 dark:bg-gray-950"
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Filtros</h2>
+              <button
+                onClick={() => setFiltersOpen(false)}
+                className="text-sm text-gray-500 dark:text-gray-400"
+              >
+                Fechar
+              </button>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium">Categoria</label>
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+              >
+                <option value="">Todas categorias</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {categoryFilter && (
+              <button
+                type="button"
+                onClick={() => setCategoryFilter("")}
+                className="text-sm font-medium text-emerald-600"
+              >
+                Limpar filtro
+              </button>
+            )}
+          </div>
         </div>
       )}
 
