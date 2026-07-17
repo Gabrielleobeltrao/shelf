@@ -150,11 +150,11 @@ export function Recipes() {
 
                 {recipe.ingredients.length > 0 && (
                   <ul className="mt-1 space-y-0.5 text-sm text-gray-500">
-                    {recipe.ingredients.map((row) => {
+                    {recipe.ingredients.map((row, index) => {
                       const item = itemsById.get(row.itemId);
                       if (!item) return null;
                       return (
-                        <li key={row.itemId}>
+                        <li key={`${row.itemId}-${index}`}>
                           {row.quantity} {row.unit} de {item.name}
                         </li>
                       );
