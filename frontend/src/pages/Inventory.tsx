@@ -43,6 +43,8 @@ export function Inventory() {
   const [scanning, setScanning] = useState(false);
   const [modal, setModal] = useState<ModalState | null>(null);
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
+  const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
 
   useEffect(() => {
     api
@@ -51,25 +53,25 @@ export function Inventory() {
       .finally(() => setLoading(false));
   }, []);
 
-  const groups = useMemo(() => {
-    const byCategory = new Map<string, Item[]>();
-    for (const item of items) {
-      const key = item.category?.trim() || "Sem categoria";
-      const list = byCategory.get(key) ?? [];
-      list.push(item);
-      byCategory.set(key, list);
-    }
-    return [...byCategory.entries()]
-      .map(([category, categoryItems]) => ({
-        category,
-        items: categoryItems.sort((a, b) => a.name.localeCompare(b.name)),
-      }))
-      .sort((a, b) => {
-        if (a.category === "Sem categoria") return 1;
-        if (b.category === "Sem categoria") return -1;
-        return a.category.localeCompare(b.category);
-      });
+  const categories = useMemo(() => {
+    const set = new Set(items.map((item) => item.category?.trim()).filter(Boolean));
+    return [...set].sort((a, b) => a!.localeCompare(b!));
   }, [items]);
+
+  const filteredItems = useMemo(() => {
+    const term = search.trim().toLowerCase();
+
+    return items
+      .filter((item) => {
+        if (categoryFilter && (item.category?.trim() || "") !== categoryFilter) return false;
+        if (!term) return true;
+        return (
+          item.name.toLowerCase().includes(term) ||
+          (item.brand ?? "").toLowerCase().includes(term)
+        );
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [items, search, categoryFilter]);
 
   async function handleSave(data: ItemFormData) {
     if (!modal) return;
@@ -173,82 +175,101 @@ export function Inventory() {
         </button>
       </div>
 
+      {items.length > 0 && (
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Buscar por nome ou marca"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          />
+          {categories.length > 0 && (
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="w-36 shrink-0 rounded-lg border border-gray-300 px-2 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+            >
+              <option value="">Todas categorias</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+      )}
+
       {loading ? (
         <p className="text-sm text-gray-500">Carregando...</p>
       ) : items.length === 0 ? (
         <p className="text-sm text-gray-500">Nenhum item no estoque ainda.</p>
+      ) : filteredItems.length === 0 ? (
+        <p className="text-sm text-gray-500">Nenhum item encontrado.</p>
       ) : (
-        <div className="space-y-5">
-          {groups.map((group) => (
-            <div key={group.category}>
-              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
-                {group.category}
-              </h2>
-              <ul className="divide-y divide-gray-200 dark:divide-gray-800">
-                {group.items.map((item) => {
-                  const secondaryInfo = item.brand || item.packageSize || "";
+        <ul className="divide-y divide-gray-200 dark:divide-gray-800">
+          {filteredItems.map((item) => {
+            const secondaryInfo = item.brand || item.packageSize || "";
 
-                  return (
-                    <li
-                      key={item._id}
-                      onClick={() =>
-                        setModal({
-                          mode: "edit",
-                          itemId: item._id,
-                          initial: toFormData(item),
-                        })
-                      }
-                      className="flex cursor-pointer items-stretch gap-3 py-2"
+            return (
+              <li
+                key={item._id}
+                onClick={() =>
+                  setModal({
+                    mode: "edit",
+                    itemId: item._id,
+                    initial: toFormData(item),
+                  })
+                }
+                className="flex cursor-pointer items-stretch gap-3 py-2"
+              >
+                {item.imageUrl && (
+                  <img
+                    src={item.imageUrl}
+                    alt=""
+                    className="h-16 w-16 shrink-0 rounded-lg object-cover"
+                  />
+                )}
+
+                <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
+                  <p className="truncate">{item.name}</p>
+
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="min-w-0 truncate text-xs text-gray-500">
+                      {secondaryInfo}
+                    </span>
+
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex shrink-0 items-center gap-2"
                     >
-                      {item.imageUrl && (
-                        <img
-                          src={item.imageUrl}
-                          alt=""
-                          className="h-16 w-16 shrink-0 rounded-lg object-cover"
-                        />
-                      )}
-
-                      <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
-                        <p className="truncate">{item.name}</p>
-
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="min-w-0 truncate text-xs text-gray-500">
-                            {secondaryInfo}
-                          </span>
-
-                          <div
-                            onClick={(e) => e.stopPropagation()}
-                            className="flex shrink-0 items-center gap-2"
-                          >
-                            <button
-                              onClick={() => handleStep(item, -1)}
-                              disabled={pendingIds.has(item._id) || item.quantity <= 0}
-                              aria-label={`Diminuir quantidade de ${item.name}`}
-                              className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none disabled:opacity-40 dark:border-gray-700"
-                            >
-                              −
-                            </button>
-                            <span className="min-w-14 whitespace-nowrap text-center text-sm text-gray-500">
-                              {item.quantity} {item.unit}
-                            </span>
-                            <button
-                              onClick={() => handleStep(item, 1)}
-                              disabled={pendingIds.has(item._id)}
-                              aria-label={`Aumentar quantidade de ${item.name}`}
-                              className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none disabled:opacity-40 dark:border-gray-700"
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
-        </div>
+                      <button
+                        onClick={() => handleStep(item, -1)}
+                        disabled={pendingIds.has(item._id) || item.quantity <= 0}
+                        aria-label={`Diminuir quantidade de ${item.name}`}
+                        className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none disabled:opacity-40 dark:border-gray-700"
+                      >
+                        −
+                      </button>
+                      <span className="min-w-14 whitespace-nowrap text-center text-sm text-gray-500">
+                        {item.quantity} {item.unit}
+                      </span>
+                      <button
+                        onClick={() => handleStep(item, 1)}
+                        disabled={pendingIds.has(item._id)}
+                        aria-label={`Aumentar quantidade de ${item.name}`}
+                        className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none disabled:opacity-40 dark:border-gray-700"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
       )}
 
       {modal && (
