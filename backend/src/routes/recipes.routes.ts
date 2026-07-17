@@ -22,6 +22,22 @@ router.post("/", async (req, res) => {
   res.status(201).json(recipe);
 });
 
+router.patch("/:id", async (req, res) => {
+  const { name, ingredients, instructions } = req.body;
+  const recipe = await Recipe.findOneAndUpdate(
+    { _id: req.params.id, userId: req.userId },
+    { $set: { name, ingredients, instructions } },
+    { new: true, omitUndefined: true },
+  );
+
+  if (!recipe) {
+    res.status(404).json({ error: "Receita não encontrada" });
+    return;
+  }
+
+  res.json(recipe);
+});
+
 router.delete("/:id", async (req, res) => {
   await Recipe.deleteOne({ _id: req.params.id, userId: req.userId });
   res.status(204).end();

@@ -1,84 +1,89 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api } from "../lib/api";
+import type { RecipeFormData } from "../components/recipes/RecipeDetailModal";
+import { RecipeDetailModal } from "../components/recipes/RecipeDetailModal";
+
+type RecipeIngredient = {
+  itemId: string;
+  quantity: number;
+  unit: string;
+};
 
 type Recipe = {
   _id: string;
   name: string;
-  ingredients: string[];
   instructions: string;
+  ingredients: RecipeIngredient[];
 };
+
+type StockItem = {
+  _id: string;
+  name: string;
+  unit: string;
+};
+
+type ModalState =
+  | { mode: "create"; initial: Partial<RecipeFormData> }
+  | { mode: "edit"; recipeId: string; initial: Partial<RecipeFormData> };
 
 export function Recipes() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [name, setName] = useState("");
-  const [ingredients, setIngredients] = useState("");
-  const [instructions, setInstructions] = useState("");
+  const [items, setItems] = useState<StockItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [modal, setModal] = useState<ModalState | null>(null);
 
   useEffect(() => {
-    api
-      .get<Recipe[]>("/api/recipes")
-      .then(setRecipes)
+    Promise.all([api.get<Recipe[]>("/api/recipes"), api.get<StockItem[]>("/api/items")])
+      .then(([recipesData, itemsData]) => {
+        setRecipes(recipesData);
+        setItems(itemsData);
+      })
       .finally(() => setLoading(false));
   }, []);
 
-  async function handleAdd(e: React.FormEvent) {
-    e.preventDefault();
-    if (!name.trim()) return;
+  const itemsById = useMemo(() => new Map(items.map((item) => [item._id, item])), [items]);
 
-    const recipe = await api.post<Recipe>("/api/recipes", {
-      name: name.trim(),
-      ingredients: ingredients
-        .split(",")
-        .map((i) => i.trim())
-        .filter(Boolean),
-      instructions: instructions.trim(),
-    });
+  async function handleSave(data: RecipeFormData) {
+    if (!modal) return;
 
-    setRecipes((prev) => [recipe, ...prev]);
-    setName("");
-    setIngredients("");
-    setInstructions("");
+    const payload = {
+      name: data.name.trim(),
+      instructions: data.instructions.trim(),
+      ingredients: data.ingredients.map((row) => ({
+        itemId: row.itemId,
+        quantity: Number(row.quantity) || 1,
+        unit: row.unit.trim() || "un",
+      })),
+    };
+
+    if (modal.mode === "edit") {
+      const updated = await api.patch<Recipe>(`/api/recipes/${modal.recipeId}`, payload);
+      setRecipes((prev) => prev.map((r) => (r._id === updated._id ? updated : r)));
+    } else {
+      const created = await api.post<Recipe>("/api/recipes", payload);
+      setRecipes((prev) => [created, ...prev]);
+    }
+
+    setModal(null);
   }
 
-  async function handleDelete(id: string) {
-    await api.delete(`/api/recipes/${id}`);
-    setRecipes((prev) => prev.filter((recipe) => recipe._id !== id));
+  async function handleDelete() {
+    if (modal?.mode !== "edit") return;
+    await api.delete(`/api/recipes/${modal.recipeId}`);
+    setRecipes((prev) => prev.filter((r) => r._id !== modal.recipeId));
+    setModal(null);
   }
 
   return (
     <div className="space-y-4">
       <h1 className="text-lg font-semibold">Receitas</h1>
 
-      <form onSubmit={handleAdd} className="space-y-2">
-        <input
-          type="text"
-          placeholder="Nome da receita"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
-        />
-        <input
-          type="text"
-          placeholder="Ingredientes (separados por vírgula)"
-          value={ingredients}
-          onChange={(e) => setIngredients(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
-        />
-        <textarea
-          placeholder="Modo de preparo"
-          value={instructions}
-          onChange={(e) => setInstructions(e.target.value)}
-          rows={3}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
-        />
-        <button
-          type="submit"
-          className="w-full rounded-lg bg-emerald-600 py-2.5 font-medium text-white"
-        >
-          Adicionar receita
-        </button>
-      </form>
+      <button
+        onClick={() => setModal({ mode: "create", initial: { ingredients: [] } })}
+        className="w-full rounded-lg bg-emerald-600 py-2.5 font-medium text-white"
+      >
+        Adicionar receita
+      </button>
 
       {loading ? (
         <p className="text-sm text-gray-500">Carregando...</p>
@@ -89,26 +94,53 @@ export function Recipes() {
           {recipes.map((recipe) => (
             <li
               key={recipe._id}
-              className="rounded-lg border border-gray-200 p-3 dark:border-gray-800"
+              onClick={() =>
+                setModal({
+                  mode: "edit",
+                  recipeId: recipe._id,
+                  initial: {
+                    name: recipe.name,
+                    instructions: recipe.instructions,
+                    ingredients: recipe.ingredients.map((row) => ({
+                      itemId: row.itemId,
+                      quantity: String(row.quantity),
+                      unit: row.unit,
+                    })),
+                  },
+                })
+              }
+              className="cursor-pointer rounded-lg border border-gray-200 p-3 dark:border-gray-800"
             >
-              <div className="flex items-center justify-between">
-                <h2 className="font-medium">{recipe.name}</h2>
-                <button
-                  onClick={() => handleDelete(recipe._id)}
-                  className="text-sm text-red-600"
-                >
-                  Remover
-                </button>
-              </div>
-              <p className="mt-1 text-sm text-gray-500">
-                {recipe.ingredients.join(", ")}
-              </p>
+              <h2 className="font-medium">{recipe.name}</h2>
+              {recipe.ingredients.length > 0 && (
+                <p className="mt-1 text-sm text-gray-500">
+                  {recipe.ingredients
+                    .map((row) => {
+                      const item = itemsById.get(row.itemId);
+                      if (!item) return null;
+                      return `${row.quantity} ${row.unit} de ${item.name}`;
+                    })
+                    .filter(Boolean)
+                    .join(", ")}
+                </p>
+              )}
               {recipe.instructions && (
-                <p className="mt-2 text-sm">{recipe.instructions}</p>
+                <p className="mt-2 truncate text-sm">{recipe.instructions}</p>
               )}
             </li>
           ))}
         </ul>
+      )}
+
+      {modal && (
+        <RecipeDetailModal
+          title={modal.mode === "edit" ? "Editar receita" : "Nova receita"}
+          initial={modal.initial}
+          stockItems={items}
+          onClose={() => setModal(null)}
+          onSave={handleSave}
+          onDelete={modal.mode === "edit" ? handleDelete : undefined}
+        />
       )}
     </div>
   );
