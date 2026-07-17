@@ -4,6 +4,7 @@ import { AppLayout } from "./components/layout/AppLayout";
 import { Login } from "./pages/Login";
 import { Inventory } from "./pages/Inventory";
 import { Recipes } from "./pages/Recipes";
+import { Settings } from "./pages/Settings";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       >
         <Route path="/" element={<Inventory />} />
         <Route path="/receitas" element={<Recipes />} />
+        <Route path="/configuracoes" element={<Settings />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -4,6 +4,7 @@ import { signOut, useSession } from "../../lib/auth-client";
 const links = [
   { to: "/", label: "Estoque", end: true },
   { to: "/receitas", label: "Receitas", end: false },
+  { to: "/configuracoes", label: "Configurações", end: false },
 ];
 
 type Props = {
