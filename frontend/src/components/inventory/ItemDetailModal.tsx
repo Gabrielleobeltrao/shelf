@@ -8,12 +8,12 @@ export type ItemFormData = {
   quantity: string;
   unit: string;
   barcode: string;
+  imageUrl: string;
 };
 
 type Props = {
   title: string;
   initial: Partial<ItemFormData>;
-  imageUrl?: string;
   onClose: () => void;
   onSave: (data: ItemFormData) => Promise<void>;
   onDelete?: () => Promise<void>;
@@ -35,7 +35,7 @@ const CATEGORY_SUGGESTIONS = [
   "Outros",
 ];
 
-export function ItemDetailModal({ title, initial, imageUrl, onClose, onSave, onDelete }: Props) {
+export function ItemDetailModal({ title, initial, onClose, onSave, onDelete }: Props) {
   const [name, setName] = useState(initial.name ?? "");
   const [brand, setBrand] = useState(initial.brand ?? "");
   const [category, setCategory] = useState(initial.category ?? "");
@@ -43,6 +43,7 @@ export function ItemDetailModal({ title, initial, imageUrl, onClose, onSave, onD
   const [quantity, setQuantity] = useState(initial.quantity ?? "1");
   const [unit, setUnit] = useState(initial.unit ?? "un");
   const [barcode, setBarcode] = useState(initial.barcode ?? "");
+  const [imageUrl, setImageUrl] = useState(initial.imageUrl ?? "");
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -51,7 +52,7 @@ export function ItemDetailModal({ title, initial, imageUrl, onClose, onSave, onD
     if (!name.trim()) return;
 
     setSaving(true);
-    await onSave({ name, brand, category, packageSize, quantity, unit, barcode });
+    await onSave({ name, brand, category, packageSize, quantity, unit, barcode, imageUrl });
     setSaving(false);
   }
 
@@ -80,13 +81,21 @@ export function ItemDetailModal({ title, initial, imageUrl, onClose, onSave, onD
           </button>
         </div>
 
-        {imageUrl && (
-          <img
-            src={imageUrl}
-            alt=""
-            className="h-32 w-32 rounded-lg object-cover"
-          />
+        {imageUrl ? (
+          <img src={imageUrl} alt="" className="h-32 w-32 rounded-lg object-cover" />
+        ) : (
+          <div className="flex h-32 w-32 items-center justify-center rounded-lg bg-gray-100 text-xs text-gray-400 dark:bg-gray-800">
+            Sem foto
+          </div>
         )}
+
+        <input
+          type="text"
+          placeholder="URL da imagem"
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+        />
 
         <input
           type="text"

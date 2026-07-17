@@ -21,8 +21,8 @@ type Item = {
 };
 
 type ModalState =
-  | { mode: "create"; initial: Partial<ItemFormData>; imageUrl?: string }
-  | { mode: "edit"; itemId: string; initial: Partial<ItemFormData>; imageUrl?: string };
+  | { mode: "create"; initial: Partial<ItemFormData> }
+  | { mode: "edit"; itemId: string; initial: Partial<ItemFormData> };
 
 function toFormData(item: Item): Partial<ItemFormData> {
   return {
@@ -33,6 +33,7 @@ function toFormData(item: Item): Partial<ItemFormData> {
     quantity: String(item.quantity),
     unit: item.unit,
     barcode: item.barcode ?? "",
+    imageUrl: item.imageUrl ?? "",
   };
 }
 
@@ -41,6 +42,7 @@ export function Inventory() {
   const [loading, setLoading] = useState(true);
   const [scanning, setScanning] = useState(false);
   const [modal, setModal] = useState<ModalState | null>(null);
+  const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     api
@@ -80,7 +82,7 @@ export function Inventory() {
       quantity: Number(data.quantity) || 1,
       unit: data.unit.trim() || "un",
       barcode: data.barcode.trim(),
-      imageUrl: modal.imageUrl,
+      imageUrl: data.imageUrl.trim(),
     };
 
     if (modal.mode === "edit") {
@@ -92,6 +94,24 @@ export function Inventory() {
     }
 
     setModal(null);
+  }
+
+  async function handleStep(item: Item, delta: number) {
+    if (pendingIds.has(item._id)) return;
+    const quantity = Math.max(0, item.quantity + delta);
+    if (quantity === item.quantity) return;
+
+    setPendingIds((prev) => new Set(prev).add(item._id));
+    try {
+      const updated = await api.patch<Item>(`/api/items/${item._id}`, { quantity });
+      setItems((prev) => prev.map((i) => (i._id === updated._id ? updated : i)));
+    } finally {
+      setPendingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(item._id);
+        return next;
+      });
+    }
   }
 
   async function handleDeleteFromModal() {
@@ -124,8 +144,8 @@ export function Inventory() {
         quantity: "1",
         unit: "un",
         barcode: code,
+        imageUrl: product?.imageUrl ?? "",
       },
-      imageUrl: product?.imageUrl ?? undefined,
     });
   }
 
@@ -165,40 +185,66 @@ export function Inventory() {
                 {group.category}
               </h2>
               <ul className="divide-y divide-gray-200 dark:divide-gray-800">
-                {group.items.map((item) => (
-                  <li key={item._id}>
-                    <button
+                {group.items.map((item) => {
+                  const secondaryInfo = item.brand || item.packageSize || "";
+
+                  return (
+                    <li
+                      key={item._id}
                       onClick={() =>
                         setModal({
                           mode: "edit",
                           itemId: item._id,
                           initial: toFormData(item),
-                          imageUrl: item.imageUrl,
                         })
                       }
-                      className="flex w-full items-center gap-3 py-3 text-left"
+                      className="flex cursor-pointer items-stretch gap-3 py-2"
                     >
-                      {item.imageUrl ? (
+                      {item.imageUrl && (
                         <img
                           src={item.imageUrl}
                           alt=""
-                          className="h-10 w-10 shrink-0 rounded-md object-cover"
+                          className="h-16 w-16 shrink-0 rounded-lg object-cover"
                         />
-                      ) : (
-                        <div className="h-10 w-10 shrink-0 rounded-md bg-gray-100 dark:bg-gray-800" />
                       )}
-                      <div className="min-w-0 flex-1">
+
+                      <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
                         <p className="truncate">{item.name}</p>
-                        {item.brand && (
-                          <p className="truncate text-xs text-gray-500">{item.brand}</p>
-                        )}
+
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="min-w-0 truncate text-xs text-gray-500">
+                            {secondaryInfo}
+                          </span>
+
+                          <div
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex shrink-0 items-center gap-2"
+                          >
+                            <button
+                              onClick={() => handleStep(item, -1)}
+                              disabled={pendingIds.has(item._id) || item.quantity <= 0}
+                              aria-label={`Diminuir quantidade de ${item.name}`}
+                              className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none disabled:opacity-40 dark:border-gray-700"
+                            >
+                              −
+                            </button>
+                            <span className="min-w-14 whitespace-nowrap text-center text-sm text-gray-500">
+                              {item.quantity} {item.unit}
+                            </span>
+                            <button
+                              onClick={() => handleStep(item, 1)}
+                              disabled={pendingIds.has(item._id)}
+                              aria-label={`Aumentar quantidade de ${item.name}`}
+                              className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none disabled:opacity-40 dark:border-gray-700"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                      <span className="shrink-0 text-sm text-gray-500">
-                        {item.quantity} {item.unit}
-                      </span>
-                    </button>
-                  </li>
-                ))}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -209,7 +255,6 @@ export function Inventory() {
         <ItemDetailModal
           title={modal.mode === "edit" ? "Editar item" : "Novo item"}
           initial={modal.initial}
-          imageUrl={modal.imageUrl}
           onClose={() => setModal(null)}
           onSave={handleSave}
           onDelete={modal.mode === "edit" ? handleDeleteFromModal : undefined}
