@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { BottomNav } from "./BottomNav";
 import { Sidebar } from "./Sidebar";
 
 export function AppLayout() {
@@ -19,11 +18,9 @@ export function AppLayout() {
         <span className="text-lg font-semibold">Shelf</span>
       </header>
 
-      <main className="flex-1 overflow-y-auto px-4 py-4 pb-20">
+      <main className="flex-1 overflow-y-auto px-4 py-4">
         <Outlet />
       </main>
-
-      <BottomNav />
 
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
     </div>
