@@ -12,21 +12,22 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { name, ingredients, instructions } = req.body;
+  const { name, ingredients, instructions, imageUrl } = req.body;
   const recipe = await Recipe.create({
     name,
     ingredients,
     instructions,
+    imageUrl,
     userId: req.userId,
   });
   res.status(201).json(recipe);
 });
 
 router.patch("/:id", async (req, res) => {
-  const { name, ingredients, instructions } = req.body;
+  const { name, ingredients, instructions, imageUrl } = req.body;
   const recipe = await Recipe.findOneAndUpdate(
     { _id: req.params.id, userId: req.userId },
-    { $set: { name, ingredients, instructions } },
+    { $set: { name, ingredients, instructions, imageUrl } },
     { new: true, omitUndefined: true },
   );
 

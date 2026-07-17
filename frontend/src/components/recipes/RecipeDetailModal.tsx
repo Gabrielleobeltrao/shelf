@@ -24,6 +24,7 @@ export type RecipeFormData = {
   name: string;
   instructions: string;
   ingredients: IngredientRow[];
+  imageUrl: string;
 };
 
 type StockItem = {
@@ -52,6 +53,7 @@ export function RecipeDetailModal({
   const [name, setName] = useState(initial.name ?? "");
   const [instructions, setInstructions] = useState(initial.instructions ?? "");
   const [ingredients, setIngredients] = useState<IngredientRow[]>(initial.ingredients ?? []);
+  const [imageUrl, setImageUrl] = useState(initial.imageUrl ?? "");
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -79,6 +81,7 @@ export function RecipeDetailModal({
       name,
       instructions,
       ingredients: ingredients.filter((row) => row.itemId),
+      imageUrl,
     });
     setSaving(false);
   }
@@ -107,6 +110,22 @@ export function RecipeDetailModal({
             Fechar
           </button>
         </div>
+
+        {imageUrl ? (
+          <img src={imageUrl} alt="" className="h-32 w-full rounded-lg object-cover" />
+        ) : (
+          <div className="flex h-32 w-full items-center justify-center rounded-lg bg-gray-100 text-xs text-gray-400 dark:bg-gray-800">
+            Sem foto
+          </div>
+        )}
+
+        <input
+          type="text"
+          placeholder="URL da foto do prato"
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+        />
 
         <input
           type="text"

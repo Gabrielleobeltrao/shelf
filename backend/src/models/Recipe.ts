@@ -15,6 +15,7 @@ const recipeSchema = new Schema(
       default: [],
     },
     instructions: { type: String, default: "" },
+    imageUrl: { type: String },
     userId: { type: String, required: true },
   },
   { timestamps: true },

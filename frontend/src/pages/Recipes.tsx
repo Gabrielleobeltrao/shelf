@@ -14,6 +14,7 @@ type Recipe = {
   name: string;
   instructions: string;
   ingredients: RecipeIngredient[];
+  imageUrl?: string;
 };
 
 type StockItem = {
@@ -31,6 +32,7 @@ export function Recipes() {
   const [items, setItems] = useState<StockItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<ModalState | null>(null);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     Promise.all([api.get<Recipe[]>("/api/recipes"), api.get<StockItem[]>("/api/items")])
@@ -43,12 +45,25 @@ export function Recipes() {
 
   const itemsById = useMemo(() => new Map(items.map((item) => [item._id, item])), [items]);
 
+  const filteredRecipes = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return recipes;
+
+    return recipes.filter((recipe) => {
+      if (recipe.name.toLowerCase().includes(term)) return true;
+      return recipe.ingredients.some((row) =>
+        itemsById.get(row.itemId)?.name.toLowerCase().includes(term),
+      );
+    });
+  }, [recipes, search, itemsById]);
+
   async function handleSave(data: RecipeFormData) {
     if (!modal) return;
 
     const payload = {
       name: data.name.trim(),
       instructions: data.instructions.trim(),
+      imageUrl: data.imageUrl.trim(),
       ingredients: data.ingredients.map((row) => ({
         itemId: row.itemId,
         quantity: Number(row.quantity) || 1,
@@ -79,19 +94,33 @@ export function Recipes() {
       <h1 className="text-lg font-semibold">Receitas</h1>
 
       <button
-        onClick={() => setModal({ mode: "create", initial: { ingredients: [] } })}
+        onClick={() =>
+          setModal({ mode: "create", initial: { ingredients: [], imageUrl: "" } })
+        }
         className="w-full rounded-lg bg-emerald-600 py-2.5 font-medium text-white"
       >
         Adicionar receita
       </button>
 
+      {recipes.length > 0 && (
+        <input
+          type="text"
+          placeholder="Buscar por nome ou ingrediente"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+        />
+      )}
+
       {loading ? (
         <p className="text-sm text-gray-500">Carregando...</p>
       ) : recipes.length === 0 ? (
         <p className="text-sm text-gray-500">Nenhuma receita cadastrada ainda.</p>
+      ) : filteredRecipes.length === 0 ? (
+        <p className="text-sm text-gray-500">Nenhuma receita encontrada.</p>
       ) : (
         <ul className="space-y-3">
-          {recipes.map((recipe) => (
+          {filteredRecipes.map((recipe) => (
             <li
               key={recipe._id}
               onClick={() =>
@@ -101,6 +130,7 @@ export function Recipes() {
                   initial: {
                     name: recipe.name,
                     instructions: recipe.instructions,
+                    imageUrl: recipe.imageUrl ?? "",
                     ingredients: recipe.ingredients.map((row) => ({
                       itemId: row.itemId,
                       quantity: String(row.quantity),
@@ -109,24 +139,33 @@ export function Recipes() {
                   },
                 })
               }
-              className="cursor-pointer rounded-lg border border-gray-200 p-3 dark:border-gray-800"
+              className="cursor-pointer overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800"
             >
-              <h2 className="font-medium">{recipe.name}</h2>
-              {recipe.ingredients.length > 0 && (
-                <p className="mt-1 text-sm text-gray-500">
-                  {recipe.ingredients
-                    .map((row) => {
+              {recipe.imageUrl && (
+                <img src={recipe.imageUrl} alt="" className="h-40 w-full object-cover" />
+              )}
+
+              <div className="p-3">
+                <h2 className="font-medium">{recipe.name}</h2>
+
+                {recipe.ingredients.length > 0 && (
+                  <ul className="mt-1 space-y-0.5 text-sm text-gray-500">
+                    {recipe.ingredients.map((row) => {
                       const item = itemsById.get(row.itemId);
                       if (!item) return null;
-                      return `${row.quantity} ${row.unit} de ${item.name}`;
-                    })
-                    .filter(Boolean)
-                    .join(", ")}
-                </p>
-              )}
-              {recipe.instructions && (
-                <p className="mt-2 truncate text-sm">{recipe.instructions}</p>
-              )}
+                      return (
+                        <li key={row.itemId}>
+                          {row.quantity} {row.unit} de {item.name}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+
+                {recipe.instructions && (
+                  <p className="mt-2 truncate text-sm">{recipe.instructions}</p>
+                )}
+              </div>
             </li>
           ))}
         </ul>
