@@ -242,7 +242,7 @@ export function Inventory() {
 
                     <div
                       onClick={(e) => e.stopPropagation()}
-                      className="flex items-center gap-2"
+                      className="flex items-center justify-end gap-2"
                     >
                       <button
                         onClick={() => handleStep(item, -1)}
