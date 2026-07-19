@@ -6,7 +6,8 @@ const recipeSchema = new Schema(
     ingredients: {
       type: [
         {
-          itemId: { type: String, required: true },
+          itemId: { type: String },
+          name: { type: String, required: true },
           quantity: { type: Number, default: 1 },
           unit: { type: String, default: "un" },
           _id: false,

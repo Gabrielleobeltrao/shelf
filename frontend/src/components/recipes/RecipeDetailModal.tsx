@@ -2,6 +2,7 @@ import { useState } from "react";
 
 export type IngredientRow = {
   itemId: string;
+  name: string;
   quantity: string;
   unit: string;
 };
@@ -61,10 +62,19 @@ export function RecipeDetailModal({
   const hasAvailableItem = stockItems.some((item) => !usedItemIds.has(item._id));
 
   function availableItemsFor(index: number) {
+    const row = ingredients[index];
     const usedElsewhere = new Set(
-      ingredients.filter((_, i) => i !== index).map((row) => row.itemId),
+      ingredients.filter((_, i) => i !== index).map((r) => r.itemId),
     );
-    return stockItems.filter((item) => !usedElsewhere.has(item._id));
+    const available = stockItems.filter((item) => !usedElsewhere.has(item._id));
+
+    // If this ingredient's original stock item was deleted, keep it visible
+    // (via its saved name) instead of silently swapping the selection.
+    if (row.itemId && !available.some((item) => item._id === row.itemId)) {
+      return [{ _id: row.itemId, name: `${row.name} (removido do estoque)` }, ...available];
+    }
+
+    return available;
   }
 
   function addIngredient() {
@@ -73,7 +83,7 @@ export function RecipeDetailModal({
 
     setIngredients((prev) => [
       ...prev,
-      { itemId: nextItem._id, quantity: "1", unit: nextItem.unit },
+      { itemId: nextItem._id, name: nextItem.name, quantity: "1", unit: nextItem.unit },
     ]);
   }
 
@@ -166,6 +176,7 @@ export function RecipeDetailModal({
                       const item = stockItems.find((i) => i._id === e.target.value);
                       updateIngredient(index, {
                         itemId: e.target.value,
+                        name: item?.name ?? row.name,
                         unit: item?.unit ?? row.unit,
                       });
                     }}

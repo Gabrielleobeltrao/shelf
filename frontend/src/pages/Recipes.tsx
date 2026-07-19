@@ -5,6 +5,7 @@ import { RecipeDetailModal } from "../components/recipes/RecipeDetailModal";
 
 type RecipeIngredient = {
   itemId: string;
+  name: string;
   quantity: number;
   unit: string;
 };
@@ -43,19 +44,15 @@ export function Recipes() {
       .finally(() => setLoading(false));
   }, []);
 
-  const itemsById = useMemo(() => new Map(items.map((item) => [item._id, item])), [items]);
-
   const filteredRecipes = useMemo(() => {
     const term = search.trim().toLowerCase();
     if (!term) return recipes;
 
     return recipes.filter((recipe) => {
       if (recipe.name.toLowerCase().includes(term)) return true;
-      return recipe.ingredients.some((row) =>
-        itemsById.get(row.itemId)?.name.toLowerCase().includes(term),
-      );
+      return recipe.ingredients.some((row) => row.name.toLowerCase().includes(term));
     });
-  }, [recipes, search, itemsById]);
+  }, [recipes, search]);
 
   async function handleSave(data: RecipeFormData) {
     if (!modal) return;
@@ -66,6 +63,7 @@ export function Recipes() {
       imageUrl: data.imageUrl.trim(),
       ingredients: data.ingredients.map((row) => ({
         itemId: row.itemId,
+        name: row.name,
         quantity: Number(row.quantity) || 1,
         unit: row.unit.trim() || "un",
       })),
@@ -133,6 +131,7 @@ export function Recipes() {
                     imageUrl: recipe.imageUrl ?? "",
                     ingredients: recipe.ingredients.map((row) => ({
                       itemId: row.itemId,
+                      name: row.name,
                       quantity: String(row.quantity),
                       unit: row.unit,
                     })),
@@ -150,15 +149,11 @@ export function Recipes() {
 
                 {recipe.ingredients.length > 0 && (
                   <ul className="mt-1 space-y-0.5 text-sm text-gray-500">
-                    {recipe.ingredients.map((row, index) => {
-                      const item = itemsById.get(row.itemId);
-                      if (!item) return null;
-                      return (
-                        <li key={`${row.itemId}-${index}`}>
-                          {row.quantity} {row.unit} de {item.name}
-                        </li>
-                      );
-                    })}
+                    {recipe.ingredients.map((row, index) => (
+                      <li key={`${row.itemId}-${index}`}>
+                        {row.quantity} {row.unit} de {row.name}
+                      </li>
+                    ))}
                   </ul>
                 )}
 
