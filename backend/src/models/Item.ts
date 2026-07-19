@@ -11,7 +11,6 @@ const itemSchema = new Schema(
     imageUrl: { type: String },
     barcode: { type: String },
     expirationDate: { type: String },
-    needsRestock: { type: Boolean, default: false },
     userId: { type: String, required: true },
   },
   { timestamps: true },

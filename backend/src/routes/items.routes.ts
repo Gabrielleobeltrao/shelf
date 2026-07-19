@@ -40,7 +40,6 @@ router.patch("/:id", async (req, res) => {
     imageUrl,
     barcode,
     expirationDate,
-    needsRestock,
   } = req.body;
   const item = await Item.findOneAndUpdate(
     { _id: req.params.id, userId: req.userId },
@@ -55,7 +54,6 @@ router.patch("/:id", async (req, res) => {
         imageUrl,
         barcode,
         expirationDate,
-        needsRestock,
       },
     },
     { new: true, omitUndefined: true },

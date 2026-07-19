@@ -4,6 +4,7 @@ import { MongoClient } from "mongodb";
 import { Item } from "../models/Item.js";
 import { Recipe } from "../models/Recipe.js";
 import { Settings } from "../models/Settings.js";
+import { ShoppingListItem } from "../models/ShoppingListItem.js";
 
 const uri = process.env.MONGODB_URI;
 
@@ -42,6 +43,7 @@ export const auth = betterAuth({
         await Item.deleteMany({ userId: user.id });
         await Recipe.deleteMany({ userId: user.id });
         await Settings.deleteMany({ userId: user.id });
+        await ShoppingListItem.deleteMany({ userId: user.id });
       },
     },
   },

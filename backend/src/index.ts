@@ -7,6 +7,7 @@ import { connectDB } from "./config/db.js";
 import itemsRouter from "./routes/items.routes.js";
 import recipesRouter from "./routes/recipes.routes.js";
 import settingsRouter from "./routes/settings.routes.js";
+import shoppingListRouter from "./routes/shopping-list.routes.js";
 
 const app = express();
 const PORT = process.env.PORT ?? 4001;
@@ -32,6 +33,7 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/items", itemsRouter);
 app.use("/api/recipes", recipesRouter);
 app.use("/api/settings", settingsRouter);
+app.use("/api/shopping-list", shoppingListRouter);
 
 await connectDB();
 

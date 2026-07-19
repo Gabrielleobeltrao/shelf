@@ -21,7 +21,11 @@ type Item = {
   imageUrl?: string;
   barcode?: string;
   expirationDate?: string;
-  needsRestock?: boolean;
+};
+
+type ShoppingListEntry = {
+  _id: string;
+  sourceItemId?: string;
 };
 
 type ModalState =
@@ -52,15 +56,24 @@ export function Inventory() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [trackExpiration, setTrackExpiration] = useState(false);
+  const [shoppingListMap, setShoppingListMap] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
     Promise.all([
       api.get<Item[]>("/api/items"),
       api.get<{ trackExpiration: boolean }>("/api/settings"),
+      api.get<ShoppingListEntry[]>("/api/shopping-list"),
     ])
-      .then(([itemsData, settings]) => {
+      .then(([itemsData, settings, shoppingList]) => {
         setItems(itemsData);
         setTrackExpiration(settings.trackExpiration);
+        setShoppingListMap(
+          new Map(
+            shoppingList
+              .filter((entry) => entry.sourceItemId)
+              .map((entry) => [entry.sourceItemId!, entry._id]),
+          ),
+        );
       })
       .finally(() => setLoading(false));
   }, []);
@@ -141,10 +154,25 @@ export function Inventory() {
   }
 
   async function handleToggleRestock(item: Item) {
-    const updated = await api.patch<Item>(`/api/items/${item._id}`, {
-      needsRestock: !item.needsRestock,
+    const existingEntryId = shoppingListMap.get(item._id);
+
+    if (existingEntryId) {
+      await api.delete(`/api/shopping-list/${existingEntryId}`);
+      setShoppingListMap((prev) => {
+        const next = new Map(prev);
+        next.delete(item._id);
+        return next;
+      });
+      return;
+    }
+
+    const entry = await api.post<ShoppingListEntry>("/api/shopping-list", {
+      name: item.name,
+      unit: item.unit,
+      brand: item.brand,
+      sourceItemId: item._id,
     });
-    setItems((prev) => prev.map((i) => (i._id === updated._id ? updated : i)));
+    setShoppingListMap((prev) => new Map(prev).set(item._id, entry._id));
   }
 
   async function handleDetected(code: string) {
@@ -364,7 +392,7 @@ export function Inventory() {
                             onClick={() => handleToggleRestock(item)}
                             aria-label={`Adicionar ${item.name} à lista de compras`}
                             className={`flex h-7 w-7 items-center justify-center rounded-full border text-base leading-none ${
-                              item.needsRestock
+                              shoppingListMap.has(item._id)
                                 ? "border-emerald-600 text-emerald-600"
                                 : "border-gray-300 text-gray-600 dark:border-gray-700 dark:text-gray-300"
                             }`}
