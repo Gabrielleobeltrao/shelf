@@ -3,6 +3,7 @@ import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { MongoClient } from "mongodb";
 import { Item } from "../models/Item.js";
 import { Recipe } from "../models/Recipe.js";
+import { Settings } from "../models/Settings.js";
 
 const uri = process.env.MONGODB_URI;
 
@@ -40,6 +41,7 @@ export const auth = betterAuth({
       afterDelete: async (user) => {
         await Item.deleteMany({ userId: user.id });
         await Recipe.deleteMany({ userId: user.id });
+        await Settings.deleteMany({ userId: user.id });
       },
     },
   },
