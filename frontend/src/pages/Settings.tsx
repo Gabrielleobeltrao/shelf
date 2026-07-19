@@ -9,6 +9,7 @@ import {
 } from "../lib/auth-client";
 import { api } from "../lib/api";
 import { Switch } from "../components/ui/Switch";
+import { NutritionFieldsModal } from "../components/settings/NutritionFieldsModal";
 
 export function Settings() {
   const navigate = useNavigate();
@@ -17,17 +18,31 @@ export function Settings() {
   const [settings, setSettings] = useState({
     trackExpiration: false,
     trackNutrition: false,
+    nutritionFields: [] as string[],
     trackGlutenFree: false,
     trackVegan: false,
   });
+  const [nutritionModalOpen, setNutritionModalOpen] = useState(false);
 
   useEffect(() => {
     api.get<typeof settings>("/api/settings").then(setSettings);
   }, []);
 
-  async function handleToggle(key: keyof typeof settings, value: boolean) {
+  async function handleToggle(key: "trackExpiration" | "trackGlutenFree" | "trackVegan", value: boolean) {
     setSettings((prev) => ({ ...prev, [key]: value }));
     await api.patch("/api/settings", { [key]: value });
+  }
+
+  async function handleToggleNutrition(value: boolean) {
+    setSettings((prev) => ({ ...prev, trackNutrition: value }));
+    await api.patch("/api/settings", { trackNutrition: value });
+    if (value) setNutritionModalOpen(true);
+  }
+
+  async function handleSaveNutritionFields(selected: string[]) {
+    setSettings((prev) => ({ ...prev, nutritionFields: selected }));
+    await api.patch("/api/settings", { trackNutrition: true, nutritionFields: selected });
+    setNutritionModalOpen(false);
   }
 
   const [name, setName] = useState(session?.user.name ?? "");
@@ -115,12 +130,23 @@ export function Settings() {
           label="Data de validade"
           description="Adiciona um campo de validade nos itens do estoque."
         />
-        <Switch
-          checked={settings.trackNutrition}
-          onChange={(value) => handleToggle("trackNutrition", value)}
-          label="Informações nutricionais"
-          description="Adiciona um campo pra anotar açúcar, sódio ou outros dados do produto."
-        />
+        <div>
+          <Switch
+            checked={settings.trackNutrition}
+            onChange={handleToggleNutrition}
+            label="Informações nutricionais"
+            description="Escolha quais dados (açúcar, sódio, etc.) aparecem nos itens do estoque."
+          />
+          {settings.trackNutrition && (
+            <button
+              type="button"
+              onClick={() => setNutritionModalOpen(true)}
+              className="mt-1 text-sm font-medium text-emerald-600"
+            >
+              Editar campos
+            </button>
+          )}
+        </div>
         <Switch
           checked={settings.trackGlutenFree}
           onChange={(value) => handleToggle("trackGlutenFree", value)}
@@ -251,6 +277,14 @@ export function Settings() {
           </button>
         )}
       </div>
+
+      {nutritionModalOpen && (
+        <NutritionFieldsModal
+          selected={settings.nutritionFields}
+          onClose={() => setNutritionModalOpen(false)}
+          onSave={handleSaveNutritionFields}
+        />
+      )}
     </div>
   );
 }

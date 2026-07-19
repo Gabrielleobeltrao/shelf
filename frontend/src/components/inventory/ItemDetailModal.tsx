@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { NUTRITION_OPTIONS } from "../../lib/nutrition";
 
 export type ItemFormData = {
   name: string;
@@ -10,14 +11,14 @@ export type ItemFormData = {
   barcode: string;
   imageUrl: string;
   expirationDate: string;
-  nutritionInfo: string;
+  nutrition: Record<string, string>;
   glutenFree: boolean;
   vegan: boolean;
 };
 
 export type VisibleFields = {
   expirationDate: boolean;
-  nutrition: boolean;
+  nutritionFields: string[];
   glutenFree: boolean;
   vegan: boolean;
 };
@@ -64,7 +65,7 @@ export function ItemDetailModal({
   const [barcode, setBarcode] = useState(initial.barcode ?? "");
   const [imageUrl, setImageUrl] = useState(initial.imageUrl ?? "");
   const [expirationDate, setExpirationDate] = useState(initial.expirationDate ?? "");
-  const [nutritionInfo, setNutritionInfo] = useState(initial.nutritionInfo ?? "");
+  const [nutrition, setNutrition] = useState<Record<string, string>>(initial.nutrition ?? {});
   const [glutenFree, setGlutenFree] = useState(initial.glutenFree ?? false);
   const [vegan, setVegan] = useState(initial.vegan ?? false);
   const [saving, setSaving] = useState(false);
@@ -85,7 +86,7 @@ export function ItemDetailModal({
       barcode,
       imageUrl,
       expirationDate,
-      nutritionInfo,
+      nutrition,
       glutenFree,
       vegan,
     });
@@ -210,16 +211,27 @@ export function ItemDetailModal({
           </div>
         )}
 
-        {visibleFields.nutrition && (
-          <div>
-            <label className="mb-1 block text-sm text-gray-500">Informações nutricionais</label>
-            <textarea
-              placeholder="Ex: Açúcar 5g, Sódio 120mg"
-              value={nutritionInfo}
-              onChange={(e) => setNutritionInfo(e.target.value)}
-              rows={2}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
-            />
+        {visibleFields.nutritionFields.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-sm text-gray-500">Informações nutricionais</p>
+            <div className="grid grid-cols-2 gap-2">
+              {NUTRITION_OPTIONS.filter((option) =>
+                visibleFields.nutritionFields.includes(option.key),
+              ).map((option) => (
+                <input
+                  key={option.key}
+                  type="number"
+                  min={0}
+                  step="any"
+                  placeholder={`${option.label} (${option.unit})`}
+                  value={nutrition[option.key] ?? ""}
+                  onChange={(e) =>
+                    setNutrition((prev) => ({ ...prev, [option.key]: e.target.value }))
+                  }
+                  className="rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+                />
+              ))}
+            </div>
           </div>
         )}
 

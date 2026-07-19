@@ -21,7 +21,7 @@ type Item = {
   imageUrl?: string;
   barcode?: string;
   expirationDate?: string;
-  nutritionInfo?: string;
+  nutrition?: Record<string, number>;
   glutenFree?: boolean;
   vegan?: boolean;
 };
@@ -46,7 +46,9 @@ function toFormData(item: Item): Partial<ItemFormData> {
     barcode: item.barcode ?? "",
     imageUrl: item.imageUrl ?? "",
     expirationDate: item.expirationDate ?? "",
-    nutritionInfo: item.nutritionInfo ?? "",
+    nutrition: Object.fromEntries(
+      Object.entries(item.nutrition ?? {}).map(([key, value]) => [key, String(value)]),
+    ),
     glutenFree: item.glutenFree ?? false,
     vegan: item.vegan ?? false,
   };
@@ -64,6 +66,7 @@ export function Inventory() {
   const [settings, setSettingsState] = useState({
     trackExpiration: false,
     trackNutrition: false,
+    nutritionFields: [] as string[],
     trackGlutenFree: false,
     trackVegan: false,
   });
@@ -122,7 +125,11 @@ export function Inventory() {
       barcode: data.barcode.trim(),
       imageUrl: data.imageUrl.trim(),
       expirationDate: data.expirationDate.trim(),
-      nutritionInfo: data.nutritionInfo.trim(),
+      nutrition: Object.fromEntries(
+        Object.entries(data.nutrition)
+          .filter(([, value]) => value.trim() !== "")
+          .map(([key, value]) => [key, Number(value)]),
+      ),
       glutenFree: data.glutenFree,
       vegan: data.vegan,
     };
@@ -214,7 +221,7 @@ export function Inventory() {
         barcode: code,
         imageUrl: product?.imageUrl ?? "",
         expirationDate: "",
-        nutritionInfo: "",
+        nutrition: {},
         glutenFree: false,
         vegan: false,
       },
@@ -455,7 +462,7 @@ export function Inventory() {
           initial={modal.initial}
           visibleFields={{
             expirationDate: settings.trackExpiration,
-            nutrition: settings.trackNutrition,
+            nutritionFields: settings.trackNutrition ? settings.nutritionFields : [],
             glutenFree: settings.trackGlutenFree,
             vegan: settings.trackVegan,
           }}
