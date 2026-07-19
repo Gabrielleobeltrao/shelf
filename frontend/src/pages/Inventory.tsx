@@ -1,7 +1,8 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { api } from "../lib/api";
 import { lookupProduct } from "../lib/openFoodFacts";
-import { getExpirationWarning } from "../lib/expiration";
+import { getExpirationWarning, isExpired } from "../lib/expiration";
+import { CartIcon, PencilIcon, TrashIcon } from "../components/icons";
 import type { ItemFormData } from "../components/inventory/ItemDetailModal";
 import { ItemDetailModal } from "../components/inventory/ItemDetailModal";
 
@@ -20,6 +21,7 @@ type Item = {
   imageUrl?: string;
   barcode?: string;
   expirationDate?: string;
+  needsRestock?: boolean;
 };
 
 type ModalState =
@@ -127,11 +129,22 @@ export function Inventory() {
     }
   }
 
+  async function handleDeleteItem(itemId: string) {
+    await api.delete(`/api/items/${itemId}`);
+    setItems((prev) => prev.filter((item) => item._id !== itemId));
+  }
+
   async function handleDeleteFromModal() {
     if (modal?.mode !== "edit") return;
-    await api.delete(`/api/items/${modal.itemId}`);
-    setItems((prev) => prev.filter((item) => item._id !== modal.itemId));
+    await handleDeleteItem(modal.itemId);
     setModal(null);
+  }
+
+  async function handleToggleRestock(item: Item) {
+    const updated = await api.patch<Item>(`/api/items/${item._id}`, {
+      needsRestock: !item.needsRestock,
+    });
+    setItems((prev) => prev.map((i) => (i._id === updated._id ? updated : i)));
   }
 
   async function handleDetected(code: string) {
@@ -278,6 +291,7 @@ export function Inventory() {
         <ul className="divide-y divide-gray-200 dark:divide-gray-800">
           {filteredItems.map((item) => {
             const secondaryInfo = item.brand || item.packageSize || "";
+            const expired = trackExpiration && isExpired(item.expirationDate);
             const expirationWarning =
               trackExpiration && getExpirationWarning(item.expirationDate);
 
@@ -320,25 +334,67 @@ export function Inventory() {
                       onClick={(e) => e.stopPropagation()}
                       className="flex items-center justify-end gap-2"
                     >
-                      <button
-                        onClick={() => handleStep(item, -1)}
-                        disabled={pendingIds.has(item._id) || item.quantity <= 0}
-                        aria-label={`Diminuir quantidade de ${item.name}`}
-                        className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none disabled:opacity-40 dark:border-gray-700"
-                      >
-                        −
-                      </button>
-                      <span className="min-w-14 whitespace-nowrap text-center text-sm text-gray-500">
-                        {item.quantity} {item.unit}
-                      </span>
-                      <button
-                        onClick={() => handleStep(item, 1)}
-                        disabled={pendingIds.has(item._id)}
-                        aria-label={`Aumentar quantidade de ${item.name}`}
-                        className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none disabled:opacity-40 dark:border-gray-700"
-                      >
-                        +
-                      </button>
+                      {expired ? (
+                        <>
+                          <button
+                            onClick={() => {
+                              if (confirm(`Excluir "${item.name}" do estoque?`)) {
+                                handleDeleteItem(item._id);
+                              }
+                            }}
+                            aria-label={`Excluir ${item.name}`}
+                            className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-red-600 dark:border-gray-700"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() =>
+                              setModal({
+                                mode: "edit",
+                                itemId: item._id,
+                                initial: toFormData(item),
+                              })
+                            }
+                            aria-label={`Editar ${item.name}`}
+                            className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-gray-600 dark:border-gray-700 dark:text-gray-300"
+                          >
+                            <PencilIcon className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleToggleRestock(item)}
+                            aria-label={`Adicionar ${item.name} à lista de compras`}
+                            className={`flex h-7 w-7 items-center justify-center rounded-full border text-base leading-none ${
+                              item.needsRestock
+                                ? "border-emerald-600 text-emerald-600"
+                                : "border-gray-300 text-gray-600 dark:border-gray-700 dark:text-gray-300"
+                            }`}
+                          >
+                            <CartIcon className="h-4 w-4" />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleStep(item, -1)}
+                            disabled={pendingIds.has(item._id) || item.quantity <= 0}
+                            aria-label={`Diminuir quantidade de ${item.name}`}
+                            className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none disabled:opacity-40 dark:border-gray-700"
+                          >
+                            −
+                          </button>
+                          <span className="min-w-14 whitespace-nowrap text-center text-sm text-gray-500">
+                            {item.quantity} {item.unit}
+                          </span>
+                          <button
+                            onClick={() => handleStep(item, 1)}
+                            disabled={pendingIds.has(item._id)}
+                            aria-label={`Aumentar quantidade de ${item.name}`}
+                            className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none disabled:opacity-40 dark:border-gray-700"
+                          >
+                            +
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

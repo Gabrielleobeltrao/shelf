@@ -30,8 +30,18 @@ router.post("/", async (req, res) => {
 });
 
 router.patch("/:id", async (req, res) => {
-  const { name, quantity, unit, category, brand, packageSize, imageUrl, barcode, expirationDate } =
-    req.body;
+  const {
+    name,
+    quantity,
+    unit,
+    category,
+    brand,
+    packageSize,
+    imageUrl,
+    barcode,
+    expirationDate,
+    needsRestock,
+  } = req.body;
   const item = await Item.findOneAndUpdate(
     { _id: req.params.id, userId: req.userId },
     {
@@ -45,6 +55,7 @@ router.patch("/:id", async (req, res) => {
         imageUrl,
         barcode,
         expirationDate,
+        needsRestock,
       },
     },
     { new: true, omitUndefined: true },
