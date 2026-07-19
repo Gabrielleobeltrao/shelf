@@ -17,7 +17,7 @@ type Props = {
 
 export function ShoppingCartModal({ open, onClose }: Props) {
   const [items, setItems] = useState<Item[]>([]);
-  const [buyQuantities, setBuyQuantities] = useState<Record<string, string>>({});
+  const [buyQuantities, setBuyQuantities] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,15 +29,22 @@ export function ShoppingCartModal({ open, onClose }: Props) {
       .then((data) => {
         const toBuy = data.filter((item) => item.needsRestock);
         setItems(toBuy);
-        setBuyQuantities(Object.fromEntries(toBuy.map((item) => [item._id, "1"])));
+        setBuyQuantities(Object.fromEntries(toBuy.map((item) => [item._id, 1])));
       })
       .finally(() => setLoading(false));
   }, [open]);
 
   if (!open) return null;
 
+  function adjustBuyQuantity(itemId: string, delta: number) {
+    setBuyQuantities((prev) => ({
+      ...prev,
+      [itemId]: Math.max(0, (prev[itemId] ?? 0) + delta),
+    }));
+  }
+
   async function handleBought(item: Item) {
-    const buyQuantity = Number(buyQuantities[item._id]) || 0;
+    const buyQuantity = buyQuantities[item._id] ?? 0;
     await api.patch(`/api/items/${item._id}`, {
       needsRestock: false,
       quantity: item.quantity + buyQuantity,
@@ -68,28 +75,37 @@ export function ShoppingCartModal({ open, onClose }: Props) {
           ) : (
             <ul className="divide-y divide-gray-200 dark:divide-gray-800">
               {items.map((item) => (
-                <li key={item._id} className="flex items-center justify-between gap-3 py-2">
+                <li key={item._id} className="space-y-2 py-3">
                   <div className="min-w-0">
                     <p className="truncate">{item.name}</p>
                     {item.brand && <p className="truncate text-xs text-gray-500">{item.brand}</p>}
                   </div>
 
-                  <div className="flex shrink-0 flex-col items-end gap-1">
-                    <div className="flex items-center gap-1">
-                      <input
-                        type="number"
-                        min={0}
-                        value={buyQuantities[item._id] ?? "1"}
-                        onChange={(e) =>
-                          setBuyQuantities((prev) => ({ ...prev, [item._id]: e.target.value }))
-                        }
-                        className="w-14 rounded-lg border border-gray-300 px-2 py-1 text-sm dark:border-gray-700 dark:bg-gray-900"
-                      />
-                      <span className="text-xs text-gray-500">{item.unit}</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => adjustBuyQuantity(item._id, -1)}
+                        disabled={(buyQuantities[item._id] ?? 0) <= 0}
+                        aria-label={`Diminuir quantidade de ${item.name}`}
+                        className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none disabled:opacity-40 dark:border-gray-700"
+                      >
+                        −
+                      </button>
+                      <span className="min-w-14 whitespace-nowrap text-center text-sm text-gray-500">
+                        {buyQuantities[item._id] ?? 0} {item.unit}
+                      </span>
+                      <button
+                        onClick={() => adjustBuyQuantity(item._id, 1)}
+                        aria-label={`Aumentar quantidade de ${item.name}`}
+                        className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none dark:border-gray-700"
+                      >
+                        +
+                      </button>
                     </div>
+
                     <button
                       onClick={() => handleBought(item)}
-                      className="rounded-lg border border-emerald-600 px-3 py-1.5 text-sm font-medium text-emerald-600"
+                      className="shrink-0 rounded-lg border border-emerald-600 px-3 py-1.5 text-sm font-medium text-emerald-600"
                     >
                       Comprado
                     </button>
