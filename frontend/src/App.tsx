@@ -5,6 +5,7 @@ import { Login } from "./pages/Login";
 import { Inventory } from "./pages/Inventory";
 import { Recipes } from "./pages/Recipes";
 import { Settings } from "./pages/Settings";
+import { Dashboard } from "./pages/Dashboard";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       >
         <Route path="/" element={<Inventory />} />
         <Route path="/receitas" element={<Recipes />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/configuracoes" element={<Settings />} />
       </Route>
 

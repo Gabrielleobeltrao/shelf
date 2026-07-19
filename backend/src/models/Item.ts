@@ -10,6 +10,7 @@ const itemSchema = new Schema(
     packageSize: { type: String },
     imageUrl: { type: String },
     barcode: { type: String },
+    expirationDate: { type: String },
     userId: { type: String, required: true },
   },
   { timestamps: true },

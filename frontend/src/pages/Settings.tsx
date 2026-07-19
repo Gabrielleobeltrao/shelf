@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   changeEmail,
@@ -7,10 +7,25 @@ import {
   updateUser,
   useSession,
 } from "../lib/auth-client";
+import { api } from "../lib/api";
+import { Switch } from "../components/ui/Switch";
 
 export function Settings() {
   const navigate = useNavigate();
   const { data: session } = useSession();
+
+  const [trackExpiration, setTrackExpiration] = useState(false);
+
+  useEffect(() => {
+    api.get<{ trackExpiration: boolean }>("/api/settings").then((data) => {
+      setTrackExpiration(data.trackExpiration);
+    });
+  }, []);
+
+  async function handleToggleTrackExpiration(value: boolean) {
+    setTrackExpiration(value);
+    await api.patch("/api/settings", { trackExpiration: value });
+  }
 
   const [name, setName] = useState(session?.user.name ?? "");
   const [nameStatus, setNameStatus] = useState<string | null>(null);
@@ -89,7 +104,17 @@ export function Settings() {
     <div className="space-y-6">
       <h1 className="text-lg font-semibold">Configurações</h1>
 
-      <form onSubmit={handleSaveName} className="space-y-2">
+      <div className="space-y-4">
+        <h2 className="text-sm font-medium text-gray-500">Preferências</h2>
+        <Switch
+          checked={trackExpiration}
+          onChange={handleToggleTrackExpiration}
+          label="Data de validade"
+          description="Adiciona um campo de validade nos itens do estoque."
+        />
+      </div>
+
+      <form onSubmit={handleSaveName} className="space-y-2 border-t border-gray-200 pt-6 dark:border-gray-800">
         <label className="text-sm font-medium">Nome</label>
         <input
           type="text"

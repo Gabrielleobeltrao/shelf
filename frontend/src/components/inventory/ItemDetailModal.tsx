@@ -9,11 +9,13 @@ export type ItemFormData = {
   unit: string;
   barcode: string;
   imageUrl: string;
+  expirationDate: string;
 };
 
 type Props = {
   title: string;
   initial: Partial<ItemFormData>;
+  showExpirationDate: boolean;
   onClose: () => void;
   onSave: (data: ItemFormData) => Promise<void>;
   onDelete?: () => Promise<void>;
@@ -35,7 +37,14 @@ const CATEGORY_SUGGESTIONS = [
   "Outros",
 ];
 
-export function ItemDetailModal({ title, initial, onClose, onSave, onDelete }: Props) {
+export function ItemDetailModal({
+  title,
+  initial,
+  showExpirationDate,
+  onClose,
+  onSave,
+  onDelete,
+}: Props) {
   const [name, setName] = useState(initial.name ?? "");
   const [brand, setBrand] = useState(initial.brand ?? "");
   const [category, setCategory] = useState(initial.category ?? "");
@@ -44,6 +53,7 @@ export function ItemDetailModal({ title, initial, onClose, onSave, onDelete }: P
   const [unit, setUnit] = useState(initial.unit ?? "un");
   const [barcode, setBarcode] = useState(initial.barcode ?? "");
   const [imageUrl, setImageUrl] = useState(initial.imageUrl ?? "");
+  const [expirationDate, setExpirationDate] = useState(initial.expirationDate ?? "");
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -52,7 +62,17 @@ export function ItemDetailModal({ title, initial, onClose, onSave, onDelete }: P
     if (!name.trim()) return;
 
     setSaving(true);
-    await onSave({ name, brand, category, packageSize, quantity, unit, barcode, imageUrl });
+    await onSave({
+      name,
+      brand,
+      category,
+      packageSize,
+      quantity,
+      unit,
+      barcode,
+      imageUrl,
+      expirationDate,
+    });
     setSaving(false);
   }
 
@@ -161,6 +181,18 @@ export function ItemDetailModal({ title, initial, onClose, onSave, onDelete }: P
           onChange={(e) => setBarcode(e.target.value)}
           className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
         />
+
+        {showExpirationDate && (
+          <div>
+            <label className="mb-1 block text-sm text-gray-500">Validade</label>
+            <input
+              type="date"
+              value={expirationDate}
+              onChange={(e) => setExpirationDate(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+            />
+          </div>
+        )}
 
         <div className="flex gap-2 pt-2">
           {onDelete && (

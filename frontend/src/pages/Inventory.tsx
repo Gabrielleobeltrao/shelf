@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { api } from "../lib/api";
 import { lookupProduct } from "../lib/openFoodFacts";
+import { getExpirationWarning } from "../lib/expiration";
 import type { ItemFormData } from "../components/inventory/ItemDetailModal";
 import { ItemDetailModal } from "../components/inventory/ItemDetailModal";
 
@@ -18,6 +19,7 @@ type Item = {
   packageSize?: string;
   imageUrl?: string;
   barcode?: string;
+  expirationDate?: string;
 };
 
 type ModalState =
@@ -34,6 +36,7 @@ function toFormData(item: Item): Partial<ItemFormData> {
     unit: item.unit,
     barcode: item.barcode ?? "",
     imageUrl: item.imageUrl ?? "",
+    expirationDate: item.expirationDate ?? "",
   };
 }
 
@@ -46,11 +49,17 @@ export function Inventory() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [trackExpiration, setTrackExpiration] = useState(false);
 
   useEffect(() => {
-    api
-      .get<Item[]>("/api/items")
-      .then(setItems)
+    Promise.all([
+      api.get<Item[]>("/api/items"),
+      api.get<{ trackExpiration: boolean }>("/api/settings"),
+    ])
+      .then(([itemsData, settings]) => {
+        setItems(itemsData);
+        setTrackExpiration(settings.trackExpiration);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -86,6 +95,7 @@ export function Inventory() {
       unit: data.unit.trim() || "un",
       barcode: data.barcode.trim(),
       imageUrl: data.imageUrl.trim(),
+      expirationDate: data.expirationDate.trim(),
     };
 
     if (modal.mode === "edit") {
@@ -148,6 +158,7 @@ export function Inventory() {
         unit: "un",
         barcode: code,
         imageUrl: product?.imageUrl ?? "",
+        expirationDate: "",
       },
     });
   }
@@ -267,6 +278,8 @@ export function Inventory() {
         <ul className="divide-y divide-gray-200 dark:divide-gray-800">
           {filteredItems.map((item) => {
             const secondaryInfo = item.brand || item.packageSize || "";
+            const expirationWarning =
+              trackExpiration && getExpirationWarning(item.expirationDate);
 
             return (
               <li
@@ -280,7 +293,14 @@ export function Inventory() {
                 }
                 className="flex cursor-pointer flex-col gap-1 py-2"
               >
-                <p className="truncate">{item.name}</p>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="truncate">{item.name}</p>
+                  {expirationWarning && (
+                    <span className="shrink-0 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/40 dark:text-red-400">
+                      {expirationWarning}
+                    </span>
+                  )}
+                </div>
 
                 <div className="flex items-stretch gap-3">
                   {item.imageUrl && (
@@ -332,6 +352,7 @@ export function Inventory() {
         <ItemDetailModal
           title={modal.mode === "edit" ? "Editar item" : "Novo item"}
           initial={modal.initial}
+          showExpirationDate={trackExpiration}
           onClose={() => setModal(null)}
           onSave={handleSave}
           onDelete={modal.mode === "edit" ? handleDeleteFromModal : undefined}

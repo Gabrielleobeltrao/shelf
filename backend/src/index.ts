@@ -6,10 +6,11 @@ import { auth } from "./config/auth.js";
 import { connectDB } from "./config/db.js";
 import itemsRouter from "./routes/items.routes.js";
 import recipesRouter from "./routes/recipes.routes.js";
+import settingsRouter from "./routes/settings.routes.js";
 
 const app = express();
-const PORT = process.env.PORT ?? 4000;
-const CLIENT_URL = process.env.CLIENT_URL ?? "http://localhost:5173";
+const PORT = process.env.PORT ?? 4001;
+const CLIENT_URL = process.env.CLIENT_URL ?? "http://localhost:5183";
 
 app.use(
   cors({
@@ -30,6 +31,7 @@ app.get("/api/health", (_req, res) => {
 
 app.use("/api/items", itemsRouter);
 app.use("/api/recipes", recipesRouter);
+app.use("/api/settings", settingsRouter);
 
 await connectDB();
 

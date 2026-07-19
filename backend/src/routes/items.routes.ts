@@ -12,7 +12,8 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { name, quantity, unit, category, brand, packageSize, imageUrl, barcode } = req.body;
+  const { name, quantity, unit, category, brand, packageSize, imageUrl, barcode, expirationDate } =
+    req.body;
   const item = await Item.create({
     name,
     quantity,
@@ -22,16 +23,30 @@ router.post("/", async (req, res) => {
     packageSize,
     imageUrl,
     barcode,
+    expirationDate,
     userId: req.userId,
   });
   res.status(201).json(item);
 });
 
 router.patch("/:id", async (req, res) => {
-  const { name, quantity, unit, category, brand, packageSize, imageUrl, barcode } = req.body;
+  const { name, quantity, unit, category, brand, packageSize, imageUrl, barcode, expirationDate } =
+    req.body;
   const item = await Item.findOneAndUpdate(
     { _id: req.params.id, userId: req.userId },
-    { $set: { name, quantity, unit, category, brand, packageSize, imageUrl, barcode } },
+    {
+      $set: {
+        name,
+        quantity,
+        unit,
+        category,
+        brand,
+        packageSize,
+        imageUrl,
+        barcode,
+        expirationDate,
+      },
+    },
     { new: true, omitUndefined: true },
   );
 
