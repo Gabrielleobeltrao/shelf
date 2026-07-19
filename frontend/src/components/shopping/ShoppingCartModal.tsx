@@ -36,11 +36,10 @@ export function ShoppingCartModal({ open, onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex items-end bg-black/50" onClick={onClose}>
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="max-h-[80vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-white p-4 dark:bg-gray-950"
-      >
+    <div className="fixed inset-0 z-40 flex justify-end">
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+
+      <aside className="relative flex h-full w-80 max-w-[85vw] flex-col bg-white p-4 dark:bg-gray-950">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Lista de compras</h2>
           <button
@@ -51,29 +50,31 @@ export function ShoppingCartModal({ open, onClose }: Props) {
           </button>
         </div>
 
-        {loading ? (
-          <p className="text-sm text-gray-500">Carregando...</p>
-        ) : items.length === 0 ? (
-          <p className="text-sm text-gray-500">Sua lista de compras está vazia.</p>
-        ) : (
-          <ul className="divide-y divide-gray-200 dark:divide-gray-800">
-            {items.map((item) => (
-              <li key={item._id} className="flex items-center justify-between gap-3 py-2">
-                <div className="min-w-0">
-                  <p className="truncate">{item.name}</p>
-                  {item.brand && <p className="truncate text-xs text-gray-500">{item.brand}</p>}
-                </div>
-                <button
-                  onClick={() => handleBought(item)}
-                  className="shrink-0 rounded-lg border border-emerald-600 px-3 py-1.5 text-sm font-medium text-emerald-600"
-                >
-                  Comprado
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+        <div className="mt-4 flex-1 overflow-y-auto">
+          {loading ? (
+            <p className="text-sm text-gray-500">Carregando...</p>
+          ) : items.length === 0 ? (
+            <p className="text-sm text-gray-500">Sua lista de compras está vazia.</p>
+          ) : (
+            <ul className="divide-y divide-gray-200 dark:divide-gray-800">
+              {items.map((item) => (
+                <li key={item._id} className="flex items-center justify-between gap-3 py-2">
+                  <div className="min-w-0">
+                    <p className="truncate">{item.name}</p>
+                    {item.brand && <p className="truncate text-xs text-gray-500">{item.brand}</p>}
+                  </div>
+                  <button
+                    onClick={() => handleBought(item)}
+                    className="shrink-0 rounded-lg border border-emerald-600 px-3 py-1.5 text-sm font-medium text-emerald-600"
+                  >
+                    Comprado
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </aside>
     </div>
   );
 }
