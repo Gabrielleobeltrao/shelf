@@ -4,6 +4,9 @@ const settingsSchema = new Schema(
   {
     userId: { type: String, required: true, unique: true },
     trackExpiration: { type: Boolean, default: false },
+    trackNutrition: { type: Boolean, default: false },
+    trackGlutenFree: { type: Boolean, default: false },
+    trackVegan: { type: Boolean, default: false },
   },
   { timestamps: true },
 );

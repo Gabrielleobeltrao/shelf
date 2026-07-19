@@ -21,6 +21,9 @@ type Item = {
   imageUrl?: string;
   barcode?: string;
   expirationDate?: string;
+  nutritionInfo?: string;
+  glutenFree?: boolean;
+  vegan?: boolean;
 };
 
 type ShoppingListEntry = {
@@ -43,6 +46,9 @@ function toFormData(item: Item): Partial<ItemFormData> {
     barcode: item.barcode ?? "",
     imageUrl: item.imageUrl ?? "",
     expirationDate: item.expirationDate ?? "",
+    nutritionInfo: item.nutritionInfo ?? "",
+    glutenFree: item.glutenFree ?? false,
+    vegan: item.vegan ?? false,
   };
 }
 
@@ -55,18 +61,23 @@ export function Inventory() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [trackExpiration, setTrackExpiration] = useState(false);
+  const [settings, setSettingsState] = useState({
+    trackExpiration: false,
+    trackNutrition: false,
+    trackGlutenFree: false,
+    trackVegan: false,
+  });
   const [shoppingListMap, setShoppingListMap] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
     Promise.all([
       api.get<Item[]>("/api/items"),
-      api.get<{ trackExpiration: boolean }>("/api/settings"),
+      api.get<typeof settings>("/api/settings"),
       api.get<ShoppingListEntry[]>("/api/shopping-list"),
     ])
-      .then(([itemsData, settings, shoppingList]) => {
+      .then(([itemsData, settingsData, shoppingList]) => {
         setItems(itemsData);
-        setTrackExpiration(settings.trackExpiration);
+        setSettingsState(settingsData);
         setShoppingListMap(
           new Map(
             shoppingList
@@ -111,6 +122,9 @@ export function Inventory() {
       barcode: data.barcode.trim(),
       imageUrl: data.imageUrl.trim(),
       expirationDate: data.expirationDate.trim(),
+      nutritionInfo: data.nutritionInfo.trim(),
+      glutenFree: data.glutenFree,
+      vegan: data.vegan,
     };
 
     if (modal.mode === "edit") {
@@ -200,6 +214,9 @@ export function Inventory() {
         barcode: code,
         imageUrl: product?.imageUrl ?? "",
         expirationDate: "",
+        nutritionInfo: "",
+        glutenFree: false,
+        vegan: false,
       },
     });
   }
@@ -319,9 +336,9 @@ export function Inventory() {
         <ul className="divide-y divide-gray-200 dark:divide-gray-800">
           {filteredItems.map((item) => {
             const secondaryInfo = item.brand || item.packageSize || "";
-            const expired = trackExpiration && isExpired(item.expirationDate);
+            const expired = settings.trackExpiration && isExpired(item.expirationDate);
             const expirationWarning =
-              trackExpiration && getExpirationWarning(item.expirationDate);
+              settings.trackExpiration && getExpirationWarning(item.expirationDate);
 
             return (
               <li
@@ -436,7 +453,12 @@ export function Inventory() {
         <ItemDetailModal
           title={modal.mode === "edit" ? "Editar item" : "Novo item"}
           initial={modal.initial}
-          showExpirationDate={trackExpiration}
+          visibleFields={{
+            expirationDate: settings.trackExpiration,
+            nutrition: settings.trackNutrition,
+            glutenFree: settings.trackGlutenFree,
+            vegan: settings.trackVegan,
+          }}
           onClose={() => setModal(null)}
           onSave={handleSave}
           onDelete={modal.mode === "edit" ? handleDeleteFromModal : undefined}

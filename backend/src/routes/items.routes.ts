@@ -12,8 +12,20 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { name, quantity, unit, category, brand, packageSize, imageUrl, barcode, expirationDate } =
-    req.body;
+  const {
+    name,
+    quantity,
+    unit,
+    category,
+    brand,
+    packageSize,
+    imageUrl,
+    barcode,
+    expirationDate,
+    nutritionInfo,
+    glutenFree,
+    vegan,
+  } = req.body;
   const item = await Item.create({
     name,
     quantity,
@@ -24,6 +36,9 @@ router.post("/", async (req, res) => {
     imageUrl,
     barcode,
     expirationDate,
+    nutritionInfo,
+    glutenFree,
+    vegan,
     userId: req.userId,
   });
   res.status(201).json(item);
@@ -40,6 +55,9 @@ router.patch("/:id", async (req, res) => {
     imageUrl,
     barcode,
     expirationDate,
+    nutritionInfo,
+    glutenFree,
+    vegan,
   } = req.body;
   const item = await Item.findOneAndUpdate(
     { _id: req.params.id, userId: req.userId },
@@ -54,6 +72,9 @@ router.patch("/:id", async (req, res) => {
         imageUrl,
         barcode,
         expirationDate,
+        nutritionInfo,
+        glutenFree,
+        vegan,
       },
     },
     { new: true, omitUndefined: true },

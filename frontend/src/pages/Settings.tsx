@@ -14,17 +14,20 @@ export function Settings() {
   const navigate = useNavigate();
   const { data: session } = useSession();
 
-  const [trackExpiration, setTrackExpiration] = useState(false);
+  const [settings, setSettings] = useState({
+    trackExpiration: false,
+    trackNutrition: false,
+    trackGlutenFree: false,
+    trackVegan: false,
+  });
 
   useEffect(() => {
-    api.get<{ trackExpiration: boolean }>("/api/settings").then((data) => {
-      setTrackExpiration(data.trackExpiration);
-    });
+    api.get<typeof settings>("/api/settings").then(setSettings);
   }, []);
 
-  async function handleToggleTrackExpiration(value: boolean) {
-    setTrackExpiration(value);
-    await api.patch("/api/settings", { trackExpiration: value });
+  async function handleToggle(key: keyof typeof settings, value: boolean) {
+    setSettings((prev) => ({ ...prev, [key]: value }));
+    await api.patch("/api/settings", { [key]: value });
   }
 
   const [name, setName] = useState(session?.user.name ?? "");
@@ -107,10 +110,28 @@ export function Settings() {
       <div className="space-y-4">
         <h2 className="text-sm font-medium text-gray-500">Preferências</h2>
         <Switch
-          checked={trackExpiration}
-          onChange={handleToggleTrackExpiration}
+          checked={settings.trackExpiration}
+          onChange={(value) => handleToggle("trackExpiration", value)}
           label="Data de validade"
           description="Adiciona um campo de validade nos itens do estoque."
+        />
+        <Switch
+          checked={settings.trackNutrition}
+          onChange={(value) => handleToggle("trackNutrition", value)}
+          label="Informações nutricionais"
+          description="Adiciona um campo pra anotar açúcar, sódio ou outros dados do produto."
+        />
+        <Switch
+          checked={settings.trackGlutenFree}
+          onChange={(value) => handleToggle("trackGlutenFree", value)}
+          label="Sem glúten"
+          description="Adiciona uma marcação de sem glúten nos itens do estoque."
+        />
+        <Switch
+          checked={settings.trackVegan}
+          onChange={(value) => handleToggle("trackVegan", value)}
+          label="Vegano"
+          description="Adiciona uma marcação de vegano nos itens do estoque."
         />
       </div>
 

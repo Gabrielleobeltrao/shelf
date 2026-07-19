@@ -10,12 +10,22 @@ export type ItemFormData = {
   barcode: string;
   imageUrl: string;
   expirationDate: string;
+  nutritionInfo: string;
+  glutenFree: boolean;
+  vegan: boolean;
+};
+
+export type VisibleFields = {
+  expirationDate: boolean;
+  nutrition: boolean;
+  glutenFree: boolean;
+  vegan: boolean;
 };
 
 type Props = {
   title: string;
   initial: Partial<ItemFormData>;
-  showExpirationDate: boolean;
+  visibleFields: VisibleFields;
   onClose: () => void;
   onSave: (data: ItemFormData) => Promise<void>;
   onDelete?: () => Promise<void>;
@@ -40,7 +50,7 @@ const CATEGORY_SUGGESTIONS = [
 export function ItemDetailModal({
   title,
   initial,
-  showExpirationDate,
+  visibleFields,
   onClose,
   onSave,
   onDelete,
@@ -54,6 +64,9 @@ export function ItemDetailModal({
   const [barcode, setBarcode] = useState(initial.barcode ?? "");
   const [imageUrl, setImageUrl] = useState(initial.imageUrl ?? "");
   const [expirationDate, setExpirationDate] = useState(initial.expirationDate ?? "");
+  const [nutritionInfo, setNutritionInfo] = useState(initial.nutritionInfo ?? "");
+  const [glutenFree, setGlutenFree] = useState(initial.glutenFree ?? false);
+  const [vegan, setVegan] = useState(initial.vegan ?? false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -72,6 +85,9 @@ export function ItemDetailModal({
       barcode,
       imageUrl,
       expirationDate,
+      nutritionInfo,
+      glutenFree,
+      vegan,
     });
     setSaving(false);
   }
@@ -182,7 +198,7 @@ export function ItemDetailModal({
           className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
         />
 
-        {showExpirationDate && (
+        {visibleFields.expirationDate && (
           <div>
             <label className="mb-1 block text-sm text-gray-500">Validade</label>
             <input
@@ -191,6 +207,46 @@ export function ItemDetailModal({
               onChange={(e) => setExpirationDate(e.target.value)}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
             />
+          </div>
+        )}
+
+        {visibleFields.nutrition && (
+          <div>
+            <label className="mb-1 block text-sm text-gray-500">Informações nutricionais</label>
+            <textarea
+              placeholder="Ex: Açúcar 5g, Sódio 120mg"
+              value={nutritionInfo}
+              onChange={(e) => setNutritionInfo(e.target.value)}
+              rows={2}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+            />
+          </div>
+        )}
+
+        {(visibleFields.glutenFree || visibleFields.vegan) && (
+          <div className="flex gap-4">
+            {visibleFields.glutenFree && (
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={glutenFree}
+                  onChange={(e) => setGlutenFree(e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300 dark:border-gray-700"
+                />
+                Sem glúten
+              </label>
+            )}
+            {visibleFields.vegan && (
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={vegan}
+                  onChange={(e) => setVegan(e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300 dark:border-gray-700"
+                />
+                Vegano
+              </label>
+            )}
           </div>
         )}
 
