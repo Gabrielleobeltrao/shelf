@@ -42,7 +42,9 @@ export type ProductSearchPage = {
 };
 
 const SEARCH_FIELDS = "code,product_name,brands,categories,quantity,image_front_url";
-const PAGE_SIZE = 20;
+// Larger than a typical page so fewer "carregar mais" clicks are needed —
+// each one is a fresh chance to hit Open Food Facts during a bad moment.
+const PAGE_SIZE = 40;
 
 type RawProduct = {
   code?: string;
@@ -81,18 +83,20 @@ async function fetchPage(url: string, page: number): Promise<ProductSearchPage> 
   return { products, hasMore: page * PAGE_SIZE < count, error: false };
 }
 
-const RETRY_ATTEMPTS = 3;
-const RETRY_DELAY_MS = 350;
+// Spread out rather than fixed-interval: OFF's flakiness comes in waves, so
+// spacing retries further apart gives a better chance of landing outside one.
+const RETRY_DELAYS_MS = [400, 900, 1600];
 
 /**
  * With a query, uses the text-search endpoint. With an empty query, falls
  * back to a general popularity-sorted listing so the picker isn't empty on
  * first open. Both paginate the same way.
  *
- * Open Food Facts occasionally 503s (mostly on the popularity listing)
- * without CORS headers on the error page, which the browser reports as a
- * CORS failure — a rejected fetch — rather than a normal HTTP error. Since
- * this tends to be transient, retry a couple of times before giving up.
+ * Open Food Facts is prone to intermittent 503s on this API — observed on
+ * both endpoints, not just the popularity listing, and not just page 1 — and
+ * the error page lacks CORS headers, so the browser reports it as a CORS
+ * failure (a rejected fetch) rather than a normal HTTP error. Retry with
+ * backoff before giving up.
  */
 export async function searchProducts(query: string, page = 1): Promise<ProductSearchPage> {
   const term = query.trim();
@@ -102,7 +106,7 @@ export async function searchProducts(query: string, page = 1): Promise<ProductSe
       )}&search_simple=1&action=process&json=1&page_size=${PAGE_SIZE}&page=${page}&fields=${SEARCH_FIELDS}`
     : `https://world.openfoodfacts.org/api/v2/search?sort_by=popularity_key&page_size=${PAGE_SIZE}&page=${page}&fields=${SEARCH_FIELDS}`;
 
-  for (let attempt = 1; attempt <= RETRY_ATTEMPTS; attempt++) {
+  for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt++) {
     try {
       const result = await fetchPage(url, page);
       if (!result.error) return result;
@@ -110,7 +114,7 @@ export async function searchProducts(query: string, page = 1): Promise<ProductSe
       // fall through to retry
     }
 
-    if (attempt < RETRY_ATTEMPTS) await wait(RETRY_DELAY_MS);
+    if (attempt < RETRY_DELAYS_MS.length) await wait(RETRY_DELAYS_MS[attempt]);
   }
 
   return { products: [], hasMore: false, error: true };
