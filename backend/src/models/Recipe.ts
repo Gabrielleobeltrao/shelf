@@ -15,7 +15,13 @@ const recipeSchema = new Schema(
       ],
       default: [],
     },
+    // Legacy free-text field, kept only so old recipes still return it for
+    // the frontend's one-time fallback into `steps`. No longer written to.
     instructions: { type: String, default: "" },
+    steps: { type: [String], default: [] },
+    prepTime: { type: Number },
+    servings: { type: Number },
+    category: { type: String },
     imageUrl: { type: String },
     userId: { type: String, required: true },
   },

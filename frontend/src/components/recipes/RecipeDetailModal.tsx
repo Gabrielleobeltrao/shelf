@@ -21,9 +21,22 @@ const UNIT_SUGGESTIONS = [
   "fatia",
 ];
 
+const CATEGORY_SUGGESTIONS = [
+  "Café da manhã",
+  "Almoço",
+  "Jantar",
+  "Lanche",
+  "Sobremesa",
+  "Bebida",
+  "Outro",
+];
+
 export type RecipeFormData = {
   name: string;
-  instructions: string;
+  steps: string[];
+  prepTime: string;
+  servings: string;
+  category: string;
   ingredients: IngredientRow[];
   imageUrl: string;
 };
@@ -52,11 +65,26 @@ export function RecipeDetailModal({
   onDelete,
 }: Props) {
   const [name, setName] = useState(initial.name ?? "");
-  const [instructions, setInstructions] = useState(initial.instructions ?? "");
+  const [steps, setSteps] = useState<string[]>(initial.steps ?? []);
+  const [prepTime, setPrepTime] = useState(initial.prepTime ?? "");
+  const [servings, setServings] = useState(initial.servings ?? "");
+  const [category, setCategory] = useState(initial.category ?? "");
   const [ingredients, setIngredients] = useState<IngredientRow[]>(initial.ingredients ?? []);
   const [imageUrl, setImageUrl] = useState(initial.imageUrl ?? "");
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  function addStep() {
+    setSteps((prev) => [...prev, ""]);
+  }
+
+  function updateStep(index: number, value: string) {
+    setSteps((prev) => prev.map((step, i) => (i === index ? value : step)));
+  }
+
+  function removeStep(index: number) {
+    setSteps((prev) => prev.filter((_, i) => i !== index));
+  }
 
   const usedItemIds = new Set(ingredients.map((row) => row.itemId));
   const hasAvailableItem = stockItems.some((item) => !usedItemIds.has(item._id));
@@ -102,7 +130,10 @@ export function RecipeDetailModal({
     setSaving(true);
     await onSave({
       name,
-      instructions,
+      steps: steps.map((step) => step.trim()).filter(Boolean),
+      prepTime,
+      servings,
+      category,
       ingredients: ingredients.filter((row) => row.itemId),
       imageUrl,
     });
@@ -158,6 +189,39 @@ export function RecipeDetailModal({
           required
           className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
         />
+
+        <input
+          type="text"
+          list="recipe-category-suggestions"
+          placeholder="Tipo (ex: Almoço, Sobremesa)"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+        />
+        <datalist id="recipe-category-suggestions">
+          {CATEGORY_SUGGESTIONS.map((c) => (
+            <option key={c} value={c} />
+          ))}
+        </datalist>
+
+        <div className="flex gap-2">
+          <input
+            type="number"
+            min={0}
+            placeholder="Tempo (min)"
+            value={prepTime}
+            onChange={(e) => setPrepTime(e.target.value)}
+            className="w-1/2 rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          />
+          <input
+            type="number"
+            min={0}
+            placeholder="Porções"
+            value={servings}
+            onChange={(e) => setServings(e.target.value)}
+            className="w-1/2 rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          />
+        </div>
 
         <div className="space-y-2">
           <p className="text-sm font-medium">Ingredientes</p>
@@ -236,13 +300,38 @@ export function RecipeDetailModal({
           )}
         </div>
 
-        <textarea
-          placeholder="Modo de preparo"
-          value={instructions}
-          onChange={(e) => setInstructions(e.target.value)}
-          rows={4}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
-        />
+        <div className="space-y-2">
+          <p className="text-sm font-medium">Modo de preparo</p>
+
+          {steps.map((step, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <span className="w-5 shrink-0 text-sm text-gray-500">{index + 1}.</span>
+              <input
+                type="text"
+                placeholder={`Passo ${index + 1}`}
+                value={step}
+                onChange={(e) => updateStep(index, e.target.value)}
+                className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+              />
+              <button
+                type="button"
+                onClick={() => removeStep(index)}
+                aria-label="Remover passo"
+                className="w-9 shrink-0 text-lg text-red-600"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+
+          <button
+            type="button"
+            onClick={addStep}
+            className="text-sm font-medium text-emerald-600"
+          >
+            + Adicionar passo
+          </button>
+        </div>
 
         <div className="flex gap-2 pt-2">
           {onDelete && (
