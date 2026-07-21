@@ -3,6 +3,7 @@ import { api } from "../lib/api";
 import { hasEnoughStock } from "../lib/units";
 import type { RecipeFormData } from "../components/recipes/RecipeDetailModal";
 import { RecipeDetailModal } from "../components/recipes/RecipeDetailModal";
+import { RecipeViewModal } from "../components/recipes/RecipeViewModal";
 
 type RecipeIngredient = {
   itemId: string;
@@ -30,6 +31,7 @@ type StockItem = {
   name: string;
   quantity: number;
   unit: string;
+  barcode?: string;
 };
 
 type ModalState =
@@ -42,11 +44,29 @@ function getSteps(recipe: Recipe): string[] {
   return [];
 }
 
+function editInitialFor(recipe: Recipe): Partial<RecipeFormData> {
+  return {
+    name: recipe.name,
+    steps: getSteps(recipe),
+    prepTime: recipe.prepTime != null ? String(recipe.prepTime) : "",
+    servings: recipe.servings != null ? String(recipe.servings) : "",
+    category: recipe.category ?? "",
+    imageUrl: recipe.imageUrl ?? "",
+    ingredients: recipe.ingredients.map((row) => ({
+      itemId: row.itemId,
+      name: row.name || "Item removido",
+      quantity: String(row.quantity),
+      unit: row.unit,
+    })),
+  };
+}
+
 export function Recipes() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [items, setItems] = useState<StockItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<ModalState | null>(null);
+  const [viewingRecipeId, setViewingRecipeId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -115,10 +135,14 @@ export function Recipes() {
     setModal(null);
   }
 
+  async function handleDeleteRecipe(recipeId: string) {
+    await api.delete(`/api/recipes/${recipeId}`);
+    setRecipes((prev) => prev.filter((r) => r._id !== recipeId));
+  }
+
   async function handleDelete() {
     if (modal?.mode !== "edit") return;
-    await api.delete(`/api/recipes/${modal.recipeId}`);
-    setRecipes((prev) => prev.filter((r) => r._id !== modal.recipeId));
+    await handleDeleteRecipe(modal.recipeId);
     setModal(null);
   }
 
@@ -235,26 +259,7 @@ export function Recipes() {
             return (
               <li
                 key={recipe._id}
-                onClick={() =>
-                  setModal({
-                    mode: "edit",
-                    recipeId: recipe._id,
-                    initial: {
-                      name: recipe.name,
-                      steps,
-                      prepTime: recipe.prepTime != null ? String(recipe.prepTime) : "",
-                      servings: recipe.servings != null ? String(recipe.servings) : "",
-                      category: recipe.category ?? "",
-                      imageUrl: recipe.imageUrl ?? "",
-                      ingredients: recipe.ingredients.map((row) => ({
-                        itemId: row.itemId,
-                        name: row.name || "Item removido",
-                        quantity: String(row.quantity),
-                        unit: row.unit,
-                      })),
-                    },
-                  })
-                }
+                onClick={() => setViewingRecipeId(recipe._id)}
                 className="cursor-pointer overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800"
               >
                 {recipe.imageUrl && (
@@ -315,6 +320,36 @@ export function Recipes() {
         </ul>
       )}
 
+      {viewingRecipeId &&
+        (() => {
+          const viewingRecipe = recipes.find((r) => r._id === viewingRecipeId);
+          if (!viewingRecipe) return null;
+
+          const missing = missingIngredients(viewingRecipe);
+          const missingIds = new Set(missing.map((row) => row.itemId));
+
+          return (
+            <RecipeViewModal
+              recipe={viewingRecipe}
+              steps={getSteps(viewingRecipe)}
+              missingIds={missingIds}
+              onClose={() => setViewingRecipeId(null)}
+              onEdit={() => {
+                setViewingRecipeId(null);
+                setModal({
+                  mode: "edit",
+                  recipeId: viewingRecipe._id,
+                  initial: editInitialFor(viewingRecipe),
+                });
+              }}
+              onDelete={() => {
+                setViewingRecipeId(null);
+                handleDeleteRecipe(viewingRecipe._id);
+              }}
+            />
+          );
+        })()}
+
       {modal && (
         <RecipeDetailModal
           title={modal.mode === "edit" ? "Editar receita" : "Nova receita"}
@@ -323,6 +358,7 @@ export function Recipes() {
           onClose={() => setModal(null)}
           onSave={handleSave}
           onDelete={modal.mode === "edit" ? handleDelete : undefined}
+          onItemCreated={(item) => setItems((prev) => [item, ...prev])}
         />
       )}
     </div>

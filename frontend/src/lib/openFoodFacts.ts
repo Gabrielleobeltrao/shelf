@@ -35,39 +35,60 @@ export async function lookupProduct(barcode: string): Promise<OpenFoodFactsProdu
   }
 }
 
-export async function searchProducts(query: string): Promise<ProductSearchResult[]> {
-  try {
-    const res = await fetch(
-      `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(
-        query,
-      )}&search_simple=1&action=process&json=1&page_size=20&fields=code,product_name,brands,categories,quantity,image_front_url`,
-    );
+export type ProductSearchPage = {
+  products: ProductSearchResult[];
+  hasMore: boolean;
+};
 
-    if (!res.ok) return [];
+const SEARCH_FIELDS = "code,product_name,brands,categories,quantity,image_front_url";
+const PAGE_SIZE = 20;
+
+type RawProduct = {
+  code?: string;
+  product_name?: string;
+  brands?: string;
+  categories?: string;
+  quantity?: string;
+  image_front_url?: string;
+};
+
+function mapProduct(product: RawProduct): ProductSearchResult | null {
+  if (!product.product_name || !product.code) return null;
+  return {
+    barcode: product.code,
+    name: product.product_name,
+    brand: product.brands?.split(",")[0]?.trim() || null,
+    category: product.categories?.split(",")[0]?.trim() || null,
+    packageSize: product.quantity || null,
+    imageUrl: product.image_front_url || null,
+  };
+}
+
+/**
+ * With a query, uses the text-search endpoint. With an empty query, falls
+ * back to a general popularity-sorted listing so the picker isn't empty on
+ * first open. Both paginate the same way.
+ */
+export async function searchProducts(query: string, page = 1): Promise<ProductSearchPage> {
+  const term = query.trim();
+
+  try {
+    const url = term
+      ? `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(
+          term,
+        )}&search_simple=1&action=process&json=1&page_size=${PAGE_SIZE}&page=${page}&fields=${SEARCH_FIELDS}`
+      : `https://world.openfoodfacts.org/api/v2/search?sort_by=popularity_key&page_size=${PAGE_SIZE}&page=${page}&fields=${SEARCH_FIELDS}`;
+
+    const res = await fetch(url);
+    if (!res.ok) return { products: [], hasMore: false };
 
     const data = await res.json();
-    const products = Array.isArray(data?.products) ? data.products : [];
+    const rawProducts: RawProduct[] = Array.isArray(data?.products) ? data.products : [];
+    const products = rawProducts.map(mapProduct).filter((p): p is ProductSearchResult => p !== null);
+    const count = typeof data?.count === "number" ? data.count : products.length;
 
-    return products
-      .filter((product: { product_name?: string; code?: string }) => product.product_name && product.code)
-      .map(
-        (product: {
-          code: string;
-          product_name: string;
-          brands?: string;
-          categories?: string;
-          quantity?: string;
-          image_front_url?: string;
-        }) => ({
-          barcode: product.code,
-          name: product.product_name,
-          brand: product.brands?.split(",")[0]?.trim() || null,
-          category: product.categories?.split(",")[0]?.trim() || null,
-          packageSize: product.quantity || null,
-          imageUrl: product.image_front_url || null,
-        }),
-      );
+    return { products, hasMore: page * PAGE_SIZE < count };
   } catch {
-    return [];
+    return { products: [], hasMore: false };
   }
 }

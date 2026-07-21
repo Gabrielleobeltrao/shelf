@@ -7,6 +7,7 @@ import { CartIcon, PencilIcon, TrashIcon } from "../components/icons";
 import type { ItemFormData } from "../components/inventory/ItemDetailModal";
 import { ItemDetailModal } from "../components/inventory/ItemDetailModal";
 import { ProductSearchModal } from "../components/inventory/ProductSearchModal";
+import { ItemViewModal } from "../components/inventory/ItemViewModal";
 
 const BarcodeScanner = lazy(() =>
   import("../components/inventory/BarcodeScanner").then((m) => ({ default: m.BarcodeScanner })),
@@ -62,6 +63,7 @@ export function Inventory() {
   const [scanning, setScanning] = useState(false);
   const [productSearchOpen, setProductSearchOpen] = useState(false);
   const [modal, setModal] = useState<ModalState | null>(null);
+  const [viewingItemId, setViewingItemId] = useState<string | null>(null);
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
@@ -380,13 +382,7 @@ export function Inventory() {
             return (
               <li
                 key={item._id}
-                onClick={() =>
-                  setModal({
-                    mode: "edit",
-                    itemId: item._id,
-                    initial: toFormData(item),
-                  })
-                }
+                onClick={() => setViewingItemId(item._id)}
                 className="flex cursor-pointer flex-col gap-1 py-2"
               >
                 <div className="flex items-center justify-between gap-2">
@@ -493,6 +489,49 @@ export function Inventory() {
           })}
         </ul>
       )}
+
+      {viewingItemId &&
+        (() => {
+          const viewingItem = items.find((i) => i._id === viewingItemId);
+          if (!viewingItem) return null;
+
+          const viewExpired = settings.trackExpiration && isExpired(viewingItem.expirationDate);
+          const viewOutOfStock = viewingItem.quantity <= 0;
+          const viewStatusBadge =
+            (settings.trackExpiration && getExpirationWarning(viewingItem.expirationDate)) ||
+            (viewOutOfStock ? "Sem estoque" : null);
+
+          return (
+            <ItemViewModal
+              item={viewingItem}
+              visibleFields={{
+                expirationDate: settings.trackExpiration,
+                nutritionFields: settings.trackNutrition ? settings.nutritionFields : [],
+                glutenFree: settings.trackGlutenFree,
+                vegan: settings.trackVegan,
+              }}
+              statusBadge={viewStatusBadge}
+              showActions={viewExpired || viewOutOfStock}
+              inShoppingList={shoppingListMap.has(viewingItem._id)}
+              pending={pendingIds.has(viewingItem._id)}
+              onClose={() => setViewingItemId(null)}
+              onEdit={() => {
+                setViewingItemId(null);
+                setModal({
+                  mode: "edit",
+                  itemId: viewingItem._id,
+                  initial: toFormData(viewingItem),
+                });
+              }}
+              onDelete={() => {
+                setViewingItemId(null);
+                handleDeleteItem(viewingItem._id);
+              }}
+              onToggleRestock={() => handleToggleRestock(viewingItem)}
+              onStep={(delta) => handleStep(viewingItem, delta)}
+            />
+          );
+        })()}
 
       {modal && (
         <ItemDetailModal

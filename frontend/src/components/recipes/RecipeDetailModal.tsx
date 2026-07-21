@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { api } from "../../lib/api";
+import { ProductSearchModal } from "../inventory/ProductSearchModal";
+import type { ProductSearchResult } from "../../lib/openFoodFacts";
 
 export type IngredientRow = {
   itemId: string;
@@ -44,7 +47,9 @@ export type RecipeFormData = {
 type StockItem = {
   _id: string;
   name: string;
+  quantity: number;
   unit: string;
+  barcode?: string;
 };
 
 type Props = {
@@ -54,6 +59,7 @@ type Props = {
   onClose: () => void;
   onSave: (data: RecipeFormData) => Promise<void>;
   onDelete?: () => Promise<void>;
+  onItemCreated?: (item: StockItem) => void;
 };
 
 export function RecipeDetailModal({
@@ -63,6 +69,7 @@ export function RecipeDetailModal({
   onClose,
   onSave,
   onDelete,
+  onItemCreated,
 }: Props) {
   const [name, setName] = useState(initial.name ?? "");
   const [steps, setSteps] = useState<string[]>(initial.steps ?? []);
@@ -73,6 +80,8 @@ export function RecipeDetailModal({
   const [imageUrl, setImageUrl] = useState(initial.imageUrl ?? "");
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [productSearchOpen, setProductSearchOpen] = useState(false);
+  const [creatingItem, setCreatingItem] = useState(false);
 
   function addStep() {
     setSteps((prev) => [...prev, ""]);
@@ -113,6 +122,35 @@ export function RecipeDetailModal({
     setIngredients((prev) => [
       ...prev,
       { itemId: nextItem._id, name: nextItem.name, quantity: "1", unit: nextItem.unit },
+    ]);
+  }
+
+  async function handleSelectProduct(product: ProductSearchResult) {
+    setProductSearchOpen(false);
+
+    let item = stockItems.find((i) => i.barcode && i.barcode === product.barcode);
+
+    if (!item) {
+      setCreatingItem(true);
+      item = await api.post<StockItem>("/api/items", {
+        name: product.name || "Produto sem nome",
+        brand: product.brand ?? "",
+        category: product.category ?? "",
+        packageSize: product.packageSize ?? "",
+        imageUrl: product.imageUrl ?? "",
+        barcode: product.barcode,
+        quantity: 0,
+        unit: "un",
+      });
+      setCreatingItem(false);
+      onItemCreated?.(item);
+    }
+
+    if (usedItemIds.has(item._id)) return;
+
+    setIngredients((prev) => [
+      ...prev,
+      { itemId: item._id, name: item.name, quantity: "1", unit: item.unit },
     ]);
   }
 
@@ -227,78 +265,76 @@ export function RecipeDetailModal({
         <div className="space-y-2">
           <p className="text-sm font-medium">Ingredientes</p>
 
-          {stockItems.length === 0 ? (
-            <p className="text-sm text-gray-500">
-              Cadastre itens no estoque primeiro pra poder escolher ingredientes.
-            </p>
-          ) : (
-            <>
-              {ingredients.map((row, index) => (
-                <div key={index} className="flex gap-2">
-                  <select
-                    value={row.itemId}
-                    onChange={(e) => {
-                      const item = stockItems.find((i) => i._id === e.target.value);
-                      updateIngredient(index, {
-                        itemId: e.target.value,
-                        name: item?.name ?? row.name,
-                        unit: item?.unit ?? row.unit,
-                      });
-                    }}
-                    className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
-                  >
-                    {availableItemsFor(index).map((item) => (
-                      <option key={item._id} value={item._id}>
-                        {item.name}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    type="number"
-                    min={0}
-                    step="any"
-                    placeholder="Qtd."
-                    value={row.quantity}
-                    onChange={(e) => updateIngredient(index, { quantity: e.target.value })}
-                    className="w-16 rounded-lg border border-gray-300 px-2 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
-                  />
-                  <select
-                    value={row.unit}
-                    onChange={(e) => updateIngredient(index, { unit: e.target.value })}
-                    className="w-24 shrink-0 rounded-lg border border-gray-300 px-2 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
-                  >
-                    {[...new Set([row.unit, ...UNIT_SUGGESTIONS])].filter(Boolean).map((u) => (
-                      <option key={u} value={u}>
-                        {u}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    onClick={() => removeIngredient(index)}
-                    aria-label="Remover ingrediente"
-                    className="w-9 shrink-0 text-lg text-red-600"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
+          {ingredients.map((row, index) => (
+            <div key={index} className="flex gap-2">
+              <select
+                value={row.itemId}
+                onChange={(e) => {
+                  const item = stockItems.find((i) => i._id === e.target.value);
+                  updateIngredient(index, {
+                    itemId: e.target.value,
+                    name: item?.name ?? row.name,
+                    unit: item?.unit ?? row.unit,
+                  });
+                }}
+                className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+              >
+                {availableItemsFor(index).map((item) => (
+                  <option key={item._id} value={item._id}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="number"
+                min={0}
+                step="any"
+                placeholder="Qtd."
+                value={row.quantity}
+                onChange={(e) => updateIngredient(index, { quantity: e.target.value })}
+                className="w-16 rounded-lg border border-gray-300 px-2 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+              />
+              <select
+                value={row.unit}
+                onChange={(e) => updateIngredient(index, { unit: e.target.value })}
+                className="w-24 shrink-0 rounded-lg border border-gray-300 px-2 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+              >
+                {[...new Set([row.unit, ...UNIT_SUGGESTIONS])].filter(Boolean).map((u) => (
+                  <option key={u} value={u}>
+                    {u}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => removeIngredient(index)}
+                aria-label="Remover ingrediente"
+                className="w-9 shrink-0 text-lg text-red-600"
+              >
+                ×
+              </button>
+            </div>
+          ))}
 
-              {hasAvailableItem ? (
-                <button
-                  type="button"
-                  onClick={addIngredient}
-                  className="text-sm font-medium text-emerald-600"
-                >
-                  + Adicionar ingrediente
-                </button>
-              ) : (
-                <p className="text-sm text-gray-500">
-                  Todos os itens do estoque já foram adicionados.
-                </p>
-              )}
-            </>
-          )}
+          <div className="flex gap-2">
+            {hasAvailableItem && (
+              <button
+                type="button"
+                onClick={addIngredient}
+                className="text-sm font-medium text-emerald-600"
+              >
+                + Do estoque
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setProductSearchOpen(true)}
+              disabled={creatingItem}
+              className="text-sm font-medium text-emerald-600 disabled:opacity-60"
+            >
+              {creatingItem ? "Adicionando..." : "+ Buscar produto"}
+            </button>
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -354,6 +390,14 @@ export function RecipeDetailModal({
           </button>
         </div>
       </form>
+
+      {productSearchOpen && (
+        <ProductSearchModal
+          title="Buscar ingrediente"
+          onSelect={handleSelectProduct}
+          onClose={() => setProductSearchOpen(false)}
+        />
+      )}
     </div>
   );
 }
