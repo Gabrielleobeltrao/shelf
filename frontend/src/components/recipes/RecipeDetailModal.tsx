@@ -99,7 +99,8 @@ export function RecipeDetailModal({
     // If this ingredient's original stock item was deleted, keep it visible
     // (via its saved name) instead of silently swapping the selection.
     if (row.itemId && !available.some((item) => item._id === row.itemId)) {
-      return [{ _id: row.itemId, name: `${row.name} (removido do estoque)` }, ...available];
+      const label = row.name || "Item removido";
+      return [{ _id: row.itemId, name: `${label} (removido do estoque)` }, ...available];
     }
 
     return available;

@@ -6,7 +6,9 @@ import { RecipeDetailModal } from "../components/recipes/RecipeDetailModal";
 
 type RecipeIngredient = {
   itemId: string;
-  name: string;
+  // Older recipes (before ingredients snapshotted their name) may not have
+  // this — always fall back to a placeholder rather than showing "undefined".
+  name?: string;
   quantity: number;
   unit: string;
 };
@@ -72,7 +74,7 @@ export function Recipes() {
       if (categoryFilter && (recipe.category?.trim() || "") !== categoryFilter) return false;
       if (!term) return true;
       if (recipe.name.toLowerCase().includes(term)) return true;
-      return recipe.ingredients.some((row) => row.name.toLowerCase().includes(term));
+      return recipe.ingredients.some((row) => row.name?.toLowerCase().includes(term));
     });
   }, [recipes, search, categoryFilter]);
 
@@ -246,7 +248,7 @@ export function Recipes() {
                       imageUrl: recipe.imageUrl ?? "",
                       ingredients: recipe.ingredients.map((row) => ({
                         itemId: row.itemId,
-                        name: row.name,
+                        name: row.name || "Item removido",
                         quantity: String(row.quantity),
                         unit: row.unit,
                       })),
@@ -293,7 +295,7 @@ export function Recipes() {
                               : "text-gray-500"
                           }
                         >
-                          {row.quantity} {row.unit} de {row.name}
+                          {row.quantity} {row.unit} de {row.name || "Item removido"}
                         </li>
                       ))}
                     </ul>
