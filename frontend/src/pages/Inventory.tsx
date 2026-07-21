@@ -1,10 +1,12 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { api } from "../lib/api";
 import { lookupProduct } from "../lib/openFoodFacts";
+import type { ProductSearchResult } from "../lib/openFoodFacts";
 import { getExpirationWarning, isExpired } from "../lib/expiration";
 import { CartIcon, PencilIcon, TrashIcon } from "../components/icons";
 import type { ItemFormData } from "../components/inventory/ItemDetailModal";
 import { ItemDetailModal } from "../components/inventory/ItemDetailModal";
+import { ProductSearchModal } from "../components/inventory/ProductSearchModal";
 
 const BarcodeScanner = lazy(() =>
   import("../components/inventory/BarcodeScanner").then((m) => ({ default: m.BarcodeScanner })),
@@ -58,6 +60,7 @@ export function Inventory() {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [scanning, setScanning] = useState(false);
+  const [productSearchOpen, setProductSearchOpen] = useState(false);
   const [modal, setModal] = useState<ModalState | null>(null);
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState("");
@@ -196,6 +199,35 @@ export function Inventory() {
     setShoppingListMap((prev) => new Map(prev).set(item._id, entry._id));
   }
 
+  function handleSelectSearchProduct(product: ProductSearchResult) {
+    setProductSearchOpen(false);
+    setModal({
+      mode: "create",
+      initial: {
+        name: product.name ?? "",
+        brand: product.brand ?? "",
+        category: product.category ?? "",
+        packageSize: product.packageSize ?? "",
+        quantity: "1",
+        unit: "un",
+        barcode: product.barcode,
+        imageUrl: product.imageUrl ?? "",
+        expirationDate: "",
+        nutrition: {},
+        glutenFree: false,
+        vegan: false,
+      },
+    });
+  }
+
+  function handleAddManually() {
+    setProductSearchOpen(false);
+    setModal({
+      mode: "create",
+      initial: { quantity: "1", unit: "un" },
+    });
+  }
+
   async function handleDetected(code: string) {
     setScanning(false);
 
@@ -234,12 +266,7 @@ export function Inventory() {
 
       <div className="flex gap-2">
         <button
-          onClick={() =>
-            setModal({
-              mode: "create",
-              initial: { quantity: "1", unit: "un" },
-            })
-          }
+          onClick={() => setProductSearchOpen(true)}
           className="flex-1 rounded-lg bg-emerald-600 py-2.5 font-medium text-white"
         >
           Adicionar item
@@ -487,6 +514,14 @@ export function Inventory() {
         <Suspense fallback={null}>
           <BarcodeScanner onDetected={handleDetected} onClose={() => setScanning(false)} />
         </Suspense>
+      )}
+
+      {productSearchOpen && (
+        <ProductSearchModal
+          onSelect={handleSelectSearchProduct}
+          onAddManually={handleAddManually}
+          onClose={() => setProductSearchOpen(false)}
+        />
       )}
     </div>
   );
