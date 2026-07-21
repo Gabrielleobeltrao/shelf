@@ -344,8 +344,11 @@ export function Inventory() {
           {filteredItems.map((item) => {
             const secondaryInfo = item.brand || item.packageSize || "";
             const expired = settings.trackExpiration && isExpired(item.expirationDate);
-            const expirationWarning =
-              settings.trackExpiration && getExpirationWarning(item.expirationDate);
+            const outOfStock = item.quantity <= 0;
+            const showActions = expired || outOfStock;
+            const statusBadge =
+              (settings.trackExpiration && getExpirationWarning(item.expirationDate)) ||
+              (outOfStock ? "Sem estoque" : null);
 
             return (
               <li
@@ -361,9 +364,9 @@ export function Inventory() {
               >
                 <div className="flex items-center justify-between gap-2">
                   <p className="truncate">{item.name}</p>
-                  {expirationWarning && (
+                  {statusBadge && (
                     <span className="shrink-0 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/40 dark:text-red-400">
-                      {expirationWarning}
+                      {statusBadge}
                     </span>
                   )}
                 </div>
@@ -386,7 +389,7 @@ export function Inventory() {
                       onClick={(e) => e.stopPropagation()}
                       className="flex items-center justify-end gap-2"
                     >
-                      {expired ? (
+                      {showActions ? (
                         <>
                           <button
                             onClick={() => {
