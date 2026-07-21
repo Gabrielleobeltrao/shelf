@@ -16,30 +16,34 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState(false);
+  const [retryToken, setRetryToken] = useState(0);
 
   useEffect(() => {
     setLoading(true);
     const delay = query.trim() ? 400 : 0;
 
     const timeout = setTimeout(() => {
-      searchProducts(query, 1).then(({ products, hasMore: more }) => {
+      searchProducts(query, 1).then(({ products, hasMore: more, error: failed }) => {
         setResults(products);
         setPage(1);
         setHasMore(more);
+        setError(failed);
         setLoading(false);
       });
     }, delay);
 
     return () => clearTimeout(timeout);
-  }, [query]);
+  }, [query, retryToken]);
 
   async function handleLoadMore() {
     setLoadingMore(true);
     const nextPage = page + 1;
-    const { products, hasMore: more } = await searchProducts(query, nextPage);
+    const { products, hasMore: more, error: failed } = await searchProducts(query, nextPage);
     setResults((prev) => [...prev, ...products]);
     setPage(nextPage);
     setHasMore(more);
+    setError(failed);
     setLoadingMore(false);
   }
 
@@ -81,6 +85,20 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
         <div className="flex-1 space-y-1 overflow-y-auto">
           {loading ? (
             <p className="text-sm text-gray-500">Carregando...</p>
+          ) : error && results.length === 0 ? (
+            <div className="space-y-2">
+              <p className="text-sm text-gray-500">
+                Não foi possível buscar produtos agora
+                {onAddManually ? " — tente de novo ou adicione manualmente." : ". Tente de novo."}
+              </p>
+              <button
+                type="button"
+                onClick={() => setRetryToken((prev) => prev + 1)}
+                className="text-sm font-medium text-emerald-600"
+              >
+                Tentar de novo
+              </button>
+            </div>
           ) : results.length === 0 ? (
             <p className="text-sm text-gray-500">
               Nenhum produto encontrado. Tente outro nome{onAddManually ? " ou adicione manualmente." : "."}

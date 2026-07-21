@@ -38,6 +38,7 @@ export async function lookupProduct(barcode: string): Promise<OpenFoodFactsProdu
 export type ProductSearchPage = {
   products: ProductSearchResult[];
   hasMore: boolean;
+  error: boolean;
 };
 
 const SEARCH_FIELDS = "code,product_name,brands,categories,quantity,image_front_url";
@@ -80,15 +81,18 @@ export async function searchProducts(query: string, page = 1): Promise<ProductSe
       : `https://world.openfoodfacts.org/api/v2/search?sort_by=popularity_key&page_size=${PAGE_SIZE}&page=${page}&fields=${SEARCH_FIELDS}`;
 
     const res = await fetch(url);
-    if (!res.ok) return { products: [], hasMore: false };
+    if (!res.ok) return { products: [], hasMore: false, error: true };
 
     const data = await res.json();
     const rawProducts: RawProduct[] = Array.isArray(data?.products) ? data.products : [];
     const products = rawProducts.map(mapProduct).filter((p): p is ProductSearchResult => p !== null);
     const count = typeof data?.count === "number" ? data.count : products.length;
 
-    return { products, hasMore: page * PAGE_SIZE < count };
+    return { products, hasMore: page * PAGE_SIZE < count, error: false };
   } catch {
-    return { products: [], hasMore: false };
+    // Open Food Facts occasionally 503s the popularity listing without CORS
+    // headers on the error page, which the browser reports as a CORS
+    // failure (a rejected fetch) rather than a normal HTTP error.
+    return { products: [], hasMore: false, error: true };
   }
 }
