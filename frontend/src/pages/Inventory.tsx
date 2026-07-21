@@ -426,6 +426,14 @@ export function Inventory() {
                           >
                             <CartIcon className="h-4 w-4" />
                           </button>
+                          <button
+                            onClick={() => handleStep(item, 1)}
+                            disabled={pendingIds.has(item._id)}
+                            aria-label={`Aumentar quantidade de ${item.name}`}
+                            className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none disabled:opacity-40 dark:border-gray-700"
+                          >
+                            +
+                          </button>
                         </>
                       ) : (
                         <>
