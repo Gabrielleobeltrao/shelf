@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { NUTRITION_OPTIONS } from "../../lib/nutrition";
+import { CATEGORY_OPTIONS } from "../../lib/categories";
 import { CloseIcon, TrashIcon } from "../icons";
 import { Switch } from "../ui/Switch";
 
@@ -33,22 +34,6 @@ type Props = {
   onSave: (data: ItemFormData) => Promise<void>;
   onDelete?: () => Promise<void>;
 };
-
-const CATEGORY_SUGGESTIONS = [
-  "Laticínios",
-  "Grãos e Cereais",
-  "Bebidas",
-  "Temperos e Condimentos",
-  "Limpeza",
-  "Higiene",
-  "Congelados",
-  "Enlatados e Conservas",
-  "Hortifruti",
-  "Padaria",
-  "Carnes",
-  "Doces e Sobremesas",
-  "Outros",
-];
 
 function FieldLabel({ children }: { children: string }) {
   return <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted">{children}</label>;
@@ -170,7 +155,7 @@ export function ItemDetailModal({
             className={inputClass}
           />
           <datalist id="category-suggestions">
-            {CATEGORY_SUGGESTIONS.map((c) => (
+            {CATEGORY_OPTIONS.map((c) => (
               <option key={c} value={c} />
             ))}
           </datalist>

@@ -1,3 +1,5 @@
+import { normalizeCategory } from "./categories";
+
 export type OpenFoodFactsProduct = {
   name: string | null;
   brand: string | null;
@@ -8,6 +10,8 @@ export type OpenFoodFactsProduct = {
 
 export type ProductSearchResult = OpenFoodFactsProduct & {
   barcode: string;
+  source?: "local" | "off";
+  localItemId?: string;
 };
 
 export async function lookupProduct(barcode: string): Promise<OpenFoodFactsProduct | null> {
@@ -26,7 +30,7 @@ export async function lookupProduct(barcode: string): Promise<OpenFoodFactsProdu
     return {
       name: product.product_name || null,
       brand: product.brands?.split(",")[0]?.trim() || null,
-      category: product.categories?.split(",")[0]?.trim() || null,
+      category: normalizeCategory(product.categories),
       packageSize: product.quantity || null,
       imageUrl: product.image_front_url || null,
     };
@@ -59,12 +63,26 @@ function mapProduct(product: RawProduct): ProductSearchResult | null {
   if (!product.product_name || !product.code) return null;
   return {
     barcode: product.code,
+    source: "off",
     name: product.product_name,
     brand: product.brands?.split(",")[0]?.trim() || null,
-    category: product.categories?.split(",")[0]?.trim() || null,
+    category: normalizeCategory(product.categories),
     packageSize: product.quantity || null,
     imageUrl: product.image_front_url || null,
   };
+}
+
+// Open Food Facts' relevance ranking doesn't account for how complete an
+// entry is, so sparse near-duplicate entries (no photo, no category — often
+// abandoned duplicates of a better-filled-out entry for the same product)
+// can outrank the useful one. Bubble up complete entries first instead,
+// keeping OFF's own order within each group.
+function sortByCompleteness(products: ProductSearchResult[]): ProductSearchResult[] {
+  const completeness = (p: ProductSearchResult) => Number(!!p.imageUrl) + Number(!!p.category);
+  return products
+    .map((product, index) => ({ product, index }))
+    .sort((a, b) => completeness(b.product) - completeness(a.product) || a.index - b.index)
+    .map(({ product }) => product);
 }
 
 function wait(ms: number) {
@@ -77,7 +95,9 @@ async function fetchPage(url: string, page: number): Promise<ProductSearchPage> 
 
   const data = await res.json();
   const rawProducts: RawProduct[] = Array.isArray(data?.products) ? data.products : [];
-  const products = rawProducts.map(mapProduct).filter((p): p is ProductSearchResult => p !== null);
+  const products = sortByCompleteness(
+    rawProducts.map(mapProduct).filter((p): p is ProductSearchResult => p !== null),
+  );
   const count = typeof data?.count === "number" ? data.count : products.length;
 
   return { products, hasMore: page * PAGE_SIZE < count, error: false };

@@ -206,6 +206,12 @@ export function Inventory() {
 
   function handleSelectSearchProduct(product: ProductSearchResult) {
     setProductSearchOpen(false);
+
+    if (product.source === "local" && product.localItemId) {
+      setViewingItemId(product.localItemId);
+      return;
+    }
+
     setModal({
       mode: "create",
       initial: {
@@ -500,6 +506,7 @@ export function Inventory() {
           onSelect={handleSelectSearchProduct}
           onAddManually={handleAddManually}
           onClose={() => setProductSearchOpen(false)}
+          localItems={items}
         />
       )}
 

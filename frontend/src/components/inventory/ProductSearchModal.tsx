@@ -1,18 +1,41 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { searchProducts } from "../../lib/openFoodFacts";
 import type { ProductSearchResult } from "../../lib/openFoodFacts";
 import { CloseIcon, SearchIcon } from "../icons";
 import { EmptyState } from "../ui/EmptyState";
 import { EmptyShelfIllustration } from "../illustrations";
 
+export type LocalStockItem = {
+  _id: string;
+  name: string;
+  brand?: string;
+  category?: string;
+  imageUrl?: string;
+  barcode?: string;
+};
+
 type Props = {
   title?: string;
   onSelect: (product: ProductSearchResult) => void;
   onAddManually?: () => void;
   onClose: () => void;
+  localItems?: LocalStockItem[];
 };
 
-export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddManually, onClose }: Props) {
+function toSearchResult(item: LocalStockItem): ProductSearchResult {
+  return {
+    barcode: item.barcode ?? "",
+    source: "local",
+    localItemId: item._id,
+    name: item.name,
+    brand: item.brand ?? null,
+    category: item.category ?? null,
+    packageSize: null,
+    imageUrl: item.imageUrl ?? null,
+  };
+}
+
+export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddManually, onClose, localItems = [] }: Props) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<ProductSearchResult[]>([]);
   const [page, setPage] = useState(1);
@@ -39,6 +62,21 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
     return () => clearTimeout(timeout);
   }, [query, retryToken]);
 
+  // Instant — no need to wait on a network round trip to search what the
+  // user already has. Only kicks in once they've typed something specific
+  // enough to be useful; an empty query would surface the whole pantry.
+  const localMatches = useMemo(() => {
+    const term = query.trim().toLowerCase();
+    if (term.length < 2) return [];
+
+    return localItems
+      .filter(
+        (item) =>
+          item.name.toLowerCase().includes(term) || (item.brand ?? "").toLowerCase().includes(term),
+      )
+      .map(toSearchResult);
+  }, [query, localItems]);
+
   async function handleLoadMore() {
     setLoadingMore(true);
     const nextPage = page + 1;
@@ -49,6 +87,8 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
     setError(failed);
     setLoadingMore(false);
   }
+
+  const noResults = localMatches.length === 0 && results.length === 0;
 
   return (
     <div className="fixed inset-0 z-40 flex items-end bg-black/50" onClick={onClose}>
@@ -86,6 +126,15 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
         </div>
 
         <div className="flex-1 space-y-1 overflow-y-auto">
+          {localMatches.length > 0 && (
+            <div className="space-y-1 pb-2">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted">Já no seu estoque</p>
+              {localMatches.map((product) => (
+                <ProductRow key={`local-${product.localItemId}`} product={product} onSelect={onSelect} />
+              ))}
+            </div>
+          )}
+
           {loading ? (
             <p className="text-sm text-muted">Carregando...</p>
           ) : error && results.length === 0 ? (
@@ -102,7 +151,7 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
                 Tentar de novo
               </button>
             </div>
-          ) : results.length === 0 ? (
+          ) : noResults ? (
             <EmptyState
               illustration={<EmptyShelfIllustration />}
               title="Nenhum produto encontrado"
@@ -110,29 +159,11 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
             />
           ) : (
             <>
+              {results.length > 0 && localMatches.length > 0 && (
+                <p className="pt-1 text-xs font-medium uppercase tracking-wide text-muted">Buscar produto</p>
+              )}
               {results.map((product, index) => (
-                <button
-                  key={`${product.barcode}-${index}`}
-                  type="button"
-                  onClick={() => onSelect(product)}
-                  className="flex w-full items-center gap-3 rounded-lg py-2 text-left hover:bg-surface-2"
-                >
-                  {product.imageUrl ? (
-                    <img
-                      src={product.imageUrl}
-                      alt=""
-                      className="h-12 w-12 shrink-0 rounded-lg object-cover"
-                    />
-                  ) : (
-                    <div className="h-12 w-12 shrink-0 rounded-lg bg-surface" />
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate">{product.name}</p>
-                    {product.brand && (
-                      <p className="truncate text-xs text-muted">{product.brand}</p>
-                    )}
-                  </div>
-                </button>
+                <ProductRow key={`${product.barcode}-${index}`} product={product} onSelect={onSelect} />
               ))}
 
               {hasMore && (
@@ -150,5 +181,25 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
         </div>
       </div>
     </div>
+  );
+}
+
+function ProductRow({ product, onSelect }: { product: ProductSearchResult; onSelect: (product: ProductSearchResult) => void }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(product)}
+      className="flex w-full items-center gap-3 rounded-lg py-2 text-left hover:bg-surface-2"
+    >
+      {product.imageUrl ? (
+        <img src={product.imageUrl} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" />
+      ) : (
+        <div className="h-12 w-12 shrink-0 rounded-lg bg-surface" />
+      )}
+      <div className="min-w-0 flex-1">
+        <p className="truncate">{product.name}</p>
+        {product.brand && <p className="truncate text-xs text-muted">{product.brand}</p>}
+      </div>
+    </button>
   );
 }

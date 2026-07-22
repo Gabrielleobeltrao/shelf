@@ -137,7 +137,10 @@ export function RecipeDetailModal({
   async function handleSelectProduct(product: ProductSearchResult) {
     setProductSearchOpen(false);
 
-    let item = stockItems.find((i) => i.barcode && i.barcode === product.barcode);
+    let item =
+      product.source === "local" && product.localItemId
+        ? stockItems.find((i) => i._id === product.localItemId)
+        : stockItems.find((i) => i.barcode && i.barcode === product.barcode);
 
     if (!item) {
       setCreatingItem(true);
@@ -415,6 +418,7 @@ export function RecipeDetailModal({
           title="Buscar ingrediente"
           onSelect={handleSelectProduct}
           onClose={() => setProductSearchOpen(false)}
+          localItems={stockItems}
         />
       )}
     </div>
