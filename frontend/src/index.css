@@ -9,47 +9,50 @@
 @import "@fontsource/karla/700.css";
 
 @theme {
-  /* Sage — herbs/pantry accent, replacing the earlier terracotta pass. */
+  /* Sage — herbs/pantry accent. 100/600/700 are the exact light-mode
+     reference values from the approved mockup (tint/base/deep); 400 is
+     the mockup's dark-mode "deep" (used for badge/pill text on dark). */
   --color-primary-50: #f6f8f2;
-  --color-primary-100: #e6edda;
-  --color-primary-200: #cfdfba;
-  --color-primary-300: #b3cc95;
-  --color-primary-400: #93b382;
+  --color-primary-100: #e1e9d7;
+  --color-primary-200: #cddcaf;
+  --color-primary-300: #a8c48a;
+  --color-primary-400: #c7dcb9;
   --color-primary-500: #75965f;
   --color-primary-600: #5c7a54;
-  --color-primary-700: #47603f;
-  --color-primary-800: #364a30;
-  --color-primary-900: #283824;
-  --color-primary-950: #182015;
+  --color-primary-700: #3f5738;
+  --color-primary-800: #33472c;
+  --color-primary-900: #26311f;
+  --color-primary-950: #161d10;
 
   /* Mustard — secondary accent used sparingly (illustrations, alternating
-     category chips), kept separate from the primary sage accent. */
+     category chips), kept separate from the primary sage accent. Same
+     100/600/700/400 anchoring as primary, taken from the mockup. */
   --color-mustard-50: #fbf5e9;
   --color-mustard-100: #f5e6c6;
   --color-mustard-200: #eccd92;
   --color-mustard-300: #e0b166;
-  --color-mustard-400: #d19c42;
+  --color-mustard-400: #f2cf8f;
   --color-mustard-500: #c98a2c;
-  --color-mustard-600: #a8721f;
+  --color-mustard-600: #c98a2c;
   --color-mustard-700: #8a5c17;
   --color-mustard-800: #6c4712;
-  --color-mustard-900: #4f350e;
-  --color-mustard-950: #2f1f08;
+  --color-mustard-900: #33290f;
+  --color-mustard-950: #1f1808;
 
   /* Rust — semantic warning/danger, kept distinct from the accent hue so
      "expiring" and "delete" never compete visually with the sage/mustard
-     brand colors. */
+     brand colors. 600 is the mockup's single rust reference value. */
   --color-rust-50: #fbf1ee;
   --color-rust-100: #f2ddd5;
   --color-rust-200: #e3bcac;
   --color-rust-300: #d19980;
-  --color-rust-400: #bd7259;
+  --color-rust-400: #dd8a72;
   --color-rust-500: #a8442c;
-  --color-rust-600: #963c26;
-  --color-rust-700: #7a301f;
-  --color-rust-800: #5f2519;
-  --color-rust-900: #481c13;
-  --color-rust-950: #2a0f0a;
+  --color-rust-600: #a8442c;
+  --color-rust-700: #8a3823;
+  --color-rust-800: #6b2b1a;
+  --color-rust-900: #3a2016;
+  --color-rust-950: #211210;
 
   --font-display: "Bricolage Grotesque", "Karla", system-ui, sans-serif;
   --font-sans: "Karla", system-ui, sans-serif;
