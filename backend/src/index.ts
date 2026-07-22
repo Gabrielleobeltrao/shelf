@@ -8,6 +8,7 @@ import itemsRouter from "./routes/items.routes.js";
 import recipesRouter from "./routes/recipes.routes.js";
 import settingsRouter from "./routes/settings.routes.js";
 import shoppingListRouter from "./routes/shopping-list.routes.js";
+import productSearchRouter from "./routes/product-search.routes.js";
 
 const app = express();
 const PORT = process.env.PORT ?? 4001;
@@ -34,6 +35,7 @@ app.use("/api/items", itemsRouter);
 app.use("/api/recipes", recipesRouter);
 app.use("/api/settings", settingsRouter);
 app.use("/api/shopping-list", shoppingListRouter);
+app.use("/api/product-search", productSearchRouter);
 
 await connectDB();
 
