@@ -3,6 +3,7 @@ import { NUTRITION_OPTIONS } from "../../lib/nutrition";
 import { CATEGORY_OPTIONS } from "../../lib/categories";
 import { CloseIcon, TrashIcon } from "../icons";
 import { Switch } from "../ui/Switch";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
 
 export type ItemFormData = {
   name: string;
@@ -64,6 +65,7 @@ export function ItemDetailModal({
   const [vegan, setVegan] = useState(initial.vegan ?? false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -89,6 +91,7 @@ export function ItemDetailModal({
 
   async function handleDelete() {
     if (!onDelete) return;
+    setConfirmingDelete(false);
     setDeleting(true);
     await onDelete();
     setDeleting(false);
@@ -243,7 +246,7 @@ export function ItemDetailModal({
           {onDelete && (
             <button
               type="button"
-              onClick={handleDelete}
+              onClick={() => setConfirmingDelete(true)}
               disabled={deleting}
               className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-rust-600 py-2.5 font-medium text-rust-600 disabled:opacity-60"
             >
@@ -260,6 +263,15 @@ export function ItemDetailModal({
           </button>
         </div>
       </form>
+
+      {confirmingDelete && (
+        <ConfirmDialog
+          title={`Excluir "${name}"?`}
+          description="O item será removido do seu estoque permanentemente."
+          onConfirm={handleDelete}
+          onCancel={() => setConfirmingDelete(false)}
+        />
+      )}
     </div>
   );
 }

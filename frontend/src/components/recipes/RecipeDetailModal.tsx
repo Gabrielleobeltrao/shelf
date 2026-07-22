@@ -4,6 +4,7 @@ import { ProductSearchModal } from "../inventory/ProductSearchModal";
 import type { ProductSearchResult } from "../../lib/openFoodFacts";
 import { CloseIcon, PlusIcon, TrashIcon } from "../icons";
 import { BowlIllustration } from "../illustrations";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
 
 function FieldLabel({ children }: { children: string }) {
   return <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted">{children}</label>;
@@ -89,6 +90,7 @@ export function RecipeDetailModal({
   const [imageUrl, setImageUrl] = useState(initial.imageUrl ?? "");
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [productSearchOpen, setProductSearchOpen] = useState(false);
   const [creatingItem, setCreatingItem] = useState(false);
 
@@ -193,6 +195,7 @@ export function RecipeDetailModal({
 
   async function handleDelete() {
     if (!onDelete) return;
+    setConfirmingDelete(false);
     setDeleting(true);
     await onDelete();
     setDeleting(false);
@@ -395,7 +398,7 @@ export function RecipeDetailModal({
           {onDelete && (
             <button
               type="button"
-              onClick={handleDelete}
+              onClick={() => setConfirmingDelete(true)}
               disabled={deleting}
               className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-rust-600 py-2.5 font-medium text-rust-600 disabled:opacity-60"
             >
@@ -419,6 +422,15 @@ export function RecipeDetailModal({
           onSelect={handleSelectProduct}
           onClose={() => setProductSearchOpen(false)}
           localItems={stockItems}
+        />
+      )}
+
+      {confirmingDelete && (
+        <ConfirmDialog
+          title={`Excluir "${name}"?`}
+          description="A receita será removida permanentemente."
+          onConfirm={handleDelete}
+          onCancel={() => setConfirmingDelete(false)}
         />
       )}
     </div>

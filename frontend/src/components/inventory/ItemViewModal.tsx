@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { NUTRITION_OPTIONS } from "../../lib/nutrition";
 import { BackIcon, CartIcon, MinusIcon, PencilIcon, PlusIcon, TrashIcon } from "../icons";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
 
 type Item = {
   _id: string;
@@ -53,6 +55,8 @@ export function ItemViewModal({
   onToggleRestock,
   onStep,
 }: Props) {
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+
   const nutritionEntries = visibleFields.nutritionFields
     .map((key) => ({ option: NUTRITION_OPTIONS.find((o) => o.key === key), value: item.nutrition?.[key] }))
     .filter((entry) => entry.option && entry.value != null);
@@ -88,9 +92,7 @@ export function ItemViewModal({
             <div className="flex gap-2">
               {showActions && (
                 <button
-                  onClick={() => {
-                    if (confirm(`Excluir "${item.name}" do estoque?`)) onDelete();
-                  }}
+                  onClick={() => setConfirmingDelete(true)}
                   aria-label="Excluir"
                   className={`${infoIconBtn} text-rust-600 dark:text-rust-400`}
                 >
@@ -196,6 +198,15 @@ export function ItemViewModal({
           </button>
         )}
       </div>
+
+      {confirmingDelete && (
+        <ConfirmDialog
+          title={`Excluir "${item.name}"?`}
+          description="O item será removido do seu estoque permanentemente."
+          onConfirm={onDelete}
+          onCancel={() => setConfirmingDelete(false)}
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { BowlIllustration } from "../illustrations";
 import { BackIcon, PencilIcon, TrashIcon } from "../icons";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
 
 type RecipeIngredient = {
   itemId: string;
@@ -28,6 +30,8 @@ type Props = {
 };
 
 export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, onDelete }: Props) {
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+
   return (
     <div className="fixed inset-0 z-30 flex items-end bg-black/50" onClick={onClose}>
       <div
@@ -99,9 +103,7 @@ export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, on
 
         <div className="flex gap-2 pt-2">
           <button
-            onClick={() => {
-              if (confirm(`Excluir "${recipe.name}"?`)) onDelete();
-            }}
+            onClick={() => setConfirmingDelete(true)}
             className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-rust-600 py-2.5 text-sm font-medium text-rust-600"
           >
             <TrashIcon className="h-4 w-4" />
@@ -116,6 +118,15 @@ export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, on
           </button>
         </div>
       </div>
+
+      {confirmingDelete && (
+        <ConfirmDialog
+          title={`Excluir "${recipe.name}"?`}
+          description="A receita será removida permanentemente."
+          onConfirm={onDelete}
+          onCancel={() => setConfirmingDelete(false)}
+        />
+      )}
     </div>
   );
 }
