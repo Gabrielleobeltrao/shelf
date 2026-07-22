@@ -157,7 +157,7 @@ export function Recipes() {
             initial: { ingredients: [], imageUrl: "", steps: [] },
           })
         }
-        className="w-full rounded-lg bg-emerald-600 py-2.5 font-medium text-white"
+        className="w-full rounded-lg bg-primary-600 py-2.5 font-medium text-white"
       >
         Adicionar receita
       </button>
@@ -169,14 +169,14 @@ export function Recipes() {
             placeholder="Buscar por nome ou ingrediente"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 py-2 pl-3 pr-10 text-base dark:border-gray-700 dark:bg-gray-900"
+            className="w-full rounded-lg border border-stone-300 py-2 pl-3 pr-10 text-base dark:border-stone-700 dark:bg-stone-900"
           />
           {categories.length > 0 && (
             <button
               type="button"
               onClick={() => setFiltersOpen(true)}
               aria-label="Abrir filtros"
-              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-gray-500 dark:text-gray-400"
+              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-stone-500 dark:text-stone-400"
             >
               <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5">
                 <path
@@ -188,7 +188,7 @@ export function Recipes() {
                 />
               </svg>
               {categoryFilter && (
-                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-emerald-600" />
+                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary-600" />
               )}
             </button>
           )}
@@ -202,13 +202,13 @@ export function Recipes() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full space-y-3 rounded-t-2xl bg-white p-4 dark:bg-gray-950"
+            className="w-full space-y-3 rounded-t-2xl bg-white p-4 dark:bg-stone-950"
           >
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold">Filtros</h2>
               <button
                 onClick={() => setFiltersOpen(false)}
-                className="text-sm text-gray-500 dark:text-gray-400"
+                className="text-sm text-stone-500 dark:text-stone-400"
               >
                 Fechar
               </button>
@@ -219,7 +219,7 @@ export function Recipes() {
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+                className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
               >
                 <option value="">Todos os tipos</option>
                 {categories.map((category) => (
@@ -234,7 +234,7 @@ export function Recipes() {
               <button
                 type="button"
                 onClick={() => setCategoryFilter("")}
-                className="text-sm font-medium text-emerald-600"
+                className="text-sm font-medium text-primary-600"
               >
                 Limpar filtro
               </button>
@@ -244,11 +244,11 @@ export function Recipes() {
       )}
 
       {loading ? (
-        <p className="text-sm text-gray-500">Carregando...</p>
+        <p className="text-sm text-stone-500">Carregando...</p>
       ) : recipes.length === 0 ? (
-        <p className="text-sm text-gray-500">Nenhuma receita cadastrada ainda.</p>
+        <p className="text-sm text-stone-500">Nenhuma receita cadastrada ainda.</p>
       ) : filteredRecipes.length === 0 ? (
-        <p className="text-sm text-gray-500">Nenhuma receita encontrada.</p>
+        <p className="text-sm text-stone-500">Nenhuma receita encontrada.</p>
       ) : (
         <ul className="space-y-3">
           {filteredRecipes.map((recipe) => {
@@ -260,7 +260,7 @@ export function Recipes() {
               <li
                 key={recipe._id}
                 onClick={() => setViewingRecipeId(recipe._id)}
-                className="cursor-pointer overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800"
+                className="cursor-pointer overflow-hidden rounded-lg border border-stone-200 dark:border-stone-800"
               >
                 {recipe.imageUrl && (
                   <img src={recipe.imageUrl} alt="" className="h-40 w-full object-cover" />
@@ -271,7 +271,7 @@ export function Recipes() {
                     <h2 className="font-medium">{recipe.name}</h2>
                     {recipe.ingredients.length > 0 &&
                       (missing.length === 0 ? (
-                        <span className="shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
+                        <span className="shrink-0 rounded-full bg-primary-100 px-2 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
                           Dá pra fazer
                         </span>
                       ) : (
@@ -282,7 +282,7 @@ export function Recipes() {
                   </div>
 
                   {(recipe.category || recipe.prepTime || recipe.servings) && (
-                    <div className="flex flex-wrap gap-x-3 text-xs text-gray-500">
+                    <div className="flex flex-wrap gap-x-3 text-xs text-stone-500">
                       {recipe.category && <span>{recipe.category}</span>}
                       {recipe.prepTime != null && <span>{recipe.prepTime} min</span>}
                       {recipe.servings != null && <span>{recipe.servings} porções</span>}
@@ -297,7 +297,7 @@ export function Recipes() {
                           className={
                             missingIds.has(row.itemId)
                               ? "text-red-600 dark:text-red-400"
-                              : "text-gray-500"
+                              : "text-stone-500"
                           }
                         >
                           {row.quantity} {row.unit} de {row.name || "Item removido"}

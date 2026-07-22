@@ -29,11 +29,11 @@ export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, on
     <div className="fixed inset-0 z-30 flex items-end bg-black/50" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-white p-4 dark:bg-gray-950"
+        className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-white p-4 dark:bg-stone-950"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Detalhes da receita</h2>
-          <button onClick={onClose} className="text-sm text-gray-500 dark:text-gray-400">
+          <button onClick={onClose} className="text-sm text-stone-500 dark:text-stone-400">
             Fechar
           </button>
         </div>
@@ -41,7 +41,7 @@ export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, on
         {recipe.imageUrl ? (
           <img src={recipe.imageUrl} alt="" className="h-48 w-full rounded-lg object-cover" />
         ) : (
-          <div className="flex h-48 w-full items-center justify-center rounded-lg bg-gray-100 text-xs text-gray-400 dark:bg-gray-800">
+          <div className="flex h-48 w-full items-center justify-center rounded-lg bg-stone-100 text-xs text-stone-400 dark:bg-stone-800">
             Sem foto
           </div>
         )}
@@ -50,7 +50,7 @@ export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, on
           <p className="text-xl font-semibold">{recipe.name}</p>
           {recipe.ingredients.length > 0 &&
             (missingIds.size === 0 ? (
-              <span className="shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
+              <span className="shrink-0 rounded-full bg-primary-100 px-2 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
                 Dá pra fazer
               </span>
             ) : (
@@ -61,7 +61,7 @@ export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, on
         </div>
 
         {(recipe.category || recipe.prepTime != null || recipe.servings != null) && (
-          <div className="flex flex-wrap gap-x-3 text-sm text-gray-500">
+          <div className="flex flex-wrap gap-x-3 text-sm text-stone-500">
             {recipe.category && <span>{recipe.category}</span>}
             {recipe.prepTime != null && <span>{recipe.prepTime} min</span>}
             {recipe.servings != null && <span>{recipe.servings} porções</span>}
@@ -76,7 +76,7 @@ export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, on
                 <li
                   key={`${row.itemId}-${index}`}
                   className={
-                    missingIds.has(row.itemId) ? "text-red-600 dark:text-red-400" : "text-gray-500"
+                    missingIds.has(row.itemId) ? "text-red-600 dark:text-red-400" : "text-stone-500"
                   }
                 >
                   {row.quantity} {row.unit} de {row.name || "Item removido"}
@@ -108,7 +108,7 @@ export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, on
           </button>
           <button
             onClick={onEdit}
-            className="flex-1 rounded-lg bg-emerald-600 py-2.5 text-sm font-medium text-white"
+            className="flex-1 rounded-lg bg-primary-600 py-2.5 text-sm font-medium text-white"
           >
             Editar
           </button>

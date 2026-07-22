@@ -191,14 +191,14 @@ export function RecipeDetailModal({
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-white p-4 dark:bg-gray-950"
+        className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-white p-4 dark:bg-stone-950"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{title}</h2>
           <button
             type="button"
             onClick={onClose}
-            className="text-sm text-gray-500 dark:text-gray-400"
+            className="text-sm text-stone-500 dark:text-stone-400"
           >
             Fechar
           </button>
@@ -207,7 +207,7 @@ export function RecipeDetailModal({
         {imageUrl ? (
           <img src={imageUrl} alt="" className="h-32 w-full rounded-lg object-cover" />
         ) : (
-          <div className="flex h-32 w-full items-center justify-center rounded-lg bg-gray-100 text-xs text-gray-400 dark:bg-gray-800">
+          <div className="flex h-32 w-full items-center justify-center rounded-lg bg-stone-100 text-xs text-stone-400 dark:bg-stone-800">
             Sem foto
           </div>
         )}
@@ -217,7 +217,7 @@ export function RecipeDetailModal({
           placeholder="URL da foto do prato"
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
         />
 
         <input
@@ -226,7 +226,7 @@ export function RecipeDetailModal({
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
         />
 
         <input
@@ -235,7 +235,7 @@ export function RecipeDetailModal({
           placeholder="Tipo (ex: Almoço, Sobremesa)"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
         />
         <datalist id="recipe-category-suggestions">
           {CATEGORY_SUGGESTIONS.map((c) => (
@@ -250,7 +250,7 @@ export function RecipeDetailModal({
             placeholder="Tempo (min)"
             value={prepTime}
             onChange={(e) => setPrepTime(e.target.value)}
-            className="w-1/2 rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+            className="w-1/2 rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
           />
           <input
             type="number"
@@ -258,7 +258,7 @@ export function RecipeDetailModal({
             placeholder="Porções"
             value={servings}
             onChange={(e) => setServings(e.target.value)}
-            className="w-1/2 rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+            className="w-1/2 rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
           />
         </div>
 
@@ -277,7 +277,7 @@ export function RecipeDetailModal({
                     unit: item?.unit ?? row.unit,
                   });
                 }}
-                className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+                className="min-w-0 flex-1 rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
               >
                 {availableItemsFor(index).map((item) => (
                   <option key={item._id} value={item._id}>
@@ -292,12 +292,12 @@ export function RecipeDetailModal({
                 placeholder="Qtd."
                 value={row.quantity}
                 onChange={(e) => updateIngredient(index, { quantity: e.target.value })}
-                className="w-16 rounded-lg border border-gray-300 px-2 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+                className="w-16 rounded-lg border border-stone-300 px-2 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
               />
               <select
                 value={row.unit}
                 onChange={(e) => updateIngredient(index, { unit: e.target.value })}
-                className="w-24 shrink-0 rounded-lg border border-gray-300 px-2 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+                className="w-24 shrink-0 rounded-lg border border-stone-300 px-2 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
               >
                 {[...new Set([row.unit, ...UNIT_SUGGESTIONS])].filter(Boolean).map((u) => (
                   <option key={u} value={u}>
@@ -321,7 +321,7 @@ export function RecipeDetailModal({
               <button
                 type="button"
                 onClick={addIngredient}
-                className="text-sm font-medium text-emerald-600"
+                className="text-sm font-medium text-primary-600"
               >
                 + Do estoque
               </button>
@@ -330,7 +330,7 @@ export function RecipeDetailModal({
               type="button"
               onClick={() => setProductSearchOpen(true)}
               disabled={creatingItem}
-              className="text-sm font-medium text-emerald-600 disabled:opacity-60"
+              className="text-sm font-medium text-primary-600 disabled:opacity-60"
             >
               {creatingItem ? "Adicionando..." : "+ Buscar produto"}
             </button>
@@ -342,13 +342,13 @@ export function RecipeDetailModal({
 
           {steps.map((step, index) => (
             <div key={index} className="flex items-center gap-2">
-              <span className="w-5 shrink-0 text-sm text-gray-500">{index + 1}.</span>
+              <span className="w-5 shrink-0 text-sm text-stone-500">{index + 1}.</span>
               <input
                 type="text"
                 placeholder={`Passo ${index + 1}`}
                 value={step}
                 onChange={(e) => updateStep(index, e.target.value)}
-                className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+                className="min-w-0 flex-1 rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
               />
               <button
                 type="button"
@@ -364,7 +364,7 @@ export function RecipeDetailModal({
           <button
             type="button"
             onClick={addStep}
-            className="text-sm font-medium text-emerald-600"
+            className="text-sm font-medium text-primary-600"
           >
             + Adicionar passo
           </button>
@@ -384,7 +384,7 @@ export function RecipeDetailModal({
           <button
             type="submit"
             disabled={saving}
-            className="flex-1 rounded-lg bg-emerald-600 py-2.5 font-medium text-white disabled:opacity-60"
+            className="flex-1 rounded-lg bg-primary-600 py-2.5 font-medium text-white disabled:opacity-60"
           >
             {saving ? "Salvando..." : "Salvar"}
           </button>

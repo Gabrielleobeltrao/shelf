@@ -68,12 +68,12 @@ export function ShoppingCartModal({ open, onClose }: Props) {
     <div className="fixed inset-0 z-40 flex justify-end">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-      <aside className="relative flex h-full w-80 max-w-[85vw] flex-col bg-white p-4 dark:bg-gray-950">
+      <aside className="relative flex h-full w-80 max-w-[85vw] flex-col bg-white p-4 dark:bg-stone-950">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Lista de compras</h2>
           <button
             onClick={onClose}
-            className="text-sm text-gray-500 dark:text-gray-400"
+            className="text-sm text-stone-500 dark:text-stone-400"
           >
             Fechar
           </button>
@@ -81,17 +81,17 @@ export function ShoppingCartModal({ open, onClose }: Props) {
 
         <div className="mt-4 flex-1 overflow-y-auto">
           {loading ? (
-            <p className="text-sm text-gray-500">Carregando...</p>
+            <p className="text-sm text-stone-500">Carregando...</p>
           ) : entries.length === 0 ? (
-            <p className="text-sm text-gray-500">Sua lista de compras está vazia.</p>
+            <p className="text-sm text-stone-500">Sua lista de compras está vazia.</p>
           ) : (
-            <ul className="divide-y divide-gray-200 dark:divide-gray-800">
+            <ul className="divide-y divide-stone-200 dark:divide-stone-800">
               {entries.map((entry) => (
                 <li key={entry._id} className="space-y-2 py-3">
                   <div className="min-w-0">
                     <p className="truncate">{entry.name}</p>
                     {entry.brand && (
-                      <p className="truncate text-xs text-gray-500">{entry.brand}</p>
+                      <p className="truncate text-xs text-stone-500">{entry.brand}</p>
                     )}
                   </div>
 
@@ -101,17 +101,17 @@ export function ShoppingCartModal({ open, onClose }: Props) {
                         onClick={() => adjustBuyQuantity(entry._id, -1)}
                         disabled={(buyQuantities[entry._id] ?? 0) <= 0}
                         aria-label={`Diminuir quantidade de ${entry.name}`}
-                        className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none disabled:opacity-40 dark:border-gray-700"
+                        className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-base leading-none disabled:opacity-40 dark:border-stone-700"
                       >
                         −
                       </button>
-                      <span className="min-w-14 whitespace-nowrap text-center text-sm text-gray-500">
+                      <span className="min-w-14 whitespace-nowrap text-center text-sm text-stone-500">
                         {buyQuantities[entry._id] ?? 0} {entry.unit}
                       </span>
                       <button
                         onClick={() => adjustBuyQuantity(entry._id, 1)}
                         aria-label={`Aumentar quantidade de ${entry.name}`}
-                        className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none dark:border-gray-700"
+                        className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-base leading-none dark:border-stone-700"
                       >
                         +
                       </button>
@@ -119,7 +119,7 @@ export function ShoppingCartModal({ open, onClose }: Props) {
 
                     <button
                       onClick={() => handleBought(entry)}
-                      className="shrink-0 rounded-lg border border-emerald-600 px-3 py-1.5 text-sm font-medium text-emerald-600"
+                      className="shrink-0 rounded-lg border border-primary-600 px-3 py-1.5 text-sm font-medium text-primary-600"
                     >
                       Comprado
                     </button>

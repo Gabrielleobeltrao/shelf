@@ -48,7 +48,7 @@ export function Login() {
     <div className="flex min-h-svh items-center justify-center px-4">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-4 rounded-xl border border-gray-200 p-6 dark:border-gray-800"
+        className="w-full max-w-sm space-y-4 rounded-xl border border-stone-200 p-6 dark:border-stone-800"
       >
         <h1 className="text-xl font-semibold">
           {mode === "signin" ? "Entrar" : "Criar conta"}
@@ -63,7 +63,7 @@ export function Login() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
           />
         )}
 
@@ -75,7 +75,7 @@ export function Login() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
         />
 
         <input
@@ -87,16 +87,16 @@ export function Login() {
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={8}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
         />
 
         {mode === "signin" && (
-          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <label className="flex items-center gap-2 text-sm text-stone-600 dark:text-stone-400">
             <input
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              className="h-4 w-4 rounded border-gray-300 dark:border-gray-700"
+              className="h-4 w-4 rounded border-stone-300 dark:border-stone-700"
             />
             Manter conectado
           </label>
@@ -107,7 +107,7 @@ export function Login() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-emerald-600 py-2.5 font-medium text-white disabled:opacity-60"
+          className="w-full rounded-lg bg-primary-600 py-2.5 font-medium text-white disabled:opacity-60"
         >
           {loading ? "Aguarde..." : mode === "signin" ? "Entrar" : "Criar conta"}
         </button>
@@ -115,7 +115,7 @@ export function Login() {
         <button
           type="button"
           onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-          className="w-full text-center text-sm text-gray-500 dark:text-gray-400"
+          className="w-full text-center text-sm text-stone-500 dark:text-stone-400"
         >
           {mode === "signin"
             ? "Não tem conta? Criar agora"

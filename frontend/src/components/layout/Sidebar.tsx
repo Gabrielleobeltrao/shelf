@@ -22,19 +22,19 @@ export function Sidebar({ open, onClose }: Props) {
     <div className="fixed inset-0 z-40 flex">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-      <aside className="relative flex h-full w-64 max-w-[80vw] flex-col bg-white p-4 dark:bg-gray-950">
+      <aside className="relative flex h-full w-64 max-w-[80vw] flex-col bg-white p-4 dark:bg-stone-950">
         <div className="flex items-center justify-between">
           <span className="text-lg font-semibold">Shelf</span>
           <button
             onClick={onClose}
-            className="text-sm text-gray-500 dark:text-gray-400"
+            className="text-sm text-stone-500 dark:text-stone-400"
           >
             Fechar
           </button>
         </div>
 
         {session && (
-          <p className="mt-4 truncate text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-4 truncate text-sm text-stone-500 dark:text-stone-400">
             {session.user.email}
           </p>
         )}
@@ -49,8 +49,8 @@ export function Sidebar({ open, onClose }: Props) {
               className={({ isActive }) =>
                 `rounded-lg px-3 py-2 text-sm font-medium ${
                   isActive
-                    ? "bg-emerald-600/10 text-emerald-600 dark:text-emerald-400"
-                    : "text-gray-700 dark:text-gray-300"
+                    ? "bg-primary-600/10 text-primary-600 dark:text-primary-400"
+                    : "text-stone-700 dark:text-stone-300"
                 }`
               }
             >

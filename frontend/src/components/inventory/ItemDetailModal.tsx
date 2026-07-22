@@ -105,14 +105,14 @@ export function ItemDetailModal({
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-white p-4 dark:bg-gray-950"
+        className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-white p-4 dark:bg-stone-950"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{title}</h2>
           <button
             type="button"
             onClick={onClose}
-            className="text-sm text-gray-500 dark:text-gray-400"
+            className="text-sm text-stone-500 dark:text-stone-400"
           >
             Fechar
           </button>
@@ -121,7 +121,7 @@ export function ItemDetailModal({
         {imageUrl ? (
           <img src={imageUrl} alt="" className="h-32 w-32 rounded-lg object-cover" />
         ) : (
-          <div className="flex h-32 w-32 items-center justify-center rounded-lg bg-gray-100 text-xs text-gray-400 dark:bg-gray-800">
+          <div className="flex h-32 w-32 items-center justify-center rounded-lg bg-stone-100 text-xs text-stone-400 dark:bg-stone-800">
             Sem foto
           </div>
         )}
@@ -131,7 +131,7 @@ export function ItemDetailModal({
           placeholder="URL da imagem"
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
         />
 
         <input
@@ -140,7 +140,7 @@ export function ItemDetailModal({
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
         />
 
         <input
@@ -148,7 +148,7 @@ export function ItemDetailModal({
           placeholder="Marca"
           value={brand}
           onChange={(e) => setBrand(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
         />
 
         <input
@@ -157,7 +157,7 @@ export function ItemDetailModal({
           placeholder="Categoria"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
         />
         <datalist id="category-suggestions">
           {CATEGORY_SUGGESTIONS.map((c) => (
@@ -170,7 +170,7 @@ export function ItemDetailModal({
           placeholder="Tamanho da embalagem (ex: 500g, 1L)"
           value={packageSize}
           onChange={(e) => setPackageSize(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
         />
 
         <div className="flex gap-2">
@@ -180,14 +180,14 @@ export function ItemDetailModal({
             placeholder="Qtd."
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
-            className="w-1/2 rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+            className="w-1/2 rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
           />
           <input
             type="text"
             placeholder="Unidade"
             value={unit}
             onChange={(e) => setUnit(e.target.value)}
-            className="w-1/2 rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+            className="w-1/2 rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
           />
         </div>
 
@@ -196,24 +196,24 @@ export function ItemDetailModal({
           placeholder="Código de barras"
           value={barcode}
           onChange={(e) => setBarcode(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
         />
 
         {visibleFields.expirationDate && (
           <div>
-            <label className="mb-1 block text-sm text-gray-500">Validade</label>
+            <label className="mb-1 block text-sm text-stone-500">Validade</label>
             <input
               type="date"
               value={expirationDate}
               onChange={(e) => setExpirationDate(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
             />
           </div>
         )}
 
         {visibleFields.nutritionFields.length > 0 && (
           <div className="space-y-2">
-            <p className="text-sm text-gray-500">Informações nutricionais</p>
+            <p className="text-sm text-stone-500">Informações nutricionais</p>
             <div className="grid grid-cols-2 gap-2">
               {NUTRITION_OPTIONS.filter((option) =>
                 visibleFields.nutritionFields.includes(option.key),
@@ -228,7 +228,7 @@ export function ItemDetailModal({
                   onChange={(e) =>
                     setNutrition((prev) => ({ ...prev, [option.key]: e.target.value }))
                   }
-                  className="rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+                  className="rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
                 />
               ))}
             </div>
@@ -243,7 +243,7 @@ export function ItemDetailModal({
                   type="checkbox"
                   checked={glutenFree}
                   onChange={(e) => setGlutenFree(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 dark:border-gray-700"
+                  className="h-4 w-4 rounded border-stone-300 dark:border-stone-700"
                 />
                 Sem glúten
               </label>
@@ -254,7 +254,7 @@ export function ItemDetailModal({
                   type="checkbox"
                   checked={vegan}
                   onChange={(e) => setVegan(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 dark:border-gray-700"
+                  className="h-4 w-4 rounded border-stone-300 dark:border-stone-700"
                 />
                 Vegano
               </label>
@@ -276,7 +276,7 @@ export function ItemDetailModal({
           <button
             type="submit"
             disabled={saving}
-            className="flex-1 rounded-lg bg-emerald-600 py-2.5 font-medium text-white disabled:opacity-60"
+            className="flex-1 rounded-lg bg-primary-600 py-2.5 font-medium text-white disabled:opacity-60"
           >
             {saving ? "Salvando..." : "Salvar"}
           </button>

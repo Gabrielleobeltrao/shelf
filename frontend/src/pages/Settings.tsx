@@ -123,7 +123,7 @@ export function Settings() {
       <h1 className="text-lg font-semibold">Configurações</h1>
 
       <div className="space-y-4">
-        <h2 className="text-sm font-medium text-gray-500">Preferências</h2>
+        <h2 className="text-sm font-medium text-stone-500">Preferências</h2>
         <Switch
           checked={settings.trackExpiration}
           onChange={(value) => handleToggle("trackExpiration", value)}
@@ -141,7 +141,7 @@ export function Settings() {
             <button
               type="button"
               onClick={() => setNutritionModalOpen(true)}
-              className="mt-1 text-sm font-medium text-emerald-600"
+              className="mt-1 text-sm font-medium text-primary-600"
             >
               Editar campos
             </button>
@@ -161,39 +161,39 @@ export function Settings() {
         />
       </div>
 
-      <form onSubmit={handleSaveName} className="space-y-2 border-t border-gray-200 pt-6 dark:border-gray-800">
+      <form onSubmit={handleSaveName} className="space-y-2 border-t border-stone-200 pt-6 dark:border-stone-800">
         <label className="text-sm font-medium">Nome</label>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
         />
-        {nameStatus && <p className="text-sm text-gray-500">{nameStatus}</p>}
+        {nameStatus && <p className="text-sm text-stone-500">{nameStatus}</p>}
         <button
           type="submit"
           disabled={nameSaving}
-          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+          className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
         >
           {nameSaving ? "Salvando..." : "Salvar nome"}
         </button>
       </form>
 
-      <form onSubmit={handleSaveEmail} className="space-y-2 border-t border-gray-200 pt-6 dark:border-gray-800">
+      <form onSubmit={handleSaveEmail} className="space-y-2 border-t border-stone-200 pt-6 dark:border-stone-800">
         <label className="text-sm font-medium">E-mail</label>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
         />
-        {emailStatus && <p className="text-sm text-gray-500">{emailStatus}</p>}
+        {emailStatus && <p className="text-sm text-stone-500">{emailStatus}</p>}
         <button
           type="submit"
           disabled={emailSaving}
-          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+          className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
         >
           {emailSaving ? "Salvando..." : "Salvar e-mail"}
         </button>
@@ -201,7 +201,7 @@ export function Settings() {
 
       <form
         onSubmit={handleChangePassword}
-        className="space-y-2 border-t border-gray-200 pt-6 dark:border-gray-800"
+        className="space-y-2 border-t border-stone-200 pt-6 dark:border-stone-800"
       >
         <label className="text-sm font-medium">Trocar senha</label>
         <input
@@ -211,7 +211,7 @@ export function Settings() {
           onChange={(e) => setCurrentPassword(e.target.value)}
           autoComplete="current-password"
           required
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
         />
         <input
           type="password"
@@ -221,21 +221,21 @@ export function Settings() {
           autoComplete="new-password"
           required
           minLength={8}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
         />
-        {passwordStatus && <p className="text-sm text-gray-500">{passwordStatus}</p>}
+        {passwordStatus && <p className="text-sm text-stone-500">{passwordStatus}</p>}
         <button
           type="submit"
           disabled={passwordSaving}
-          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+          className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
         >
           {passwordSaving ? "Salvando..." : "Trocar senha"}
         </button>
       </form>
 
-      <div className="space-y-2 border-t border-gray-200 pt-6 dark:border-gray-800">
+      <div className="space-y-2 border-t border-stone-200 pt-6 dark:border-stone-800">
         <label className="text-sm font-medium text-red-600">Excluir conta</label>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-stone-500">
           Remove sua conta e todo o seu estoque e receitas permanentemente.
         </p>
 
@@ -248,14 +248,14 @@ export function Settings() {
               onChange={(e) => setDeletePassword(e.target.value)}
               autoComplete="current-password"
               required
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
             />
             {deleteStatus && <p className="text-sm text-red-600">{deleteStatus}</p>}
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setConfirmingDelete(false)}
-                className="flex-1 rounded-lg border border-gray-300 py-2 text-sm font-medium dark:border-gray-700"
+                className="flex-1 rounded-lg border border-stone-300 py-2 text-sm font-medium dark:border-stone-700"
               >
                 Cancelar
               </button>

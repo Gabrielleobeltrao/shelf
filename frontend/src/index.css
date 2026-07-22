@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+@theme {
+  /* Warm terracotta accent — kitchen/pantry feel instead of a generic
+     SaaS green. Paired with Tailwind's built-in "stone" for neutrals. */
+  --color-primary-50: #fbf4f1;
+  --color-primary-100: #f5e3db;
+  --color-primary-200: #e9c5b4;
+  --color-primary-300: #dba087;
+  --color-primary-400: #c97c5c;
+  --color-primary-500: #b35f3e;
+  --color-primary-600: #9c4a2d;
+  --color-primary-700: #7d3b24;
+  --color-primary-800: #64301f;
+  --color-primary-900: #4f281a;
+  --color-primary-950: #2c140c;
+}
+
 :root {
   color-scheme: light dark;
 }

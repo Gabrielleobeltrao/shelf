@@ -269,13 +269,13 @@ export function Inventory() {
       <div className="flex gap-2">
         <button
           onClick={() => setProductSearchOpen(true)}
-          className="flex-1 rounded-lg bg-emerald-600 py-2.5 font-medium text-white"
+          className="flex-1 rounded-lg bg-primary-600 py-2.5 font-medium text-white"
         >
           Adicionar item
         </button>
         <button
           onClick={() => setScanning(true)}
-          className="flex-1 rounded-lg border border-emerald-600 py-2.5 font-medium text-emerald-600"
+          className="flex-1 rounded-lg border border-primary-600 py-2.5 font-medium text-primary-600"
         >
           Escanear
         </button>
@@ -288,14 +288,14 @@ export function Inventory() {
             placeholder="Buscar por nome ou marca"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 py-2 pl-3 pr-10 text-base dark:border-gray-700 dark:bg-gray-900"
+            className="w-full rounded-lg border border-stone-300 py-2 pl-3 pr-10 text-base dark:border-stone-700 dark:bg-stone-900"
           />
           {categories.length > 0 && (
             <button
               type="button"
               onClick={() => setFiltersOpen(true)}
               aria-label="Abrir filtros"
-              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-gray-500 dark:text-gray-400"
+              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-stone-500 dark:text-stone-400"
             >
               <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5">
                 <path
@@ -307,7 +307,7 @@ export function Inventory() {
                 />
               </svg>
               {categoryFilter && (
-                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-emerald-600" />
+                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary-600" />
               )}
             </button>
           )}
@@ -321,13 +321,13 @@ export function Inventory() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full space-y-3 rounded-t-2xl bg-white p-4 dark:bg-gray-950"
+            className="w-full space-y-3 rounded-t-2xl bg-white p-4 dark:bg-stone-950"
           >
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold">Filtros</h2>
               <button
                 onClick={() => setFiltersOpen(false)}
-                className="text-sm text-gray-500 dark:text-gray-400"
+                className="text-sm text-stone-500 dark:text-stone-400"
               >
                 Fechar
               </button>
@@ -338,7 +338,7 @@ export function Inventory() {
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900"
+                className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
               >
                 <option value="">Todas categorias</option>
                 {categories.map((category) => (
@@ -353,7 +353,7 @@ export function Inventory() {
               <button
                 type="button"
                 onClick={() => setCategoryFilter("")}
-                className="text-sm font-medium text-emerald-600"
+                className="text-sm font-medium text-primary-600"
               >
                 Limpar filtro
               </button>
@@ -363,13 +363,13 @@ export function Inventory() {
       )}
 
       {loading ? (
-        <p className="text-sm text-gray-500">Carregando...</p>
+        <p className="text-sm text-stone-500">Carregando...</p>
       ) : items.length === 0 ? (
-        <p className="text-sm text-gray-500">Nenhum item no estoque ainda.</p>
+        <p className="text-sm text-stone-500">Nenhum item no estoque ainda.</p>
       ) : filteredItems.length === 0 ? (
-        <p className="text-sm text-gray-500">Nenhum item encontrado.</p>
+        <p className="text-sm text-stone-500">Nenhum item encontrado.</p>
       ) : (
-        <ul className="divide-y divide-gray-200 dark:divide-gray-800">
+        <ul className="divide-y divide-stone-200 dark:divide-stone-800">
           {filteredItems.map((item) => {
             const secondaryInfo = item.brand || item.packageSize || "";
             const expired = settings.trackExpiration && isExpired(item.expirationDate);
@@ -404,7 +404,7 @@ export function Inventory() {
                   )}
 
                   <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
-                    <span className="min-w-0 truncate text-xs text-gray-500">
+                    <span className="min-w-0 truncate text-xs text-stone-500">
                       {secondaryInfo}
                     </span>
 
@@ -421,7 +421,7 @@ export function Inventory() {
                               }
                             }}
                             aria-label={`Excluir ${item.name}`}
-                            className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-red-600 dark:border-gray-700"
+                            className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-red-600 dark:border-stone-700"
                           >
                             <TrashIcon className="h-4 w-4" />
                           </button>
@@ -434,7 +434,7 @@ export function Inventory() {
                               })
                             }
                             aria-label={`Editar ${item.name}`}
-                            className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-gray-600 dark:border-gray-700 dark:text-gray-300"
+                            className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-stone-600 dark:border-stone-700 dark:text-stone-300"
                           >
                             <PencilIcon className="h-4 w-4" />
                           </button>
@@ -443,8 +443,8 @@ export function Inventory() {
                             aria-label={`Adicionar ${item.name} à lista de compras`}
                             className={`flex h-7 w-7 items-center justify-center rounded-full border text-base leading-none ${
                               shoppingListMap.has(item._id)
-                                ? "border-emerald-600 text-emerald-600"
-                                : "border-gray-300 text-gray-600 dark:border-gray-700 dark:text-gray-300"
+                                ? "border-primary-600 text-primary-600"
+                                : "border-stone-300 text-stone-600 dark:border-stone-700 dark:text-stone-300"
                             }`}
                           >
                             <CartIcon className="h-4 w-4" />
@@ -453,7 +453,7 @@ export function Inventory() {
                             onClick={() => handleStep(item, 1)}
                             disabled={pendingIds.has(item._id)}
                             aria-label={`Aumentar quantidade de ${item.name}`}
-                            className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none disabled:opacity-40 dark:border-gray-700"
+                            className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-base leading-none disabled:opacity-40 dark:border-stone-700"
                           >
                             +
                           </button>
@@ -464,18 +464,18 @@ export function Inventory() {
                             onClick={() => handleStep(item, -1)}
                             disabled={pendingIds.has(item._id) || item.quantity <= 0}
                             aria-label={`Diminuir quantidade de ${item.name}`}
-                            className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none disabled:opacity-40 dark:border-gray-700"
+                            className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-base leading-none disabled:opacity-40 dark:border-stone-700"
                           >
                             −
                           </button>
-                          <span className="min-w-14 whitespace-nowrap text-center text-sm text-gray-500">
+                          <span className="min-w-14 whitespace-nowrap text-center text-sm text-stone-500">
                             {item.quantity} {item.unit}
                           </span>
                           <button
                             onClick={() => handleStep(item, 1)}
                             disabled={pendingIds.has(item._id)}
                             aria-label={`Aumentar quantidade de ${item.name}`}
-                            className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-base leading-none disabled:opacity-40 dark:border-gray-700"
+                            className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-base leading-none disabled:opacity-40 dark:border-stone-700"
                           >
                             +
                           </button>
