@@ -34,16 +34,16 @@ export function NutritionFieldsModal({ selected, onClose, onSave }: Props) {
     <div className="fixed inset-0 z-30 flex items-end bg-black/50" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className="max-h-[80vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-white p-4 dark:bg-stone-950"
+        className="max-h-[80vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-surface p-4"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Informações nutricionais</h2>
-          <button onClick={onClose} aria-label="Fechar" className="text-stone-500 dark:text-stone-400">
+          <button onClick={onClose} aria-label="Fechar" className="text-muted">
             <CloseIcon className="h-4 w-4" />
           </button>
         </div>
 
-        <p className="text-sm text-stone-500">
+        <p className="text-sm text-muted">
           Escolha quais campos vão aparecer nos itens do estoque.
         </p>
 
@@ -57,7 +57,7 @@ export function NutritionFieldsModal({ selected, onClose, onSave }: Props) {
                 type="checkbox"
                 checked={checked.has(option.key)}
                 onChange={() => toggle(option.key)}
-                className="h-4 w-4 rounded border-stone-300 dark:border-stone-700"
+                className="h-4 w-4 rounded border-line"
               />
               {option.label} ({option.unit})
             </label>

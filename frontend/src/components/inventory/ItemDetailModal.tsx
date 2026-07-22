@@ -51,11 +51,11 @@ const CATEGORY_SUGGESTIONS = [
 ];
 
 function FieldLabel({ children }: { children: string }) {
-  return <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-stone-500">{children}</label>;
+  return <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted">{children}</label>;
 }
 
 const inputClass =
-  "w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900";
+  "w-full rounded-lg bg-surface-2 px-3 py-2 text-base";
 
 export function ItemDetailModal({
   title,
@@ -114,21 +114,21 @@ export function ItemDetailModal({
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-white p-4 dark:bg-stone-950"
+        className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-surface p-4"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{title}</h2>
-          <button type="button" onClick={onClose} aria-label="Fechar" className="text-stone-500 dark:text-stone-400">
+          <button type="button" onClick={onClose} aria-label="Fechar" className="text-muted">
             <CloseIcon className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-stone-300 p-3 dark:border-stone-700">
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-line p-3">
           {imageUrl ? (
             <img src={imageUrl} alt="" className="h-28 w-28 rounded-lg object-cover" />
           ) : (
-            <div className="flex h-28 w-28 items-center justify-center rounded-lg bg-stone-100 dark:bg-stone-800">
-              <svg viewBox="0 0 32 32" fill="none" className="h-8 w-8 text-stone-400">
+            <div className="flex h-28 w-28 items-center justify-center rounded-lg bg-surface-2">
+              <svg viewBox="0 0 32 32" fill="none" className="h-8 w-8 text-muted">
                 <rect x="4" y="10" width="24" height="16" rx="3" stroke="currentColor" strokeWidth="1.6" />
                 <circle cx="16" cy="18" r="5" stroke="currentColor" strokeWidth="1.6" />
                 <path d="M12 10l1.5-3h5L20 10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -140,7 +140,7 @@ export function ItemDetailModal({
             placeholder="URL da foto do produto"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
+            className="w-full rounded-lg bg-surface-2 px-3 py-2 text-sm"
           />
         </div>
 
@@ -238,7 +238,7 @@ export function ItemDetailModal({
                   onChange={(e) =>
                     setNutrition((prev) => ({ ...prev, [option.key]: e.target.value }))
                   }
-                  className="rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
+                  className="rounded-lg bg-surface-2 px-3 py-2 text-base"
                 />
               ))}
             </div>
@@ -246,7 +246,7 @@ export function ItemDetailModal({
         )}
 
         {(visibleFields.glutenFree || visibleFields.vegan) && (
-          <div className="space-y-3 border-t border-stone-200 pt-3 dark:border-stone-800">
+          <div className="space-y-3 border-t border-line pt-3">
             {visibleFields.glutenFree && (
               <Switch checked={glutenFree} onChange={setGlutenFree} label="Sem glúten" />
             )}

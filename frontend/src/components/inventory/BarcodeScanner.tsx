@@ -84,9 +84,19 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
     <div className="fixed inset-0 z-20 flex flex-col bg-black">
       <video ref={videoRef} className="flex-1 object-cover" muted playsInline />
 
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-linear-to-b from-black/70 to-transparent" />
+      <p className="pointer-events-none absolute inset-x-0 top-5 text-center font-display text-base font-semibold text-white">
+        Escanear código de barras
+      </p>
+
       {!error && (
         <div className="pointer-events-none absolute inset-x-8 top-1/2 -translate-y-1/2">
-          <div className="aspect-2/1 rounded-lg border-4 border-white/80" />
+          <div className="relative aspect-2/1">
+            <span className="absolute left-0 top-0 h-8 w-8 rounded-tl-lg border-l-4 border-t-4 border-primary-400" />
+            <span className="absolute right-0 top-0 h-8 w-8 rounded-tr-lg border-r-4 border-t-4 border-primary-400" />
+            <span className="absolute bottom-0 left-0 h-8 w-8 rounded-bl-lg border-b-4 border-l-4 border-primary-400" />
+            <span className="absolute bottom-0 right-0 h-8 w-8 rounded-br-lg border-b-4 border-r-4 border-primary-400" />
+          </div>
           <p className="mt-3 text-center text-sm text-white/90">
             Aproxime o código de barras dessa área
           </p>
@@ -99,11 +109,13 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
         </p>
       )}
 
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-black/70 to-transparent" />
+
       <div className="absolute inset-x-0 top-4 flex justify-between px-4">
         {devices.length > 1 ? (
           <button
             onClick={() => setDeviceIndex((i) => (i + 1) % devices.length)}
-            className="rounded-full bg-white/90 px-4 py-2 text-sm font-medium"
+            className="rounded-full bg-on-photo px-4 py-2 text-sm font-medium text-ink"
           >
             Trocar câmera
           </button>
@@ -111,8 +123,8 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
           <span />
         )}
 
-        <button onClick={onClose} aria-label="Fechar" className="rounded-full bg-white/90 p-2.5">
-          <CloseIcon className="h-4 w-4 text-stone-800" />
+        <button onClick={onClose} aria-label="Fechar" className="rounded-full bg-on-photo p-2.5">
+          <CloseIcon className="h-4 w-4 text-ink" />
         </button>
       </div>
     </div>

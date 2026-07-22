@@ -10,7 +10,7 @@ export function Switch({ checked, onChange, label, description }: Props) {
     <div className="flex items-center justify-between gap-4">
       <div className="min-w-0">
         <p className="text-sm font-medium">{label}</p>
-        {description && <p className="text-xs text-stone-500">{description}</p>}
+        {description && <p className="text-xs text-muted">{description}</p>}
       </div>
       <button
         type="button"
@@ -19,11 +19,11 @@ export function Switch({ checked, onChange, label, description }: Props) {
         aria-label={label}
         onClick={() => onChange(!checked)}
         className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
-          checked ? "bg-primary-600" : "bg-stone-300 dark:bg-stone-700"
+          checked ? "bg-primary-600" : "bg-line"
         }`}
       >
         <span
-          className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
+          className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-surface transition-transform ${
             checked ? "translate-x-5" : "translate-x-0"
           }`}
         />

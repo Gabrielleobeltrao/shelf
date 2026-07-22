@@ -38,8 +38,7 @@ type Props = {
   onStep: (delta: number) => void;
 };
 
-const infoIconBtn =
-  "flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-stone-700 shadow-sm dark:bg-stone-950/80 dark:text-stone-200";
+const infoIconBtn = "flex h-9 w-9 items-center justify-center rounded-full bg-on-photo text-ink shadow-sm";
 
 export function ItemViewModal({
   item,
@@ -73,13 +72,13 @@ export function ItemViewModal({
     <div className="fixed inset-0 z-30 flex items-end bg-black/50" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-white p-4 dark:bg-stone-950"
+        className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-surface p-4"
       >
         <div className="relative h-48 w-full overflow-hidden rounded-xl">
           {item.imageUrl ? (
             <img src={item.imageUrl} alt="" className="h-full w-full object-cover" />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-stone-100 dark:bg-stone-800" />
+            <div className="flex h-full w-full items-center justify-center bg-surface" />
           )}
 
           <div className="absolute inset-0 flex items-start justify-between p-3">
@@ -108,7 +107,7 @@ export function ItemViewModal({
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="text-xl font-semibold">{item.name}</p>
-            {item.brand && <p className="text-sm text-stone-500">{item.brand}</p>}
+            {item.brand && <p className="text-sm text-muted">{item.brand}</p>}
           </div>
           {statusBadge && (
             <span className="shrink-0 rounded-full bg-rust-100 px-2 py-0.5 text-xs font-medium text-rust-700 dark:bg-rust-900/40 dark:text-rust-400">
@@ -122,7 +121,7 @@ export function ItemViewModal({
             onClick={() => onStep(-1)}
             disabled={pending || item.quantity <= 0}
             aria-label="Diminuir quantidade"
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100 disabled:opacity-40 dark:bg-stone-900"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2 disabled:opacity-40"
           >
             <MinusIcon className="h-4 w-4" />
           </button>
@@ -133,7 +132,7 @@ export function ItemViewModal({
             onClick={() => onStep(1)}
             disabled={pending}
             aria-label="Aumentar quantidade"
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100 disabled:opacity-40 dark:bg-stone-900"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2 disabled:opacity-40"
           >
             <PlusIcon className="h-4 w-4" />
           </button>
@@ -157,8 +156,8 @@ export function ItemViewModal({
         {infoLines.length > 0 && (
           <div className="grid grid-cols-2 gap-2">
             {infoLines.map((line) => (
-              <div key={line.label} className="rounded-lg bg-stone-100 px-3 py-2 dark:bg-stone-900">
-                <p className="text-[0.65rem] font-medium uppercase tracking-wide text-stone-500">{line.label}</p>
+              <div key={line.label} className="rounded-lg bg-surface-2 px-3 py-2">
+                <p className="text-[0.65rem] font-medium uppercase tracking-wide text-muted">{line.label}</p>
                 <p className="truncate text-sm font-medium">{line.value}</p>
               </div>
             ))}
@@ -167,13 +166,13 @@ export function ItemViewModal({
 
         {nutritionEntries.length > 0 && (
           <div>
-            <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-stone-500">
+            <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
               Informações nutricionais
             </p>
             <div className="grid grid-cols-2 gap-2">
               {nutritionEntries.map(({ option, value }) => (
-                <div key={option!.key} className="rounded-lg bg-stone-100 px-3 py-2 dark:bg-stone-900">
-                  <p className="text-[0.65rem] font-medium uppercase tracking-wide text-stone-500">{option!.label}</p>
+                <div key={option!.key} className="rounded-lg bg-surface-2 px-3 py-2">
+                  <p className="text-[0.65rem] font-medium uppercase tracking-wide text-muted">{option!.label}</p>
                   <p className="text-sm font-semibold tabular-nums">
                     {value} {option!.unit}
                   </p>

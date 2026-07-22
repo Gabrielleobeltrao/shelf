@@ -38,10 +38,10 @@ export function Dashboard() {
       <h1 className="text-lg font-semibold">Dashboard</h1>
 
       <div>
-        <h2 className="mb-2 text-sm font-medium text-stone-500">Vencendo em breve</h2>
+        <h2 className="mb-2 text-sm font-medium text-muted">Vencendo em breve</h2>
 
         {!trackExpiration ? (
-          <p className="text-sm text-stone-500">
+          <p className="text-sm text-muted">
             Ative o controle de validade em{" "}
             <Link to="/configuracoes" className="text-primary-600 underline">
               Configurações
@@ -49,11 +49,11 @@ export function Dashboard() {
             pra acompanhar aqui.
           </p>
         ) : loading ? (
-          <p className="text-sm text-stone-500">Carregando...</p>
+          <p className="text-sm text-muted">Carregando...</p>
         ) : expiringSoon.length === 0 ? (
-          <p className="text-sm text-stone-500">Nenhum produto vencendo em breve.</p>
+          <p className="text-sm text-muted">Nenhum produto vencendo em breve.</p>
         ) : (
-          <ul className="divide-y divide-stone-200 dark:divide-stone-800">
+          <ul className="divide-y divide-line">
             {expiringSoon.map((item) => (
               <li key={item._id} className="flex items-center gap-3 py-2">
                 {item.imageUrl ? (
@@ -63,11 +63,11 @@ export function Dashboard() {
                     className="h-10 w-10 shrink-0 rounded-lg object-cover"
                   />
                 ) : (
-                  <div className="h-10 w-10 shrink-0 rounded-lg bg-stone-100 dark:bg-stone-800" />
+                  <div className="h-10 w-10 shrink-0 rounded-lg bg-surface" />
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="truncate">{item.name}</p>
-                  {item.brand && <p className="truncate text-xs text-stone-500">{item.brand}</p>}
+                  {item.brand && <p className="truncate text-xs text-muted">{item.brand}</p>}
                 </div>
                 <span className="shrink-0 rounded-full bg-rust-100 px-2 py-0.5 text-xs font-medium text-rust-700 dark:bg-rust-900/40 dark:text-rust-400">
                   {getExpirationWarning(item.expirationDate)}

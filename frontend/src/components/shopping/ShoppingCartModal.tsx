@@ -72,17 +72,17 @@ export function ShoppingCartModal({ open, onClose }: Props) {
     <div className="fixed inset-0 z-40 flex justify-end">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-      <aside className="relative flex h-full w-80 max-w-[85vw] flex-col bg-white p-4 dark:bg-stone-950">
+      <aside className="relative flex h-full w-80 max-w-[85vw] flex-col bg-surface p-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Lista de compras</h2>
-          <button onClick={onClose} aria-label="Fechar" className="text-stone-500 dark:text-stone-400">
+          <button onClick={onClose} aria-label="Fechar" className="text-muted">
             <CloseIcon className="h-4 w-4" />
           </button>
         </div>
 
         <div className="mt-4 flex-1 overflow-y-auto">
           {loading ? (
-            <p className="text-sm text-stone-500">Carregando...</p>
+            <p className="text-sm text-muted">Carregando...</p>
           ) : entries.length === 0 ? (
             <EmptyState
               illustration={<EmptyShelfIllustration />}
@@ -92,17 +92,17 @@ export function ShoppingCartModal({ open, onClose }: Props) {
           ) : (
             <ul className="space-y-2">
               {entries.map((entry) => (
-                <li key={entry._id} className="space-y-2 rounded-xl bg-stone-100 p-3 dark:bg-stone-900">
+                <li key={entry._id} className="space-y-2 rounded-xl bg-surface-2 p-3">
                   <div className="flex items-center gap-3">
                     {entry.imageUrl ? (
                       <img src={entry.imageUrl} alt="" className="h-11 w-11 shrink-0 rounded-lg object-cover" />
                     ) : (
-                      <div className="h-11 w-11 shrink-0 rounded-lg bg-stone-200 dark:bg-stone-800" />
+                      <div className="h-11 w-11 shrink-0 rounded-lg bg-surface" />
                     )}
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium">{entry.name}</p>
                       {entry.brand && (
-                        <p className="truncate text-xs text-stone-500">{entry.brand}</p>
+                        <p className="truncate text-xs text-muted">{entry.brand}</p>
                       )}
                     </div>
                   </div>
@@ -113,17 +113,17 @@ export function ShoppingCartModal({ open, onClose }: Props) {
                         onClick={() => adjustBuyQuantity(entry._id, -1)}
                         disabled={(buyQuantities[entry._id] ?? 0) <= 0}
                         aria-label={`Diminuir quantidade de ${entry.name}`}
-                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-stone-300 disabled:opacity-40 dark:border-stone-700"
+                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-line bg-surface disabled:opacity-40"
                       >
                         <MinusIcon className="h-3 w-3" />
                       </button>
-                      <span className="min-w-14 whitespace-nowrap text-center text-sm text-stone-500">
+                      <span className="min-w-14 whitespace-nowrap text-center text-sm text-muted">
                         {buyQuantities[entry._id] ?? 0} {entry.unit}
                       </span>
                       <button
                         onClick={() => adjustBuyQuantity(entry._id, 1)}
                         aria-label={`Aumentar quantidade de ${entry.name}`}
-                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-stone-300 dark:border-stone-700"
+                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-line bg-surface"
                       >
                         <PlusIcon className="h-3 w-3" />
                       </button>

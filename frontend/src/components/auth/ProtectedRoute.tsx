@@ -7,7 +7,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
 
   if (isPending) {
     return (
-      <div className="flex min-h-svh items-center justify-center text-sm text-stone-500">
+      <div className="flex min-h-svh items-center justify-center text-sm text-muted">
         Carregando...
       </div>
     );

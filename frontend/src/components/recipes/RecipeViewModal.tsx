@@ -1,5 +1,5 @@
 import { BowlIllustration } from "../illustrations";
-import { CloseIcon, PencilIcon, TrashIcon } from "../icons";
+import { BackIcon, PencilIcon, TrashIcon } from "../icons";
 
 type RecipeIngredient = {
   itemId: string;
@@ -32,14 +32,11 @@ export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, on
     <div className="fixed inset-0 z-30 flex items-end bg-black/50" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-white p-4 dark:bg-stone-950"
+        className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-surface p-4"
       >
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Detalhes da receita</h2>
-          <button onClick={onClose} aria-label="Fechar" className="text-stone-500 dark:text-stone-400">
-            <CloseIcon className="h-4 w-4" />
-          </button>
-        </div>
+        <button onClick={onClose} aria-label="Voltar" className="text-muted">
+          <BackIcon className="h-5 w-5" />
+        </button>
 
         {recipe.imageUrl ? (
           <img src={recipe.imageUrl} alt="" className="h-48 w-full rounded-lg object-cover" />
@@ -64,7 +61,7 @@ export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, on
         </div>
 
         {(recipe.category || recipe.prepTime != null || recipe.servings != null) && (
-          <div className="flex flex-wrap gap-x-3 text-sm text-stone-500">
+          <div className="flex flex-wrap gap-x-3 text-sm text-muted">
             {recipe.category && <span>{recipe.category}</span>}
             {recipe.prepTime != null && <span>{recipe.prepTime} min</span>}
             {recipe.servings != null && <span>{recipe.servings} porções</span>}
@@ -79,7 +76,7 @@ export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, on
                 <li
                   key={`${row.itemId}-${index}`}
                   className={
-                    missingIds.has(row.itemId) ? "text-rust-600 dark:text-rust-400" : "text-stone-500"
+                    missingIds.has(row.itemId) ? "text-rust-600 dark:text-rust-400" : "text-muted"
                   }
                 >
                   {row.quantity} {row.unit} de {row.name || "Item removido"}

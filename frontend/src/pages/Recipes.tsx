@@ -166,19 +166,19 @@ export function Recipes() {
 
       {recipes.length > 0 && (
         <div className="relative">
-          <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+          <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
             type="text"
             placeholder="Buscar por nome ou ingrediente"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-stone-300 py-2 pl-9 pr-3 text-base dark:border-stone-700 dark:bg-stone-900"
+            className="w-full rounded-lg bg-surface-2 py-2 pl-9 pr-3 text-base"
           />
         </div>
       )}
 
       {categories.length > 0 && (
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <div className="-m-1 flex gap-2 overflow-x-auto p-1">
           {categories.map((category) => {
             const active = categoryFilter === category;
             return (
@@ -198,7 +198,7 @@ export function Recipes() {
       )}
 
       {loading ? (
-        <p className="text-sm text-stone-500">Carregando...</p>
+        <p className="text-sm text-muted">Carregando...</p>
       ) : recipes.length === 0 ? (
         <EmptyState
           illustration={<EmptyShelfIllustration />}
@@ -206,7 +206,7 @@ export function Recipes() {
           description="Adicione sua primeira receita pra começar a cozinhar."
         />
       ) : filteredRecipes.length === 0 ? (
-        <p className="text-sm text-stone-500">Nenhuma receita encontrada.</p>
+        <p className="text-sm text-muted">Nenhuma receita encontrada.</p>
       ) : (
         <ul className="space-y-3">
           {filteredRecipes.map((recipe) => {
@@ -218,7 +218,7 @@ export function Recipes() {
               <li
                 key={recipe._id}
                 onClick={() => setViewingRecipeId(recipe._id)}
-                className="cursor-pointer overflow-hidden rounded-lg border border-stone-200 dark:border-stone-800"
+                className="cursor-pointer overflow-hidden rounded-lg border border-line"
               >
                 {recipe.imageUrl ? (
                   <img src={recipe.imageUrl} alt="" className="h-40 w-full object-cover" />
@@ -244,7 +244,7 @@ export function Recipes() {
                   </div>
 
                   {(recipe.category || recipe.prepTime || recipe.servings) && (
-                    <div className="flex flex-wrap gap-x-3 text-xs text-stone-500">
+                    <div className="flex flex-wrap gap-x-3 text-xs text-muted">
                       {recipe.category && <span>{recipe.category}</span>}
                       {recipe.prepTime != null && <span>{recipe.prepTime} min</span>}
                       {recipe.servings != null && <span>{recipe.servings} porções</span>}
@@ -259,7 +259,7 @@ export function Recipes() {
                           className={
                             missingIds.has(row.itemId)
                               ? "text-rust-600 dark:text-rust-400"
-                              : "text-stone-500"
+                              : "text-muted"
                           }
                         >
                           {row.quantity} {row.unit} de {row.name || "Item removido"}

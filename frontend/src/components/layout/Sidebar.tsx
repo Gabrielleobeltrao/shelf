@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { signOut, useSession } from "../../lib/auth-client";
-import { CloseIcon, LogoutIcon } from "../icons";
+import { CloseIcon, LogoutIcon, ShelfLogo } from "../icons";
 
 function DashboardNavIcon({ className }: { className?: string }) {
   return (
@@ -68,10 +68,13 @@ export function Sidebar({ open, onClose }: Props) {
     <div className="fixed inset-0 z-40 flex">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-      <aside className="relative flex h-full w-64 max-w-[80vw] flex-col bg-white p-4 dark:bg-stone-950">
+      <aside className="relative flex h-full w-64 max-w-[80vw] flex-col bg-surface p-4">
         <div className="flex items-center justify-between">
-          <span className="font-display text-lg font-semibold">Shelf</span>
-          <button onClick={onClose} aria-label="Fechar menu" className="text-stone-500 dark:text-stone-400">
+          <div className="flex items-center gap-2">
+            <ShelfLogo className="h-6 w-6" />
+            <span className="font-display text-lg font-semibold">Shelf</span>
+          </div>
+          <button onClick={onClose} aria-label="Fechar menu" className="text-muted">
             <CloseIcon className="h-4 w-4" />
           </button>
         </div>
@@ -81,7 +84,7 @@ export function Sidebar({ open, onClose }: Props) {
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-100 font-display font-semibold text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
               {initial}
             </span>
-            <p className="truncate text-sm text-stone-500 dark:text-stone-400">{session.user.email}</p>
+            <p className="truncate text-sm text-muted">{session.user.email}</p>
           </div>
         )}
 
@@ -96,13 +99,13 @@ export function Sidebar({ open, onClose }: Props) {
                 `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium ${
                   isActive
                     ? "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-400"
-                    : "text-stone-700 dark:text-stone-300"
+                    : "text-ink"
                 }`
               }
             >
               {({ isActive }) => (
                 <>
-                  <Icon className={`h-4.5 w-4.5 ${isActive ? "" : "text-stone-400 dark:text-stone-500"}`} />
+                  <Icon className={`h-4.5 w-4.5 ${isActive ? "" : "text-muted"}`} />
                   {label}
                 </>
               )}

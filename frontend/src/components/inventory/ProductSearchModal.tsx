@@ -54,11 +54,11 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
     <div className="fixed inset-0 z-40 flex items-end bg-black/50" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className="flex max-h-[85vh] w-full flex-col space-y-3 rounded-t-2xl bg-white p-4 dark:bg-stone-950"
+        className="flex max-h-[85vh] w-full flex-col space-y-3 rounded-t-2xl bg-surface p-4"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{title}</h2>
-          <button onClick={onClose} aria-label="Fechar" className="text-stone-500 dark:text-stone-400">
+          <button onClick={onClose} aria-label="Fechar" className="text-muted">
             <CloseIcon className="h-4 w-4" />
           </button>
         </div>
@@ -74,23 +74,23 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
         )}
 
         <div className="relative">
-          <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+          <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
             type="text"
             placeholder="Buscar produto por nome"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             autoFocus
-            className="w-full rounded-lg border border-stone-300 py-2 pl-9 pr-3 text-base dark:border-stone-700 dark:bg-stone-900"
+            className="w-full rounded-lg bg-surface-2 py-2 pl-9 pr-3 text-base"
           />
         </div>
 
         <div className="flex-1 space-y-1 overflow-y-auto">
           {loading ? (
-            <p className="text-sm text-stone-500">Carregando...</p>
+            <p className="text-sm text-muted">Carregando...</p>
           ) : error && results.length === 0 ? (
             <div className="space-y-2">
-              <p className="text-sm text-stone-500">
+              <p className="text-sm text-muted">
                 Não foi possível buscar produtos agora
                 {onAddManually ? " — tente de novo ou adicione manualmente." : ". Tente de novo."}
               </p>
@@ -115,7 +115,7 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
                   key={`${product.barcode}-${index}`}
                   type="button"
                   onClick={() => onSelect(product)}
-                  className="flex w-full items-center gap-3 rounded-lg py-2 text-left hover:bg-stone-50 dark:hover:bg-stone-900"
+                  className="flex w-full items-center gap-3 rounded-lg py-2 text-left hover:bg-surface-2"
                 >
                   {product.imageUrl ? (
                     <img
@@ -124,12 +124,12 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
                       className="h-12 w-12 shrink-0 rounded-lg object-cover"
                     />
                   ) : (
-                    <div className="h-12 w-12 shrink-0 rounded-lg bg-stone-100 dark:bg-stone-800" />
+                    <div className="h-12 w-12 shrink-0 rounded-lg bg-surface" />
                   )}
                   <div className="min-w-0 flex-1">
                     <p className="truncate">{product.name}</p>
                     {product.brand && (
-                      <p className="truncate text-xs text-stone-500">{product.brand}</p>
+                      <p className="truncate text-xs text-muted">{product.brand}</p>
                     )}
                   </div>
                 </button>

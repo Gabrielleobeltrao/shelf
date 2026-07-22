@@ -3,7 +3,7 @@ import { api } from "../lib/api";
 import { lookupProduct } from "../lib/openFoodFacts";
 import type { ProductSearchResult } from "../lib/openFoodFacts";
 import { getExpirationWarning, isExpired } from "../lib/expiration";
-import { BarcodeIcon, CartIcon, MinusIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "../components/icons";
+import { BarcodeIcon, CartIcon, MinusIcon, PlusIcon, SearchIcon } from "../components/icons";
 import { getCategoryIcon } from "../lib/categoryIcon";
 import { EmptyState } from "../components/ui/EmptyState";
 import { EmptyShelfIllustration } from "../components/illustrations";
@@ -272,7 +272,7 @@ export function Inventory() {
         <button
           onClick={() => setScanning(true)}
           aria-label="Escanear código de barras"
-          className="flex h-9 w-9 items-center justify-center rounded-lg bg-stone-100 text-stone-600 dark:bg-stone-900 dark:text-stone-300"
+          className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-2 text-ink"
         >
           <BarcodeIcon className="h-4 w-4" />
         </button>
@@ -280,19 +280,19 @@ export function Inventory() {
 
       {items.length > 0 && (
         <div className="relative">
-          <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+          <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
             type="text"
             placeholder="Buscar por nome ou marca"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-stone-300 py-2 pl-9 pr-3 text-base dark:border-stone-700 dark:bg-stone-900"
+            className="w-full rounded-lg bg-surface-2 py-2 pl-9 pr-3 text-base"
           />
         </div>
       )}
 
       {categories.length > 0 && (
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <div className="-m-1 flex gap-2 overflow-x-auto p-1">
           {categories.map((category) => {
             const { Icon: ChipIcon, tint } = getCategoryIcon(category);
             const active = categoryFilter === category;
@@ -316,7 +316,7 @@ export function Inventory() {
       )}
 
       {loading ? (
-        <p className="text-sm text-stone-500">Carregando...</p>
+        <p className="text-sm text-muted">Carregando...</p>
       ) : items.length === 0 ? (
         <EmptyState
           illustration={<EmptyShelfIllustration />}
@@ -324,7 +324,7 @@ export function Inventory() {
           description="Escaneie um código de barras ou busque um produto pra começar."
         />
       ) : filteredItems.length === 0 ? (
-        <p className="text-sm text-stone-500">Nenhum item encontrado.</p>
+        <p className="text-sm text-muted">Nenhum item encontrado.</p>
       ) : (
         <ul className="space-y-2">
           {filteredItems.map((item) => {
@@ -341,7 +341,7 @@ export function Inventory() {
               <li
                 key={item._id}
                 onClick={() => setViewingItemId(item._id)}
-                className="flex cursor-pointer items-center gap-3 rounded-2xl bg-stone-100 p-3 dark:bg-stone-900"
+                className="flex cursor-pointer items-center gap-3 rounded-2xl bg-surface-2 p-3"
               >
                 {item.imageUrl ? (
                   <img
@@ -350,12 +350,12 @@ export function Inventory() {
                     className="h-12 w-12 shrink-0 rounded-lg object-cover"
                   />
                 ) : (
-                  <div className="h-12 w-12 shrink-0 rounded-lg bg-stone-200 dark:bg-stone-800" />
+                  <div className="h-12 w-12 shrink-0 rounded-lg bg-surface" />
                 )}
 
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">{item.name}</p>
-                  <span className="flex min-w-0 items-center gap-1 truncate text-xs text-stone-500">
+                  <span className="flex min-w-0 items-center gap-1 truncate text-xs text-muted">
                     {item.category && (
                       <CategoryIcon
                         className={`h-3.5 w-3.5 shrink-0 ${
@@ -378,36 +378,12 @@ export function Inventory() {
                     {showActions ? (
                       <>
                         <button
-                          onClick={() => {
-                            if (confirm(`Excluir "${item.name}" do estoque?`)) {
-                              handleDeleteItem(item._id);
-                            }
-                          }}
-                          aria-label={`Excluir ${item.name}`}
-                          className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-rust-600 dark:border-stone-700"
-                        >
-                          <TrashIcon className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() =>
-                            setModal({
-                              mode: "edit",
-                              itemId: item._id,
-                              initial: toFormData(item),
-                            })
-                          }
-                          aria-label={`Editar ${item.name}`}
-                          className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-stone-600 dark:border-stone-700 dark:text-stone-300"
-                        >
-                          <PencilIcon className="h-4 w-4" />
-                        </button>
-                        <button
                           onClick={() => handleToggleRestock(item)}
                           aria-label={`Adicionar ${item.name} à lista de compras`}
-                          className={`flex h-7 w-7 items-center justify-center rounded-full border text-base leading-none ${
+                          className={`flex h-7 w-16 items-center justify-center gap-1.5 rounded-full border bg-surface ${
                             shoppingListMap.has(item._id)
                               ? "border-primary-600 text-primary-600"
-                              : "border-stone-300 text-stone-600 dark:border-stone-700 dark:text-stone-300"
+                              : "border-line text-muted"
                           }`}
                         >
                           <CartIcon className="h-4 w-4" />
@@ -416,7 +392,7 @@ export function Inventory() {
                           onClick={() => handleStep(item, 1)}
                           disabled={pendingIds.has(item._id)}
                           aria-label={`Aumentar quantidade de ${item.name}`}
-                          className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 disabled:opacity-40 dark:border-stone-700"
+                          className="flex h-7 w-7 items-center justify-center rounded-full border border-line bg-surface disabled:opacity-40"
                         >
                           <PlusIcon className="h-3 w-3" />
                         </button>
@@ -427,18 +403,18 @@ export function Inventory() {
                           onClick={() => handleStep(item, -1)}
                           disabled={pendingIds.has(item._id) || item.quantity <= 0}
                           aria-label={`Diminuir quantidade de ${item.name}`}
-                          className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 disabled:opacity-40 dark:border-stone-700"
+                          className="flex h-7 w-7 items-center justify-center rounded-full border border-line bg-surface disabled:opacity-40"
                         >
                           <MinusIcon className="h-3 w-3" />
                         </button>
-                        <span className="min-w-14 whitespace-nowrap text-center text-sm text-stone-500">
+                        <span className="min-w-14 whitespace-nowrap text-center text-sm text-muted">
                           {item.quantity} {item.unit}
                         </span>
                         <button
                           onClick={() => handleStep(item, 1)}
                           disabled={pendingIds.has(item._id)}
                           aria-label={`Aumentar quantidade de ${item.name}`}
-                          className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 disabled:opacity-40 dark:border-stone-700"
+                          className="flex h-7 w-7 items-center justify-center rounded-full border border-line bg-surface disabled:opacity-40"
                         >
                           <PlusIcon className="h-3 w-3" />
                         </button>

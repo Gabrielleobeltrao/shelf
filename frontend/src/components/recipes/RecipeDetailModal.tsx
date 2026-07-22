@@ -6,11 +6,11 @@ import { CloseIcon, PlusIcon, TrashIcon } from "../icons";
 import { BowlIllustration } from "../illustrations";
 
 function FieldLabel({ children }: { children: string }) {
-  return <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-stone-500">{children}</label>;
+  return <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted">{children}</label>;
 }
 
 const inputClass =
-  "w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900";
+  "w-full rounded-lg bg-surface-2 px-3 py-2 text-base";
 
 export type IngredientRow = {
   itemId: string;
@@ -200,16 +200,16 @@ export function RecipeDetailModal({
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-white p-4 dark:bg-stone-950"
+        className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-surface p-4"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{title}</h2>
-          <button type="button" onClick={onClose} aria-label="Fechar" className="text-stone-500 dark:text-stone-400">
+          <button type="button" onClick={onClose} aria-label="Fechar" className="text-muted">
             <CloseIcon className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-stone-300 p-3 dark:border-stone-700">
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-line p-3">
           {imageUrl ? (
             <img src={imageUrl} alt="" className="h-28 w-full rounded-lg object-cover" />
           ) : (
@@ -222,7 +222,7 @@ export function RecipeDetailModal({
             placeholder="URL da foto do prato"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
+            className="w-full rounded-lg bg-surface-2 px-3 py-2 text-sm"
           />
         </div>
 
@@ -292,7 +292,7 @@ export function RecipeDetailModal({
                     unit: item?.unit ?? row.unit,
                   });
                 }}
-                className="min-w-0 flex-1 rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
+                className="min-w-0 flex-1 rounded-lg bg-surface-2 px-3 py-2 text-base"
               >
                 {availableItemsFor(index).map((item) => (
                   <option key={item._id} value={item._id}>
@@ -307,12 +307,12 @@ export function RecipeDetailModal({
                 placeholder="Qtd."
                 value={row.quantity}
                 onChange={(e) => updateIngredient(index, { quantity: e.target.value })}
-                className="w-16 rounded-lg border border-stone-300 px-2 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
+                className="w-16 rounded-lg bg-surface-2 px-2 py-2 text-base"
               />
               <select
                 value={row.unit}
                 onChange={(e) => updateIngredient(index, { unit: e.target.value })}
-                className="w-24 shrink-0 rounded-lg border border-stone-300 px-2 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
+                className="w-24 shrink-0 rounded-lg bg-surface-2 px-2 py-2 text-base"
               >
                 {[...new Set([row.unit, ...UNIT_SUGGESTIONS])].filter(Boolean).map((u) => (
                   <option key={u} value={u}>
@@ -359,13 +359,13 @@ export function RecipeDetailModal({
 
           {steps.map((step, index) => (
             <div key={index} className="flex items-center gap-2">
-              <span className="w-5 shrink-0 text-sm text-stone-500">{index + 1}.</span>
+              <span className="w-5 shrink-0 text-sm text-muted">{index + 1}.</span>
               <input
                 type="text"
                 placeholder={`Passo ${index + 1}`}
                 value={step}
                 onChange={(e) => updateStep(index, e.target.value)}
-                className="min-w-0 flex-1 rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
+                className="min-w-0 flex-1 rounded-lg bg-surface-2 px-3 py-2 text-base"
               />
               <button
                 type="button"

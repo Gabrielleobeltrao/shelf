@@ -5,9 +5,9 @@ type IllustrationProps = {
 export function PantryShelfIllustration({ className }: IllustrationProps) {
   return (
     <svg viewBox="0 0 168 118" fill="none" className={className}>
-      <ellipse cx="40" cy="106" rx="26" ry="5" className="fill-stone-200 dark:fill-stone-800" />
-      <ellipse cx="84" cy="108" rx="30" ry="5.5" className="fill-stone-200 dark:fill-stone-800" />
-      <ellipse cx="130" cy="105" rx="22" ry="4.5" className="fill-stone-200 dark:fill-stone-800" />
+      <ellipse cx="40" cy="106" rx="26" ry="5" className="fill-line" />
+      <ellipse cx="84" cy="108" rx="30" ry="5.5" className="fill-line" />
+      <ellipse cx="130" cy="105" rx="22" ry="4.5" className="fill-line" />
       <rect x="10" y="98" width="148" height="8" rx="4" className="fill-primary-700 dark:fill-primary-400" />
       <rect
         x="20"
@@ -49,7 +49,7 @@ export function PantryShelfIllustration({ className }: IllustrationProps) {
         width="34"
         height="44"
         rx="8"
-        className="fill-stone-100 dark:fill-stone-900 stroke-stone-400 dark:stroke-stone-600"
+        className="stroke-muted"
         strokeWidth="2"
         strokeDasharray="4 4"
       />
@@ -59,7 +59,7 @@ export function PantryShelfIllustration({ className }: IllustrationProps) {
         width="20"
         height="12"
         rx="3"
-        className="fill-stone-100 dark:fill-stone-900 stroke-stone-400 dark:stroke-stone-600"
+        className="stroke-muted"
         strokeWidth="2"
         strokeDasharray="4 4"
       />
@@ -71,7 +71,7 @@ export function EmptyShelfIllustration({ className }: IllustrationProps) {
   return (
     <svg viewBox="0 0 150 118" fill="none" className={className}>
       <rect x="8" y="86" width="134" height="8" rx="4" className="fill-primary-700 dark:fill-primary-400" />
-      <ellipse cx="46" cy="94" rx="24" ry="5" className="fill-stone-200 dark:fill-stone-800" />
+      <ellipse cx="46" cy="94" rx="24" ry="5" className="fill-line" />
       <rect
         x="26"
         y="42"
@@ -88,7 +88,7 @@ export function EmptyShelfIllustration({ className }: IllustrationProps) {
         width="42"
         height="38"
         rx="9"
-        className="stroke-stone-400 dark:stroke-stone-600"
+        className="stroke-muted"
         strokeWidth="2.2"
         strokeDasharray="5 5"
       />
@@ -98,12 +98,12 @@ export function EmptyShelfIllustration({ className }: IllustrationProps) {
         width="26"
         height="15"
         rx="4"
-        className="stroke-stone-400 dark:stroke-stone-600"
+        className="stroke-muted"
         strokeWidth="2.2"
         strokeDasharray="5 5"
       />
-      <circle cx="103" cy="68" r="10" className="fill-stone-50 dark:fill-stone-900 stroke-stone-400 dark:stroke-stone-600" strokeWidth="2" />
-      <path d="M103 63v10M98 68h10" className="stroke-stone-400 dark:stroke-stone-600" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="103" cy="68" r="10" className="fill-surface stroke-muted" strokeWidth="2" />
+      <path d="M103 63v10M98 68h10" className="stroke-muted" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -117,7 +117,7 @@ export function BowlIllustration({ className }: IllustrationProps) {
         strokeWidth="2.5"
         strokeLinecap="round"
       />
-      <ellipse cx="32" cy="46" rx="30" ry="10" className="fill-stone-50 dark:fill-stone-950" />
+      <ellipse cx="32" cy="46" rx="30" ry="10" className="fill-surface" />
       <path
         d="M4 46c0 12 12 22 28 22s28-10 28-22"
         fill="none"

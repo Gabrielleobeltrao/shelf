@@ -56,10 +56,41 @@
 
   --font-display: "Bricolage Grotesque", "Karla", system-ui, sans-serif;
   --font-sans: "Karla", system-ui, sans-serif;
+
+  /* Neutral surface tokens — the mockup's warm parchment background
+     instead of stark white/black. These reference the custom properties
+     below so bg-bg/bg-surface/etc. adapt automatically with the OS
+     color scheme, no dark: variant needed. */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-on-photo: var(--on-photo);
 }
 
 :root {
   color-scheme: light dark;
+  --bg: #eef1e8;
+  --surface: #fbfbf6;
+  --surface-2: #f1f4ea;
+  --ink: #2a2b21;
+  --muted: #6c705f;
+  --line: #dee2d3;
+  --on-photo: rgba(251, 251, 246, 0.9);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1c15;
+    --surface: #232519;
+    --surface-2: #2a2c1e;
+    --ink: #ecefe1;
+    --muted: #a3a68f;
+    --line: #363928;
+    --on-photo: rgba(35, 37, 25, 0.82);
+  }
 }
 
 body {
@@ -67,6 +98,8 @@ body {
   min-height: 100svh;
   -webkit-font-smoothing: antialiased;
   font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--ink);
 }
 
 h1, h2, h3 {

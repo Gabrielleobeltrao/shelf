@@ -124,7 +124,7 @@ export function Settings() {
       <h1 className="text-lg font-semibold">Configurações</h1>
 
       <div className="space-y-4">
-        <h2 className="text-sm font-medium text-stone-500">Preferências</h2>
+        <h2 className="text-sm font-medium text-muted">Preferências</h2>
         <Switch
           checked={settings.trackExpiration}
           onChange={(value) => handleToggle("trackExpiration", value)}
@@ -162,16 +162,16 @@ export function Settings() {
         />
       </div>
 
-      <form onSubmit={handleSaveName} className="space-y-2 border-t border-stone-200 pt-6 dark:border-stone-800">
+      <form onSubmit={handleSaveName} className="space-y-2 border-t border-line pt-6">
         <label className="text-sm font-medium">Nome</label>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
+          className="w-full rounded-lg bg-surface-2 px-3 py-2 text-base"
         />
-        {nameStatus && <p className="text-sm text-stone-500">{nameStatus}</p>}
+        {nameStatus && <p className="text-sm text-muted">{nameStatus}</p>}
         <button
           type="submit"
           disabled={nameSaving}
@@ -181,16 +181,16 @@ export function Settings() {
         </button>
       </form>
 
-      <form onSubmit={handleSaveEmail} className="space-y-2 border-t border-stone-200 pt-6 dark:border-stone-800">
+      <form onSubmit={handleSaveEmail} className="space-y-2 border-t border-line pt-6">
         <label className="text-sm font-medium">E-mail</label>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
+          className="w-full rounded-lg bg-surface-2 px-3 py-2 text-base"
         />
-        {emailStatus && <p className="text-sm text-stone-500">{emailStatus}</p>}
+        {emailStatus && <p className="text-sm text-muted">{emailStatus}</p>}
         <button
           type="submit"
           disabled={emailSaving}
@@ -202,7 +202,7 @@ export function Settings() {
 
       <form
         onSubmit={handleChangePassword}
-        className="space-y-2 border-t border-stone-200 pt-6 dark:border-stone-800"
+        className="space-y-2 border-t border-line pt-6"
       >
         <label className="text-sm font-medium">Trocar senha</label>
         <input
@@ -212,7 +212,7 @@ export function Settings() {
           onChange={(e) => setCurrentPassword(e.target.value)}
           autoComplete="current-password"
           required
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
+          className="w-full rounded-lg bg-surface-2 px-3 py-2 text-base"
         />
         <input
           type="password"
@@ -222,9 +222,9 @@ export function Settings() {
           autoComplete="new-password"
           required
           minLength={8}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
+          className="w-full rounded-lg bg-surface-2 px-3 py-2 text-base"
         />
-        {passwordStatus && <p className="text-sm text-stone-500">{passwordStatus}</p>}
+        {passwordStatus && <p className="text-sm text-muted">{passwordStatus}</p>}
         <button
           type="submit"
           disabled={passwordSaving}
@@ -234,9 +234,9 @@ export function Settings() {
         </button>
       </form>
 
-      <div className="space-y-2 border-t border-stone-200 pt-6 dark:border-stone-800">
+      <div className="space-y-2 border-t border-line pt-6">
         <label className="text-sm font-medium text-rust-600">Excluir conta</label>
-        <p className="text-sm text-stone-500">
+        <p className="text-sm text-muted">
           Remove sua conta e todo o seu estoque e receitas permanentemente.
         </p>
 
@@ -249,14 +249,14 @@ export function Settings() {
               onChange={(e) => setDeletePassword(e.target.value)}
               autoComplete="current-password"
               required
-              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
+              className="w-full rounded-lg bg-surface-2 px-3 py-2 text-base"
             />
             {deleteStatus && <p className="text-sm text-rust-600">{deleteStatus}</p>}
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setConfirmingDelete(false)}
-                className="flex-1 rounded-lg border border-stone-300 py-2 text-sm font-medium dark:border-stone-700"
+                className="flex-1 rounded-lg border border-line py-2 text-sm font-medium"
               >
                 Cancelar
               </button>
