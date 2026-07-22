@@ -334,7 +334,7 @@ export function Inventory() {
       ) : filteredItems.length === 0 ? (
         <p className="text-sm text-stone-500">Nenhum item encontrado.</p>
       ) : (
-        <ul className="divide-y divide-stone-200 dark:divide-stone-800">
+        <ul className="space-y-2">
           {filteredItems.map((item) => {
             const secondaryInfo = item.brand || item.packageSize || "";
             const expired = settings.trackExpiration && isExpired(item.expirationDate);
@@ -349,27 +349,29 @@ export function Inventory() {
               <li
                 key={item._id}
                 onClick={() => setViewingItemId(item._id)}
-                className="flex cursor-pointer flex-col gap-1 py-2"
+                className="flex cursor-pointer items-center gap-3 rounded-2xl bg-stone-100 p-3 dark:bg-stone-900"
               >
-                <div className="flex items-center justify-between gap-2">
-                  <p className="truncate">{item.name}</p>
-                  {statusBadge && (
-                    <span className="shrink-0 rounded-full bg-rust-100 px-2 py-0.5 text-xs font-medium text-rust-700 dark:bg-rust-900/40 dark:text-rust-400">
-                      {statusBadge}
-                    </span>
-                  )}
-                </div>
+                {item.imageUrl ? (
+                  <img
+                    src={item.imageUrl}
+                    alt=""
+                    className="h-14 w-14 shrink-0 rounded-lg object-cover"
+                  />
+                ) : (
+                  <div className="h-14 w-14 shrink-0 rounded-lg bg-stone-200 dark:bg-stone-800" />
+                )}
 
-                <div className="flex items-stretch gap-3">
-                  {item.imageUrl && (
-                    <img
-                      src={item.imageUrl}
-                      alt=""
-                      className="h-14 w-14 shrink-0 rounded-lg object-cover"
-                    />
-                  )}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="truncate font-medium">{item.name}</p>
+                    {statusBadge && (
+                      <span className="shrink-0 rounded-full bg-rust-100 px-2 py-0.5 text-xs font-medium text-rust-700 dark:bg-rust-900/40 dark:text-rust-400">
+                        {statusBadge}
+                      </span>
+                    )}
+                  </div>
 
-                  <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
+                  <div className="mt-1 flex items-center justify-between gap-2">
                     <span className="flex min-w-0 items-center gap-1 truncate text-xs text-stone-500">
                       {item.category && (
                         <CategoryIcon
@@ -383,7 +385,7 @@ export function Inventory() {
 
                     <div
                       onClick={(e) => e.stopPropagation()}
-                      className="flex items-center justify-end gap-2"
+                      className="flex shrink-0 items-center gap-2"
                     >
                       {showActions ? (
                         <>
