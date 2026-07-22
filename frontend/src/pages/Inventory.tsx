@@ -6,6 +6,7 @@ import { getExpirationWarning, isExpired } from "../lib/expiration";
 import { BarcodeIcon, CartIcon, MinusIcon, PlusIcon, SearchIcon } from "../components/icons";
 import { getCategoryIcon } from "../lib/categoryIcon";
 import { EmptyState } from "../components/ui/EmptyState";
+import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 import { EmptyShelfIllustration } from "../components/illustrations";
 import type { ItemFormData } from "../components/inventory/ItemDetailModal";
 import { ItemDetailModal } from "../components/inventory/ItemDetailModal";
@@ -349,15 +350,11 @@ export function Inventory() {
                 onClick={() => setViewingItemId(item._id)}
                 className="flex cursor-pointer items-center gap-3 rounded-2xl bg-surface-2 p-4"
               >
-                {item.imageUrl ? (
-                  <img
-                    src={item.imageUrl}
-                    alt=""
-                    className="h-14 w-14 shrink-0 rounded-xl object-cover"
-                  />
-                ) : (
-                  <div className="h-14 w-14 shrink-0 rounded-xl bg-surface" />
-                )}
+                <PhotoOrFallback
+                  src={item.imageUrl}
+                  imgClassName="h-14 w-14 shrink-0 rounded-xl object-cover"
+                  fallback={<div className="h-14 w-14 shrink-0 rounded-xl bg-surface" />}
+                />
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">

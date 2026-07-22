@@ -2,6 +2,7 @@ import { useState } from "react";
 import { BowlIllustration } from "../illustrations";
 import { BackIcon, PencilIcon, TrashIcon } from "../icons";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 
 type RecipeIngredient = {
   itemId: string;
@@ -42,13 +43,15 @@ export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, on
           <BackIcon className="h-5 w-5" />
         </button>
 
-        {recipe.imageUrl ? (
-          <img src={recipe.imageUrl} alt="" className="h-48 w-full rounded-lg object-cover" />
-        ) : (
-          <div className="flex h-48 w-full items-center justify-center rounded-lg bg-mustard-100 dark:bg-mustard-900/30">
-            <BowlIllustration className="h-24 w-auto" />
-          </div>
-        )}
+        <PhotoOrFallback
+          src={recipe.imageUrl}
+          imgClassName="h-48 w-full rounded-lg object-cover"
+          fallback={
+            <div className="flex h-48 w-full items-center justify-center rounded-lg bg-mustard-100 dark:bg-mustard-900/30">
+              <BowlIllustration className="h-24 w-auto" />
+            </div>
+          }
+        />
 
         <div className="flex items-start justify-between gap-2">
           <p className="text-xl font-semibold">{recipe.name}</p>

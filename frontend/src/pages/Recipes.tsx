@@ -6,6 +6,7 @@ import { RecipeDetailModal } from "../components/recipes/RecipeDetailModal";
 import { RecipeViewModal } from "../components/recipes/RecipeViewModal";
 import { PlusIcon, SearchIcon } from "../components/icons";
 import { EmptyState } from "../components/ui/EmptyState";
+import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 
 type RecipeIngredient = {
@@ -208,13 +209,15 @@ export function Recipes() {
                 onClick={() => setViewingRecipeId(recipe._id)}
                 className="cursor-pointer overflow-hidden rounded-lg border border-line"
               >
-                {recipe.imageUrl ? (
-                  <img src={recipe.imageUrl} alt="" className="h-40 w-full object-cover" />
-                ) : (
-                  <div className="flex h-28 w-full items-center justify-center bg-mustard-100 dark:bg-mustard-900/30">
-                    <BowlIllustration className="h-16 w-auto" />
-                  </div>
-                )}
+                <PhotoOrFallback
+                  src={recipe.imageUrl}
+                  imgClassName="h-40 w-full object-cover"
+                  fallback={
+                    <div className="flex h-28 w-full items-center justify-center bg-mustard-100 dark:bg-mustard-900/30">
+                      <BowlIllustration className="h-16 w-auto" />
+                    </div>
+                  }
+                />
 
                 <div className="space-y-2 p-3">
                   <div className="flex items-center justify-between gap-2">

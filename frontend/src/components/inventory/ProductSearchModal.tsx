@@ -3,6 +3,7 @@ import { searchProducts } from "../../lib/openFoodFacts";
 import type { ProductSearchResult } from "../../lib/openFoodFacts";
 import { CloseIcon, SearchIcon } from "../icons";
 import { EmptyState } from "../ui/EmptyState";
+import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 import { EmptyShelfIllustration } from "../illustrations";
 
 export type LocalStockItem = {
@@ -185,28 +186,17 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
 }
 
 function ProductRow({ product, onSelect }: { product: ProductSearchResult; onSelect: (product: ProductSearchResult) => void }) {
-  // Open Food Facts' image_front_url isn't always reliable — some entries
-  // reference a size variant that was never generated or has since been
-  // removed, which 404s. Fall back to the placeholder instead of a broken
-  // image icon.
-  const [imageFailed, setImageFailed] = useState(false);
-
   return (
     <button
       type="button"
       onClick={() => onSelect(product)}
       className="flex w-full items-center gap-3 rounded-lg py-2 text-left hover:bg-surface-2"
     >
-      {product.imageUrl && !imageFailed ? (
-        <img
-          src={product.imageUrl}
-          alt=""
-          onError={() => setImageFailed(true)}
-          className="h-12 w-12 shrink-0 rounded-lg object-cover"
-        />
-      ) : (
-        <div className="h-12 w-12 shrink-0 rounded-lg bg-surface" />
-      )}
+      <PhotoOrFallback
+        src={product.imageUrl}
+        imgClassName="h-12 w-12 shrink-0 rounded-lg object-cover"
+        fallback={<div className="h-12 w-12 shrink-0 rounded-lg bg-surface" />}
+      />
       <div className="min-w-0 flex-1">
         <p className="truncate">{product.name}</p>
         {product.brand && <p className="truncate text-xs text-muted">{product.brand}</p>}

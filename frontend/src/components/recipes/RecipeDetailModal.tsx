@@ -5,6 +5,7 @@ import type { ProductSearchResult } from "../../lib/openFoodFacts";
 import { CloseIcon, PlusIcon, TrashIcon } from "../icons";
 import { BowlIllustration } from "../illustrations";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 
 function FieldLabel({ children }: { children: string }) {
   return <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted">{children}</label>;
@@ -216,13 +217,15 @@ export function RecipeDetailModal({
         </div>
 
         <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-line p-3">
-          {imageUrl ? (
-            <img src={imageUrl} alt="" className="h-28 w-full rounded-lg object-cover" />
-          ) : (
-            <div className="flex h-28 w-full items-center justify-center rounded-lg bg-mustard-100 dark:bg-mustard-900/30">
-              <BowlIllustration className="h-16 w-auto" />
-            </div>
-          )}
+          <PhotoOrFallback
+            src={imageUrl}
+            imgClassName="h-28 w-full rounded-lg object-cover"
+            fallback={
+              <div className="flex h-28 w-full items-center justify-center rounded-lg bg-mustard-100 dark:bg-mustard-900/30">
+                <BowlIllustration className="h-16 w-auto" />
+              </div>
+            }
+          />
           <input
             type="text"
             placeholder="URL da foto do prato"

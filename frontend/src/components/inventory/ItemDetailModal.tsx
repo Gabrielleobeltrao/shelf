@@ -4,6 +4,7 @@ import { CATEGORY_OPTIONS } from "../../lib/categories";
 import { CloseIcon, TrashIcon } from "../icons";
 import { Switch } from "../ui/Switch";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 
 export type ItemFormData = {
   name: string;
@@ -112,17 +113,19 @@ export function ItemDetailModal({
         </div>
 
         <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-line p-3">
-          {imageUrl ? (
-            <img src={imageUrl} alt="" className="h-28 w-28 rounded-lg object-cover" />
-          ) : (
-            <div className="flex h-28 w-28 items-center justify-center rounded-lg bg-surface-2">
-              <svg viewBox="0 0 32 32" fill="none" className="h-8 w-8 text-muted">
-                <rect x="4" y="10" width="24" height="16" rx="3" stroke="currentColor" strokeWidth="1.6" />
-                <circle cx="16" cy="18" r="5" stroke="currentColor" strokeWidth="1.6" />
-                <path d="M12 10l1.5-3h5L20 10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          )}
+          <PhotoOrFallback
+            src={imageUrl}
+            imgClassName="h-28 w-28 rounded-lg object-cover"
+            fallback={
+              <div className="flex h-28 w-28 items-center justify-center rounded-lg bg-surface-2">
+                <svg viewBox="0 0 32 32" fill="none" className="h-8 w-8 text-muted">
+                  <rect x="4" y="10" width="24" height="16" rx="3" stroke="currentColor" strokeWidth="1.6" />
+                  <circle cx="16" cy="18" r="5" stroke="currentColor" strokeWidth="1.6" />
+                  <path d="M12 10l1.5-3h5L20 10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+            }
+          />
           <input
             type="text"
             placeholder="URL da foto do produto"

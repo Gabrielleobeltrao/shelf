@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../../lib/api";
 import { CheckIcon, CloseIcon, MinusIcon, PlusIcon } from "../icons";
 import { EmptyState } from "../ui/EmptyState";
+import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 import { EmptyShelfIllustration } from "../illustrations";
 
 type ShoppingListEntry = {
@@ -94,11 +95,11 @@ export function ShoppingCartModal({ open, onClose }: Props) {
               {entries.map((entry) => (
                 <li key={entry._id} className="space-y-2 rounded-xl bg-surface-2 p-3">
                   <div className="flex items-center gap-3">
-                    {entry.imageUrl ? (
-                      <img src={entry.imageUrl} alt="" className="h-11 w-11 shrink-0 rounded-lg object-cover" />
-                    ) : (
-                      <div className="h-11 w-11 shrink-0 rounded-lg bg-surface" />
-                    )}
+                    <PhotoOrFallback
+                      src={entry.imageUrl}
+                      imgClassName="h-11 w-11 shrink-0 rounded-lg object-cover"
+                      fallback={<div className="h-11 w-11 shrink-0 rounded-lg bg-surface" />}
+                    />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium">{entry.name}</p>
                       {entry.brand && (

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { NUTRITION_OPTIONS } from "../../lib/nutrition";
 import { BackIcon, CartIcon, MinusIcon, PencilIcon, PlusIcon, TrashIcon } from "../icons";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 
 type Item = {
   _id: string;
@@ -79,11 +80,11 @@ export function ItemViewModal({
         className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-surface p-4"
       >
         <div className="relative h-48 w-full overflow-hidden rounded-xl">
-          {item.imageUrl ? (
-            <img src={item.imageUrl} alt="" className="h-full w-full object-cover" />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-surface" />
-          )}
+          <PhotoOrFallback
+            src={item.imageUrl}
+            imgClassName="h-full w-full object-cover"
+            fallback={<div className="flex h-full w-full items-center justify-center bg-surface" />}
+          />
 
           <div className="absolute inset-0 flex items-start justify-between p-3">
             <button onClick={onClose} aria-label="Fechar" className={infoIconBtn}>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { daysUntil, getExpirationWarning } from "../lib/expiration";
+import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 
 type Item = {
   _id: string;
@@ -56,15 +57,11 @@ export function Dashboard() {
           <ul className="divide-y divide-line">
             {expiringSoon.map((item) => (
               <li key={item._id} className="flex items-center gap-3 py-2">
-                {item.imageUrl ? (
-                  <img
-                    src={item.imageUrl}
-                    alt=""
-                    className="h-10 w-10 shrink-0 rounded-lg object-cover"
-                  />
-                ) : (
-                  <div className="h-10 w-10 shrink-0 rounded-lg bg-surface" />
-                )}
+                <PhotoOrFallback
+                  src={item.imageUrl}
+                  imgClassName="h-10 w-10 shrink-0 rounded-lg object-cover"
+                  fallback={<div className="h-10 w-10 shrink-0 rounded-lg bg-surface" />}
+                />
                 <div className="min-w-0 flex-1">
                   <p className="truncate">{item.name}</p>
                   {item.brand && <p className="truncate text-xs text-muted">{item.brand}</p>}
