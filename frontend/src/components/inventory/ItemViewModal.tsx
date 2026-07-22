@@ -1,5 +1,5 @@
 import { NUTRITION_OPTIONS } from "../../lib/nutrition";
-import { CartIcon, CloseIcon, MinusIcon, PencilIcon, PlusIcon, TrashIcon } from "../icons";
+import { BackIcon, CartIcon, MinusIcon, PencilIcon, PlusIcon, TrashIcon } from "../icons";
 
 type Item = {
   _id: string;
@@ -38,6 +38,9 @@ type Props = {
   onStep: (delta: number) => void;
 };
 
+const infoIconBtn =
+  "flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-stone-700 shadow-sm dark:bg-stone-950/80 dark:text-stone-200";
+
 export function ItemViewModal({
   item,
   visibleFields,
@@ -55,26 +58,52 @@ export function ItemViewModal({
     .map((key) => ({ option: NUTRITION_OPTIONS.find((o) => o.key === key), value: item.nutrition?.[key] }))
     .filter((entry) => entry.option && entry.value != null);
 
+  const infoLines = [
+    item.category && { label: "Categoria", value: item.category },
+    item.packageSize && { label: "Embalagem", value: item.packageSize },
+    item.barcode && { label: "Código de barras", value: item.barcode },
+    visibleFields.expirationDate &&
+      item.expirationDate && {
+        label: "Validade",
+        value: new Date(`${item.expirationDate}T00:00:00`).toLocaleDateString("pt-BR"),
+      },
+  ].filter(Boolean) as { label: string; value: string }[];
+
   return (
     <div className="fixed inset-0 z-30 flex items-end bg-black/50" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
         className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-white p-4 dark:bg-stone-950"
       >
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Detalhes do item</h2>
-          <button onClick={onClose} aria-label="Fechar" className="text-stone-500 dark:text-stone-400">
-            <CloseIcon className="h-4 w-4" />
-          </button>
-        </div>
+        <div className="relative h-48 w-full overflow-hidden rounded-xl">
+          {item.imageUrl ? (
+            <img src={item.imageUrl} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-stone-100 dark:bg-stone-800" />
+          )}
 
-        {item.imageUrl ? (
-          <img src={item.imageUrl} alt="" className="h-48 w-full rounded-lg object-cover" />
-        ) : (
-          <div className="flex h-48 w-full items-center justify-center rounded-lg bg-stone-100 text-xs text-stone-400 dark:bg-stone-800">
-            Sem foto
+          <div className="absolute inset-0 flex items-start justify-between p-3">
+            <button onClick={onClose} aria-label="Fechar" className={infoIconBtn}>
+              <BackIcon className="h-4 w-4" />
+            </button>
+            <div className="flex gap-2">
+              {showActions && (
+                <button
+                  onClick={() => {
+                    if (confirm(`Excluir "${item.name}" do estoque?`)) onDelete();
+                  }}
+                  aria-label="Excluir"
+                  className={`${infoIconBtn} text-rust-600 dark:text-rust-400`}
+                >
+                  <TrashIcon className="h-4 w-4" />
+                </button>
+              )}
+              <button onClick={onEdit} aria-label="Editar" className={infoIconBtn}>
+                <PencilIcon className="h-4 w-4" />
+              </button>
+            </div>
           </div>
-        )}
+        </div>
 
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
@@ -88,43 +117,27 @@ export function ItemViewModal({
           )}
         </div>
 
-        <div className="space-y-1 text-sm">
-          {item.category && (
-            <p>
-              <span className="text-stone-500">Categoria: </span>
-              {item.category}
-            </p>
-          )}
-          {item.packageSize && (
-            <p>
-              <span className="text-stone-500">Embalagem: </span>
-              {item.packageSize}
-            </p>
-          )}
-          {item.barcode && (
-            <p>
-              <span className="text-stone-500">Código de barras: </span>
-              {item.barcode}
-            </p>
-          )}
-          {visibleFields.expirationDate && item.expirationDate && (
-            <p>
-              <span className="text-stone-500">Validade: </span>
-              {new Date(`${item.expirationDate}T00:00:00`).toLocaleDateString("pt-BR")}
-            </p>
-          )}
+        <div className="flex items-center justify-center gap-4 py-1">
+          <button
+            onClick={() => onStep(-1)}
+            disabled={pending || item.quantity <= 0}
+            aria-label="Diminuir quantidade"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100 disabled:opacity-40 dark:bg-stone-900"
+          >
+            <MinusIcon className="h-4 w-4" />
+          </button>
+          <span className="min-w-20 text-center text-xl font-semibold tabular-nums">
+            {item.quantity} {item.unit}
+          </span>
+          <button
+            onClick={() => onStep(1)}
+            disabled={pending}
+            aria-label="Aumentar quantidade"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100 disabled:opacity-40 dark:bg-stone-900"
+          >
+            <PlusIcon className="h-4 w-4" />
+          </button>
         </div>
-
-        {nutritionEntries.length > 0 && (
-          <div className="grid grid-cols-2 gap-1 text-sm">
-            {nutritionEntries.map(({ option, value }) => (
-              <p key={option!.key}>
-                <span className="text-stone-500">{option!.label}: </span>
-                {value} {option!.unit}
-              </p>
-            ))}
-          </div>
-        )}
 
         {((visibleFields.glutenFree && item.glutenFree) || (visibleFields.vegan && item.vegan)) && (
           <div className="flex gap-2">
@@ -141,60 +154,48 @@ export function ItemViewModal({
           </div>
         )}
 
-        <div className="flex items-center justify-center gap-3 border-y border-stone-200 py-3 dark:border-stone-800">
-          <button
-            onClick={() => onStep(-1)}
-            disabled={pending || item.quantity <= 0}
-            aria-label="Diminuir quantidade"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-300 disabled:opacity-40 dark:border-stone-700"
-          >
-            <MinusIcon className="h-3.5 w-3.5" />
-          </button>
-          <span className="min-w-20 text-center text-lg">
-            {item.quantity} {item.unit}
-          </span>
-          <button
-            onClick={() => onStep(1)}
-            disabled={pending}
-            aria-label="Aumentar quantidade"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-300 disabled:opacity-40 dark:border-stone-700"
-          >
-            <PlusIcon className="h-3.5 w-3.5" />
-          </button>
-        </div>
-
-        {showActions && (
-          <div className="flex gap-2">
-            <button
-              onClick={() => {
-                if (confirm(`Excluir "${item.name}" do estoque?`)) onDelete();
-              }}
-              className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-rust-600 py-2.5 text-sm font-medium text-rust-600"
-            >
-              <TrashIcon className="h-4 w-4" />
-              Excluir
-            </button>
-            <button
-              onClick={onToggleRestock}
-              className={`flex flex-1 items-center justify-center gap-2 rounded-lg border py-2.5 text-sm font-medium ${
-                inShoppingList
-                  ? "border-primary-600 text-primary-600"
-                  : "border-stone-300 text-stone-600 dark:border-stone-700 dark:text-stone-300"
-              }`}
-            >
-              <CartIcon className="h-4 w-4" />
-              {inShoppingList ? "Na lista" : "Comprar"}
-            </button>
+        {infoLines.length > 0 && (
+          <div className="grid grid-cols-2 gap-2">
+            {infoLines.map((line) => (
+              <div key={line.label} className="rounded-lg bg-stone-100 px-3 py-2 dark:bg-stone-900">
+                <p className="text-[0.65rem] font-medium uppercase tracking-wide text-stone-500">{line.label}</p>
+                <p className="truncate text-sm font-medium">{line.value}</p>
+              </div>
+            ))}
           </div>
         )}
 
-        <button
-          onClick={onEdit}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 py-2.5 font-medium text-white"
-        >
-          <PencilIcon className="h-4 w-4" />
-          Editar
-        </button>
+        {nutritionEntries.length > 0 && (
+          <div>
+            <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-stone-500">
+              Informações nutricionais
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {nutritionEntries.map(({ option, value }) => (
+                <div key={option!.key} className="rounded-lg bg-stone-100 px-3 py-2 dark:bg-stone-900">
+                  <p className="text-[0.65rem] font-medium uppercase tracking-wide text-stone-500">{option!.label}</p>
+                  <p className="text-sm font-semibold tabular-nums">
+                    {value} {option!.unit}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {showActions && (
+          <button
+            onClick={onToggleRestock}
+            className={`flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium ${
+              inShoppingList
+                ? "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-400"
+                : "bg-primary-600 text-white"
+            }`}
+          >
+            <CartIcon className="h-4 w-4" />
+            {inShoppingList ? "Na lista de compras" : "Adicionar à lista de compras"}
+          </button>
+        )}
       </div>
     </div>
   );

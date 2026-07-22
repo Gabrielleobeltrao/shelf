@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NUTRITION_OPTIONS } from "../../lib/nutrition";
 import { CloseIcon, TrashIcon } from "../icons";
+import { Switch } from "../ui/Switch";
 
 export type ItemFormData = {
   name: string;
@@ -48,6 +49,13 @@ const CATEGORY_SUGGESTIONS = [
   "Doces e Sobremesas",
   "Outros",
 ];
+
+function FieldLabel({ children }: { children: string }) {
+  return <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-stone-500">{children}</label>;
+}
+
+const inputClass =
+  "w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900";
 
 export function ItemDetailModal({
   title,
@@ -115,102 +123,107 @@ export function ItemDetailModal({
           </button>
         </div>
 
-        {imageUrl ? (
-          <img src={imageUrl} alt="" className="h-32 w-32 rounded-lg object-cover" />
-        ) : (
-          <div className="flex h-32 w-32 items-center justify-center rounded-lg bg-stone-100 text-xs text-stone-400 dark:bg-stone-800">
-            Sem foto
-          </div>
-        )}
-
-        <input
-          type="text"
-          placeholder="URL da imagem"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
-        />
-
-        <input
-          type="text"
-          placeholder="Nome do item*"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
-        />
-
-        <input
-          type="text"
-          placeholder="Marca"
-          value={brand}
-          onChange={(e) => setBrand(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
-        />
-
-        <input
-          type="text"
-          list="category-suggestions"
-          placeholder="Categoria"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
-        />
-        <datalist id="category-suggestions">
-          {CATEGORY_SUGGESTIONS.map((c) => (
-            <option key={c} value={c} />
-          ))}
-        </datalist>
-
-        <input
-          type="text"
-          placeholder="Tamanho da embalagem (ex: 500g, 1L)"
-          value={packageSize}
-          onChange={(e) => setPackageSize(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
-        />
-
-        <div className="flex gap-2">
-          <input
-            type="number"
-            min={0}
-            placeholder="Qtd."
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            className="w-1/2 rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
-          />
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-stone-300 p-3 dark:border-stone-700">
+          {imageUrl ? (
+            <img src={imageUrl} alt="" className="h-28 w-28 rounded-lg object-cover" />
+          ) : (
+            <div className="flex h-28 w-28 items-center justify-center rounded-lg bg-stone-100 dark:bg-stone-800">
+              <svg viewBox="0 0 32 32" fill="none" className="h-8 w-8 text-stone-400">
+                <rect x="4" y="10" width="24" height="16" rx="3" stroke="currentColor" strokeWidth="1.6" />
+                <circle cx="16" cy="18" r="5" stroke="currentColor" strokeWidth="1.6" />
+                <path d="M12 10l1.5-3h5L20 10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+          )}
           <input
             type="text"
-            placeholder="Unidade"
-            value={unit}
-            onChange={(e) => setUnit(e.target.value)}
-            className="w-1/2 rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
+            placeholder="URL da foto do produto"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
           />
         </div>
 
-        <input
-          type="text"
-          placeholder="Código de barras"
-          value={barcode}
-          onChange={(e) => setBarcode(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
-        />
+        <div>
+          <FieldLabel>Nome*</FieldLabel>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className={inputClass}
+          />
+        </div>
+
+        <div>
+          <FieldLabel>Marca</FieldLabel>
+          <input type="text" value={brand} onChange={(e) => setBrand(e.target.value)} className={inputClass} />
+        </div>
+
+        <div>
+          <FieldLabel>Categoria</FieldLabel>
+          <input
+            type="text"
+            list="category-suggestions"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className={inputClass}
+          />
+          <datalist id="category-suggestions">
+            {CATEGORY_SUGGESTIONS.map((c) => (
+              <option key={c} value={c} />
+            ))}
+          </datalist>
+        </div>
+
+        <div>
+          <FieldLabel>Tamanho da embalagem</FieldLabel>
+          <input
+            type="text"
+            placeholder="ex: 500g, 1L"
+            value={packageSize}
+            onChange={(e) => setPackageSize(e.target.value)}
+            className={inputClass}
+          />
+        </div>
+
+        <div className="flex gap-2">
+          <div className="w-1/2">
+            <FieldLabel>Quantidade</FieldLabel>
+            <input
+              type="number"
+              min={0}
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div className="w-1/2">
+            <FieldLabel>Unidade</FieldLabel>
+            <input type="text" value={unit} onChange={(e) => setUnit(e.target.value)} className={inputClass} />
+          </div>
+        </div>
+
+        <div>
+          <FieldLabel>Código de barras</FieldLabel>
+          <input type="text" value={barcode} onChange={(e) => setBarcode(e.target.value)} className={inputClass} />
+        </div>
 
         {visibleFields.expirationDate && (
           <div>
-            <label className="mb-1 block text-sm text-stone-500">Validade</label>
+            <FieldLabel>Validade</FieldLabel>
             <input
               type="date"
               value={expirationDate}
               onChange={(e) => setExpirationDate(e.target.value)}
-              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
+              className={inputClass}
             />
           </div>
         )}
 
         {visibleFields.nutritionFields.length > 0 && (
-          <div className="space-y-2">
-            <p className="text-sm text-stone-500">Informações nutricionais</p>
+          <div>
+            <FieldLabel>Informações nutricionais</FieldLabel>
             <div className="grid grid-cols-2 gap-2">
               {NUTRITION_OPTIONS.filter((option) =>
                 visibleFields.nutritionFields.includes(option.key),
@@ -233,29 +246,11 @@ export function ItemDetailModal({
         )}
 
         {(visibleFields.glutenFree || visibleFields.vegan) && (
-          <div className="flex gap-4">
+          <div className="space-y-3 border-t border-stone-200 pt-3 dark:border-stone-800">
             {visibleFields.glutenFree && (
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={glutenFree}
-                  onChange={(e) => setGlutenFree(e.target.checked)}
-                  className="h-4 w-4 rounded border-stone-300 dark:border-stone-700"
-                />
-                Sem glúten
-              </label>
+              <Switch checked={glutenFree} onChange={setGlutenFree} label="Sem glúten" />
             )}
-            {visibleFields.vegan && (
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={vegan}
-                  onChange={(e) => setVegan(e.target.checked)}
-                  className="h-4 w-4 rounded border-stone-300 dark:border-stone-700"
-                />
-                Vegano
-              </label>
-            )}
+            {visibleFields.vegan && <Switch checked={vegan} onChange={setVegan} label="Vegano" />}
           </div>
         )}
 

@@ -4,7 +4,7 @@ import { hasEnoughStock } from "../lib/units";
 import type { RecipeFormData } from "../components/recipes/RecipeDetailModal";
 import { RecipeDetailModal } from "../components/recipes/RecipeDetailModal";
 import { RecipeViewModal } from "../components/recipes/RecipeViewModal";
-import { CloseIcon, FilterIcon, SearchIcon } from "../components/icons";
+import { SearchIcon } from "../components/icons";
 import { EmptyState } from "../components/ui/EmptyState";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 
@@ -72,7 +72,6 @@ export function Recipes() {
   const [viewingRecipeId, setViewingRecipeId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
-  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     Promise.all([api.get<Recipe[]>("/api/recipes"), api.get<StockItem[]>("/api/items")])
@@ -173,66 +172,28 @@ export function Recipes() {
             placeholder="Buscar por nome ou ingrediente"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-stone-300 py-2 pl-9 pr-10 text-base dark:border-stone-700 dark:bg-stone-900"
+            className="w-full rounded-lg border border-stone-300 py-2 pl-9 pr-3 text-base dark:border-stone-700 dark:bg-stone-900"
           />
-          {categories.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setFiltersOpen(true)}
-              aria-label="Abrir filtros"
-              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-stone-500 dark:text-stone-400"
-            >
-              <FilterIcon className="h-5 w-5" />
-              {categoryFilter && (
-                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary-600" />
-              )}
-            </button>
-          )}
         </div>
       )}
 
-      {filtersOpen && (
-        <div
-          className="fixed inset-0 z-30 flex items-end bg-black/50"
-          onClick={() => setFiltersOpen(false)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="w-full space-y-3 rounded-t-2xl bg-white p-4 dark:bg-stone-950"
-          >
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Filtros</h2>
-              <button onClick={() => setFiltersOpen(false)} aria-label="Fechar" className="text-stone-500 dark:text-stone-400">
-                <CloseIcon className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div>
-              <label className="mb-1 block text-sm font-medium">Tipo</label>
-              <select
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
-              >
-                <option value="">Todos os tipos</option>
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {categoryFilter && (
+      {categories.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {categories.map((category) => {
+            const active = categoryFilter === category;
+            return (
               <button
+                key={category}
                 type="button"
-                onClick={() => setCategoryFilter("")}
-                className="text-sm font-medium text-primary-600"
+                onClick={() => setCategoryFilter(active ? "" : category!)}
+                className={`shrink-0 rounded-full bg-primary-100 px-3 py-1.5 text-xs font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-400 ${
+                  active ? "ring-2 ring-primary-600" : ""
+                }`}
               >
-                Limpar filtro
+                {category}
               </button>
-            )}
-          </div>
+            );
+          })}
         </div>
       )}
 

@@ -2,8 +2,15 @@ import { useState } from "react";
 import { api } from "../../lib/api";
 import { ProductSearchModal } from "../inventory/ProductSearchModal";
 import type { ProductSearchResult } from "../../lib/openFoodFacts";
-import { CloseIcon, TrashIcon } from "../icons";
+import { CloseIcon, PlusIcon, TrashIcon } from "../icons";
 import { BowlIllustration } from "../illustrations";
+
+function FieldLabel({ children }: { children: string }) {
+  return <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-stone-500">{children}</label>;
+}
+
+const inputClass =
+  "w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900";
 
 export type IngredientRow = {
   itemId: string;
@@ -202,62 +209,72 @@ export function RecipeDetailModal({
           </button>
         </div>
 
-        {imageUrl ? (
-          <img src={imageUrl} alt="" className="h-32 w-full rounded-lg object-cover" />
-        ) : (
-          <div className="flex h-32 w-full items-center justify-center rounded-lg bg-mustard-100 dark:bg-mustard-900/30">
-            <BowlIllustration className="h-16 w-auto" />
-          </div>
-        )}
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-stone-300 p-3 dark:border-stone-700">
+          {imageUrl ? (
+            <img src={imageUrl} alt="" className="h-28 w-full rounded-lg object-cover" />
+          ) : (
+            <div className="flex h-28 w-full items-center justify-center rounded-lg bg-mustard-100 dark:bg-mustard-900/30">
+              <BowlIllustration className="h-16 w-auto" />
+            </div>
+          )}
+          <input
+            type="text"
+            placeholder="URL da foto do prato"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
+          />
+        </div>
 
-        <input
-          type="text"
-          placeholder="URL da foto do prato"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
-        />
+        <div>
+          <FieldLabel>Nome*</FieldLabel>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className={inputClass}
+          />
+        </div>
 
-        <input
-          type="text"
-          placeholder="Nome da receita*"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
-        />
-
-        <input
-          type="text"
-          list="recipe-category-suggestions"
-          placeholder="Tipo (ex: Almoço, Sobremesa)"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
-        />
-        <datalist id="recipe-category-suggestions">
-          {CATEGORY_SUGGESTIONS.map((c) => (
-            <option key={c} value={c} />
-          ))}
-        </datalist>
+        <div>
+          <FieldLabel>Tipo</FieldLabel>
+          <input
+            type="text"
+            list="recipe-category-suggestions"
+            placeholder="ex: Almoço, Sobremesa"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className={inputClass}
+          />
+          <datalist id="recipe-category-suggestions">
+            {CATEGORY_SUGGESTIONS.map((c) => (
+              <option key={c} value={c} />
+            ))}
+          </datalist>
+        </div>
 
         <div className="flex gap-2">
-          <input
-            type="number"
-            min={0}
-            placeholder="Tempo (min)"
-            value={prepTime}
-            onChange={(e) => setPrepTime(e.target.value)}
-            className="w-1/2 rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
-          />
-          <input
-            type="number"
-            min={0}
-            placeholder="Porções"
-            value={servings}
-            onChange={(e) => setServings(e.target.value)}
-            className="w-1/2 rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
-          />
+          <div className="w-1/2">
+            <FieldLabel>Tempo (min)</FieldLabel>
+            <input
+              type="number"
+              min={0}
+              value={prepTime}
+              onChange={(e) => setPrepTime(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div className="w-1/2">
+            <FieldLabel>Porções</FieldLabel>
+            <input
+              type="number"
+              min={0}
+              value={servings}
+              onChange={(e) => setServings(e.target.value)}
+              className={inputClass}
+            />
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -319,18 +336,20 @@ export function RecipeDetailModal({
               <button
                 type="button"
                 onClick={addIngredient}
-                className="text-sm font-medium text-primary-600"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-dashed border-primary-600 py-2 text-sm font-medium text-primary-700 dark:text-primary-400"
               >
-                + Do estoque
+                <PlusIcon className="h-3.5 w-3.5" />
+                Do estoque
               </button>
             )}
             <button
               type="button"
               onClick={() => setProductSearchOpen(true)}
               disabled={creatingItem}
-              className="text-sm font-medium text-primary-600 disabled:opacity-60"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-dashed border-primary-600 py-2 text-sm font-medium text-primary-700 disabled:opacity-60 dark:text-primary-400"
             >
-              {creatingItem ? "Adicionando..." : "+ Buscar produto"}
+              <PlusIcon className="h-3.5 w-3.5" />
+              {creatingItem ? "Adicionando..." : "Buscar produto"}
             </button>
           </div>
         </div>
@@ -362,9 +381,10 @@ export function RecipeDetailModal({
           <button
             type="button"
             onClick={addStep}
-            className="text-sm font-medium text-primary-600"
+            className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-primary-600 py-2 text-sm font-medium text-primary-700 dark:text-primary-400"
           >
-            + Adicionar passo
+            <PlusIcon className="h-3.5 w-3.5" />
+            Adicionar passo
           </button>
         </div>
 
