@@ -4,7 +4,7 @@ import { hasEnoughStock } from "../lib/units";
 import type { RecipeFormData } from "../components/recipes/RecipeDetailModal";
 import { RecipeDetailModal } from "../components/recipes/RecipeDetailModal";
 import { RecipeViewModal } from "../components/recipes/RecipeViewModal";
-import { SearchIcon } from "../components/icons";
+import { PlusIcon, SearchIcon } from "../components/icons";
 import { EmptyState } from "../components/ui/EmptyState";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 
@@ -149,20 +149,8 @@ export function Recipes() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-16">
       <h1 className="text-lg font-semibold">Receitas</h1>
-
-      <button
-        onClick={() =>
-          setModal({
-            mode: "create",
-            initial: { ingredients: [], imageUrl: "", steps: [] },
-          })
-        }
-        className="w-full rounded-lg bg-primary-600 py-2.5 font-medium text-white"
-      >
-        Adicionar receita
-      </button>
 
       {recipes.length > 0 && (
         <div className="relative">
@@ -323,6 +311,19 @@ export function Recipes() {
           onItemCreated={(item) => setItems((prev) => [item, ...prev])}
         />
       )}
+
+      <button
+        onClick={() =>
+          setModal({
+            mode: "create",
+            initial: { ingredients: [], imageUrl: "", steps: [] },
+          })
+        }
+        aria-label="Adicionar receita"
+        className="fixed bottom-6 right-4 z-20 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-lg"
+      >
+        <PlusIcon className="h-6 w-6" />
+      </button>
     </div>
   );
 }
