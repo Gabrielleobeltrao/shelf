@@ -341,86 +341,97 @@ export function Inventory() {
               <li
                 key={item._id}
                 onClick={() => setViewingItemId(item._id)}
-                className="flex cursor-pointer items-center gap-3 rounded-2xl bg-surface-2 p-3"
+                className="cursor-pointer rounded-2xl bg-surface-2 p-4"
               >
-                {item.imageUrl ? (
-                  <img
-                    src={item.imageUrl}
-                    alt=""
-                    className="h-12 w-12 shrink-0 rounded-lg object-cover"
-                  />
-                ) : (
-                  <div className="h-12 w-12 shrink-0 rounded-lg bg-surface" />
-                )}
-
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium">{item.name}</p>
-                  <span className="flex min-w-0 items-center gap-1 truncate text-xs text-muted">
-                    {item.category && (
-                      <CategoryIcon
-                        className={`h-3.5 w-3.5 shrink-0 ${
-                          tint === "mustard" ? "text-mustard-700 dark:text-mustard-400" : "text-primary-600 dark:text-primary-400"
-                        }`}
-                      />
-                    )}
-                    <span className="truncate">{secondaryInfo}</span>
-                  </span>
-                </div>
-
-                <div className="flex shrink-0 flex-col items-end gap-1.5">
-                  {statusBadge && (
-                    <span className="rounded-full bg-rust-100 px-2 py-0.5 text-xs font-medium text-rust-700 dark:bg-rust-900/40 dark:text-rust-400">
-                      {statusBadge}
-                    </span>
+                <div className="flex items-start gap-3">
+                  {item.imageUrl ? (
+                    <img
+                      src={item.imageUrl}
+                      alt=""
+                      className="h-16 w-16 shrink-0 rounded-xl object-cover"
+                    />
+                  ) : (
+                    <div className="h-16 w-16 shrink-0 rounded-xl bg-surface" />
                   )}
 
-                  <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-2">
-                    {showActions ? (
-                      <>
-                        <button
-                          onClick={() => handleToggleRestock(item)}
-                          aria-label={`Adicionar ${item.name} à lista de compras`}
-                          className={`flex h-7 w-16 items-center justify-center gap-1.5 rounded-full border bg-surface ${
-                            shoppingListMap.has(item._id)
-                              ? "border-primary-600 text-primary-600"
-                              : "border-line text-muted"
-                          }`}
-                        >
-                          <CartIcon className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleStep(item, 1)}
-                          disabled={pendingIds.has(item._id)}
-                          aria-label={`Aumentar quantidade de ${item.name}`}
-                          className="flex h-7 w-7 items-center justify-center rounded-full border border-line bg-surface disabled:opacity-40"
-                        >
-                          <PlusIcon className="h-3 w-3" />
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => handleStep(item, -1)}
-                          disabled={pendingIds.has(item._id) || item.quantity <= 0}
-                          aria-label={`Diminuir quantidade de ${item.name}`}
-                          className="flex h-7 w-7 items-center justify-center rounded-full border border-line bg-surface disabled:opacity-40"
-                        >
-                          <MinusIcon className="h-3 w-3" />
-                        </button>
-                        <span className="min-w-14 whitespace-nowrap text-center text-sm text-muted">
-                          {item.quantity} {item.unit}
+                  <div className="min-w-0 flex-1 py-0.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="truncate text-base font-semibold">{item.name}</p>
+                      {statusBadge && (
+                        <span className="shrink-0 rounded-full bg-rust-100 px-2 py-0.5 text-xs font-medium text-rust-700 dark:bg-rust-900/40 dark:text-rust-400">
+                          {statusBadge}
                         </span>
-                        <button
-                          onClick={() => handleStep(item, 1)}
-                          disabled={pendingIds.has(item._id)}
-                          aria-label={`Aumentar quantidade de ${item.name}`}
-                          className="flex h-7 w-7 items-center justify-center rounded-full border border-line bg-surface disabled:opacity-40"
-                        >
-                          <PlusIcon className="h-3 w-3" />
-                        </button>
-                      </>
+                      )}
+                    </div>
+
+                    {secondaryInfo && (
+                      <p className="mt-0.5 truncate text-sm text-muted">{secondaryInfo}</p>
+                    )}
+
+                    {item.category && (
+                      <span
+                        className={`mt-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
+                          tint === "mustard"
+                            ? "bg-mustard-100 text-mustard-700 dark:bg-mustard-900/40 dark:text-mustard-400"
+                            : "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-400"
+                        }`}
+                      >
+                        <CategoryIcon className="h-3.5 w-3.5" />
+                        {item.category}
+                      </span>
                     )}
                   </div>
+                </div>
+
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="mt-3 flex items-center justify-end gap-2 border-t border-line pt-3"
+                >
+                  {showActions ? (
+                    <>
+                      <button
+                        onClick={() => handleToggleRestock(item)}
+                        aria-label={`Adicionar ${item.name} à lista de compras`}
+                        className={`flex h-9 w-20 items-center justify-center gap-1.5 rounded-full border bg-surface ${
+                          shoppingListMap.has(item._id)
+                            ? "border-primary-600 text-primary-600"
+                            : "border-line text-muted"
+                        }`}
+                      >
+                        <CartIcon className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => handleStep(item, 1)}
+                        disabled={pendingIds.has(item._id)}
+                        aria-label={`Aumentar quantidade de ${item.name}`}
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-line bg-surface disabled:opacity-40"
+                      >
+                        <PlusIcon className="h-3.5 w-3.5" />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => handleStep(item, -1)}
+                        disabled={pendingIds.has(item._id) || item.quantity <= 0}
+                        aria-label={`Diminuir quantidade de ${item.name}`}
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-line bg-surface disabled:opacity-40"
+                      >
+                        <MinusIcon className="h-3.5 w-3.5" />
+                      </button>
+                      <span className="min-w-16 whitespace-nowrap text-center font-medium">
+                        {item.quantity} {item.unit}
+                      </span>
+                      <button
+                        onClick={() => handleStep(item, 1)}
+                        disabled={pendingIds.has(item._id)}
+                        aria-label={`Aumentar quantidade de ${item.name}`}
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-line bg-surface disabled:opacity-40"
+                      >
+                        <PlusIcon className="h-3.5 w-3.5" />
+                      </button>
+                    </>
+                  )}
                 </div>
               </li>
             );
