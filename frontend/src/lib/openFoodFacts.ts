@@ -57,8 +57,14 @@ type RawProduct = {
   image_front_url?: string;
 };
 
+// Real EAN/UPC/GTIN barcodes are 8, 12, 13 or 14 digits. The popularity-
+// sorted "browse" listing (no query) surfaces a handful of malformed
+// entries with garbage "codes" (40+ digits, clearly not a real barcode) —
+// filter those out rather than showing junk in the picker.
+const BARCODE_PATTERN = /^\d{8}$|^\d{12,14}$/;
+
 function mapProduct(product: RawProduct): ProductSearchResult | null {
-  if (!product.product_name || !product.code) return null;
+  if (!product.product_name || !product.code || !BARCODE_PATTERN.test(product.code)) return null;
   return {
     barcode: product.code,
     source: "off",

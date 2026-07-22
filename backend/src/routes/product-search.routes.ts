@@ -28,7 +28,10 @@ router.get("/", async (req, res) => {
   if (term) {
     url.searchParams.set("q", term);
   } else {
-    url.searchParams.set("sort_by", "popularity_key");
+    // popularity_key surfaces a lot of malformed entries (garbage barcodes,
+    // missing images) on this API — unique_scans_n (actual scan count) is a
+    // much cleaner signal for "real, commonly-seen products".
+    url.searchParams.set("sort_by", "unique_scans_n");
   }
   url.searchParams.set("page", String(page));
   url.searchParams.set("page_size", String(PAGE_SIZE));
