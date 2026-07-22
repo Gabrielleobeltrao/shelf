@@ -178,7 +178,7 @@ export function Recipes() {
       )}
 
       {categories.length > 0 && (
-        <div className="-m-1 flex gap-2 overflow-x-auto p-1">
+        <div className="-mx-1 flex gap-2 overflow-x-auto overflow-y-visible px-1 py-1.5">
           {categories.map((category) => {
             const active = categoryFilter === category;
             return (
