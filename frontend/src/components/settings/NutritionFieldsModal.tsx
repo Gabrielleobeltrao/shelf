@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { NUTRITION_OPTIONS } from "../../lib/nutrition";
+import { CloseIcon } from "../icons";
 
 type Props = {
   selected: string[];
@@ -37,11 +38,8 @@ export function NutritionFieldsModal({ selected, onClose, onSave }: Props) {
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Informações nutricionais</h2>
-          <button
-            onClick={onClose}
-            className="text-sm text-stone-500 dark:text-stone-400"
-          >
-            Fechar
+          <button onClick={onClose} aria-label="Fechar" className="text-stone-500 dark:text-stone-400">
+            <CloseIcon className="h-4 w-4" />
           </button>
         </div>
 

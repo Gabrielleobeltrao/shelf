@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signIn, signUp } from "../lib/auth-client";
+import { PantryShelfIllustration } from "../components/illustrations";
 
 export function Login() {
   const navigate = useNavigate();
@@ -45,15 +46,25 @@ export function Login() {
   }
 
   return (
-    <div className="flex min-h-svh items-center justify-center px-4">
+    <div className="flex min-h-svh flex-col items-center justify-center gap-6 px-4 py-10">
+      <div className="flex flex-col items-center gap-3 text-center">
+        <PantryShelfIllustration className="h-28 w-auto" />
+        <div>
+          <h1 className="font-display text-xl font-semibold">
+            {mode === "signin" ? "Bem-vindo de volta" : "Criar conta"}
+          </h1>
+          {mode === "signin" && (
+            <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+              Sua cozinha organizada te espera.
+            </p>
+          )}
+        </div>
+      </div>
+
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-sm space-y-4 rounded-xl border border-stone-200 p-6 dark:border-stone-800"
       >
-        <h1 className="text-xl font-semibold">
-          {mode === "signin" ? "Entrar" : "Criar conta"}
-        </h1>
-
         {mode === "signup" && (
           <input
             type="text"
@@ -102,7 +113,7 @@ export function Login() {
           </label>
         )}
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-rust-600">{error}</p>}
 
         <button
           type="submit"

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { NUTRITION_OPTIONS } from "../../lib/nutrition";
+import { CloseIcon, TrashIcon } from "../icons";
 
 export type ItemFormData = {
   name: string;
@@ -109,12 +110,8 @@ export function ItemDetailModal({
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{title}</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-sm text-stone-500 dark:text-stone-400"
-          >
-            Fechar
+          <button type="button" onClick={onClose} aria-label="Fechar" className="text-stone-500 dark:text-stone-400">
+            <CloseIcon className="h-4 w-4" />
           </button>
         </div>
 
@@ -268,8 +265,9 @@ export function ItemDetailModal({
               type="button"
               onClick={handleDelete}
               disabled={deleting}
-              className="flex-1 rounded-lg border border-red-600 py-2.5 font-medium text-red-600 disabled:opacity-60"
+              className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-rust-600 py-2.5 font-medium text-rust-600 disabled:opacity-60"
             >
+              <TrashIcon className="h-4 w-4" />
               {deleting ? "Excluindo..." : "Excluir"}
             </button>
           )}

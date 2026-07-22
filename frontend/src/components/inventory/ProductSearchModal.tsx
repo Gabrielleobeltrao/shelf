@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { searchProducts } from "../../lib/openFoodFacts";
 import type { ProductSearchResult } from "../../lib/openFoodFacts";
+import { CloseIcon, SearchIcon } from "../icons";
+import { EmptyState } from "../ui/EmptyState";
+import { EmptyShelfIllustration } from "../illustrations";
 
 type Props = {
   title?: string;
@@ -55,11 +58,8 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{title}</h2>
-          <button
-            onClick={onClose}
-            className="text-sm text-stone-500 dark:text-stone-400"
-          >
-            Fechar
+          <button onClick={onClose} aria-label="Fechar" className="text-stone-500 dark:text-stone-400">
+            <CloseIcon className="h-4 w-4" />
           </button>
         </div>
 
@@ -73,14 +73,17 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
           </button>
         )}
 
-        <input
-          type="text"
-          placeholder="Buscar produto por nome"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          autoFocus
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
-        />
+        <div className="relative">
+          <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+          <input
+            type="text"
+            placeholder="Buscar produto por nome"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            autoFocus
+            className="w-full rounded-lg border border-stone-300 py-2 pl-9 pr-3 text-base dark:border-stone-700 dark:bg-stone-900"
+          />
+        </div>
 
         <div className="flex-1 space-y-1 overflow-y-auto">
           {loading ? (
@@ -100,9 +103,11 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
               </button>
             </div>
           ) : results.length === 0 ? (
-            <p className="text-sm text-stone-500">
-              Nenhum produto encontrado. Tente outro nome{onAddManually ? " ou adicione manualmente." : "."}
-            </p>
+            <EmptyState
+              illustration={<EmptyShelfIllustration />}
+              title="Nenhum produto encontrado"
+              description={`Tente outro nome${onAddManually ? " ou adicione manualmente." : "."}`}
+            />
           ) : (
             <>
               {results.map((product, index) => (

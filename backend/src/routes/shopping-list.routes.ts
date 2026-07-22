@@ -12,11 +12,12 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { name, unit, brand, sourceItemId } = req.body;
+  const { name, unit, brand, imageUrl, sourceItemId } = req.body;
   const entry = await ShoppingListItem.create({
     name,
     unit,
     brand,
+    imageUrl,
     sourceItemId,
     userId: req.userId,
   });

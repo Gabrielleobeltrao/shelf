@@ -69,7 +69,7 @@ export function Dashboard() {
                   <p className="truncate">{item.name}</p>
                   {item.brand && <p className="truncate text-xs text-stone-500">{item.brand}</p>}
                 </div>
-                <span className="shrink-0 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/40 dark:text-red-400">
+                <span className="shrink-0 rounded-full bg-rust-100 px-2 py-0.5 text-xs font-medium text-rust-700 dark:bg-rust-900/40 dark:text-rust-400">
                   {getExpirationWarning(item.expirationDate)}
                 </span>
               </li>

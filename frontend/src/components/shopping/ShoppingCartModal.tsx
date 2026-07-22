@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { api } from "../../lib/api";
+import { CheckIcon, CloseIcon, MinusIcon, PlusIcon } from "../icons";
+import { EmptyState } from "../ui/EmptyState";
+import { EmptyShelfIllustration } from "../illustrations";
 
 type ShoppingListEntry = {
   _id: string;
   name: string;
   brand?: string;
   unit: string;
+  imageUrl?: string;
   sourceItemId?: string;
 };
 
@@ -71,11 +75,8 @@ export function ShoppingCartModal({ open, onClose }: Props) {
       <aside className="relative flex h-full w-80 max-w-[85vw] flex-col bg-white p-4 dark:bg-stone-950">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Lista de compras</h2>
-          <button
-            onClick={onClose}
-            className="text-sm text-stone-500 dark:text-stone-400"
-          >
-            Fechar
+          <button onClick={onClose} aria-label="Fechar" className="text-stone-500 dark:text-stone-400">
+            <CloseIcon className="h-4 w-4" />
           </button>
         </div>
 
@@ -83,16 +84,27 @@ export function ShoppingCartModal({ open, onClose }: Props) {
           {loading ? (
             <p className="text-sm text-stone-500">Carregando...</p>
           ) : entries.length === 0 ? (
-            <p className="text-sm text-stone-500">Sua lista de compras está vazia.</p>
+            <EmptyState
+              illustration={<EmptyShelfIllustration />}
+              title="Sua lista está vazia"
+              description="Marque itens como 'Comprar' no estoque pra vê-los aqui."
+            />
           ) : (
-            <ul className="divide-y divide-stone-200 dark:divide-stone-800">
+            <ul className="space-y-2">
               {entries.map((entry) => (
-                <li key={entry._id} className="space-y-2 py-3">
-                  <div className="min-w-0">
-                    <p className="truncate">{entry.name}</p>
-                    {entry.brand && (
-                      <p className="truncate text-xs text-stone-500">{entry.brand}</p>
+                <li key={entry._id} className="space-y-2 rounded-xl bg-stone-100 p-3 dark:bg-stone-900">
+                  <div className="flex items-center gap-3">
+                    {entry.imageUrl ? (
+                      <img src={entry.imageUrl} alt="" className="h-11 w-11 shrink-0 rounded-lg object-cover" />
+                    ) : (
+                      <div className="h-11 w-11 shrink-0 rounded-lg bg-stone-200 dark:bg-stone-800" />
                     )}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">{entry.name}</p>
+                      {entry.brand && (
+                        <p className="truncate text-xs text-stone-500">{entry.brand}</p>
+                      )}
+                    </div>
                   </div>
 
                   <div className="flex items-center justify-between gap-2">
@@ -101,9 +113,9 @@ export function ShoppingCartModal({ open, onClose }: Props) {
                         onClick={() => adjustBuyQuantity(entry._id, -1)}
                         disabled={(buyQuantities[entry._id] ?? 0) <= 0}
                         aria-label={`Diminuir quantidade de ${entry.name}`}
-                        className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-base leading-none disabled:opacity-40 dark:border-stone-700"
+                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-stone-300 disabled:opacity-40 dark:border-stone-700"
                       >
-                        −
+                        <MinusIcon className="h-3 w-3" />
                       </button>
                       <span className="min-w-14 whitespace-nowrap text-center text-sm text-stone-500">
                         {buyQuantities[entry._id] ?? 0} {entry.unit}
@@ -111,16 +123,17 @@ export function ShoppingCartModal({ open, onClose }: Props) {
                       <button
                         onClick={() => adjustBuyQuantity(entry._id, 1)}
                         aria-label={`Aumentar quantidade de ${entry.name}`}
-                        className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-base leading-none dark:border-stone-700"
+                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-stone-300 dark:border-stone-700"
                       >
-                        +
+                        <PlusIcon className="h-3 w-3" />
                       </button>
                     </div>
 
                     <button
                       onClick={() => handleBought(entry)}
-                      className="shrink-0 rounded-lg border border-primary-600 px-3 py-1.5 text-sm font-medium text-primary-600"
+                      className="flex shrink-0 items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-1.5 text-sm font-medium text-white"
                     >
+                      <CheckIcon className="h-3.5 w-3.5" />
                       Comprado
                     </button>
                   </div>

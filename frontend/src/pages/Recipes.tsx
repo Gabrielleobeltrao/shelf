@@ -4,6 +4,9 @@ import { hasEnoughStock } from "../lib/units";
 import type { RecipeFormData } from "../components/recipes/RecipeDetailModal";
 import { RecipeDetailModal } from "../components/recipes/RecipeDetailModal";
 import { RecipeViewModal } from "../components/recipes/RecipeViewModal";
+import { CloseIcon, FilterIcon, SearchIcon } from "../components/icons";
+import { EmptyState } from "../components/ui/EmptyState";
+import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 
 type RecipeIngredient = {
   itemId: string;
@@ -164,12 +167,13 @@ export function Recipes() {
 
       {recipes.length > 0 && (
         <div className="relative">
+          <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
           <input
             type="text"
             placeholder="Buscar por nome ou ingrediente"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-stone-300 py-2 pl-3 pr-10 text-base dark:border-stone-700 dark:bg-stone-900"
+            className="w-full rounded-lg border border-stone-300 py-2 pl-9 pr-10 text-base dark:border-stone-700 dark:bg-stone-900"
           />
           {categories.length > 0 && (
             <button
@@ -178,15 +182,7 @@ export function Recipes() {
               aria-label="Abrir filtros"
               className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-stone-500 dark:text-stone-400"
             >
-              <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5">
-                <path
-                  d="M3 4.5h14l-5.5 6.5v5l-3 1.5v-6.5L3 4.5z"
-                  stroke="currentColor"
-                  strokeWidth="1.4"
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                />
-              </svg>
+              <FilterIcon className="h-5 w-5" />
               {categoryFilter && (
                 <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary-600" />
               )}
@@ -206,11 +202,8 @@ export function Recipes() {
           >
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold">Filtros</h2>
-              <button
-                onClick={() => setFiltersOpen(false)}
-                className="text-sm text-stone-500 dark:text-stone-400"
-              >
-                Fechar
+              <button onClick={() => setFiltersOpen(false)} aria-label="Fechar" className="text-stone-500 dark:text-stone-400">
+                <CloseIcon className="h-4 w-4" />
               </button>
             </div>
 
@@ -246,7 +239,11 @@ export function Recipes() {
       {loading ? (
         <p className="text-sm text-stone-500">Carregando...</p>
       ) : recipes.length === 0 ? (
-        <p className="text-sm text-stone-500">Nenhuma receita cadastrada ainda.</p>
+        <EmptyState
+          illustration={<EmptyShelfIllustration />}
+          title="Nenhuma receita ainda"
+          description="Adicione sua primeira receita pra começar a cozinhar."
+        />
       ) : filteredRecipes.length === 0 ? (
         <p className="text-sm text-stone-500">Nenhuma receita encontrada.</p>
       ) : (
@@ -262,8 +259,12 @@ export function Recipes() {
                 onClick={() => setViewingRecipeId(recipe._id)}
                 className="cursor-pointer overflow-hidden rounded-lg border border-stone-200 dark:border-stone-800"
               >
-                {recipe.imageUrl && (
+                {recipe.imageUrl ? (
                   <img src={recipe.imageUrl} alt="" className="h-40 w-full object-cover" />
+                ) : (
+                  <div className="flex h-28 w-full items-center justify-center bg-mustard-100 dark:bg-mustard-900/30">
+                    <BowlIllustration className="h-16 w-auto" />
+                  </div>
                 )}
 
                 <div className="space-y-2 p-3">
@@ -275,7 +276,7 @@ export function Recipes() {
                           Dá pra fazer
                         </span>
                       ) : (
-                        <span className="shrink-0 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/40 dark:text-red-400">
+                        <span className="shrink-0 rounded-full bg-rust-100 px-2 py-0.5 text-xs font-medium text-rust-700 dark:bg-rust-900/40 dark:text-rust-400">
                           Falta {missing.length}
                         </span>
                       ))}
@@ -296,7 +297,7 @@ export function Recipes() {
                           key={`${row.itemId}-${index}`}
                           className={
                             missingIds.has(row.itemId)
-                              ? "text-red-600 dark:text-red-400"
+                              ? "text-rust-600 dark:text-rust-400"
                               : "text-stone-500"
                           }
                         >

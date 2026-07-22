@@ -1,19 +1,58 @@
 @import "tailwindcss";
 
+@import "@fontsource/bricolage-grotesque/600.css";
+@import "@fontsource/bricolage-grotesque/700.css";
+@import "@fontsource/bricolage-grotesque/800.css";
+@import "@fontsource/karla/400.css";
+@import "@fontsource/karla/500.css";
+@import "@fontsource/karla/600.css";
+@import "@fontsource/karla/700.css";
+
 @theme {
-  /* Warm terracotta accent — kitchen/pantry feel instead of a generic
-     SaaS green. Paired with Tailwind's built-in "stone" for neutrals. */
-  --color-primary-50: #fbf4f1;
-  --color-primary-100: #f5e3db;
-  --color-primary-200: #e9c5b4;
-  --color-primary-300: #dba087;
-  --color-primary-400: #c97c5c;
-  --color-primary-500: #b35f3e;
-  --color-primary-600: #9c4a2d;
-  --color-primary-700: #7d3b24;
-  --color-primary-800: #64301f;
-  --color-primary-900: #4f281a;
-  --color-primary-950: #2c140c;
+  /* Sage — herbs/pantry accent, replacing the earlier terracotta pass. */
+  --color-primary-50: #f6f8f2;
+  --color-primary-100: #e6edda;
+  --color-primary-200: #cfdfba;
+  --color-primary-300: #b3cc95;
+  --color-primary-400: #93b382;
+  --color-primary-500: #75965f;
+  --color-primary-600: #5c7a54;
+  --color-primary-700: #47603f;
+  --color-primary-800: #364a30;
+  --color-primary-900: #283824;
+  --color-primary-950: #182015;
+
+  /* Mustard — secondary accent used sparingly (illustrations, alternating
+     category chips), kept separate from the primary sage accent. */
+  --color-mustard-50: #fbf5e9;
+  --color-mustard-100: #f5e6c6;
+  --color-mustard-200: #eccd92;
+  --color-mustard-300: #e0b166;
+  --color-mustard-400: #d19c42;
+  --color-mustard-500: #c98a2c;
+  --color-mustard-600: #a8721f;
+  --color-mustard-700: #8a5c17;
+  --color-mustard-800: #6c4712;
+  --color-mustard-900: #4f350e;
+  --color-mustard-950: #2f1f08;
+
+  /* Rust — semantic warning/danger, kept distinct from the accent hue so
+     "expiring" and "delete" never compete visually with the sage/mustard
+     brand colors. */
+  --color-rust-50: #fbf1ee;
+  --color-rust-100: #f2ddd5;
+  --color-rust-200: #e3bcac;
+  --color-rust-300: #d19980;
+  --color-rust-400: #bd7259;
+  --color-rust-500: #a8442c;
+  --color-rust-600: #963c26;
+  --color-rust-700: #7a301f;
+  --color-rust-800: #5f2519;
+  --color-rust-900: #481c13;
+  --color-rust-950: #2a0f0a;
+
+  --font-display: "Bricolage Grotesque", "Karla", system-ui, sans-serif;
+  --font-sans: "Karla", system-ui, sans-serif;
 }
 
 :root {
@@ -24,6 +63,11 @@ body {
   margin: 0;
   min-height: 100svh;
   -webkit-font-smoothing: antialiased;
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
 }
 
 #root {

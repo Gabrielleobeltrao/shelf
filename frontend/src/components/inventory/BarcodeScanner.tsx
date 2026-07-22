@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { BrowserMultiFormatReader } from "@zxing/browser";
+import { CloseIcon } from "../icons";
 
 type Props = {
   onDetected: (code: string) => void;
@@ -110,11 +111,8 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
           <span />
         )}
 
-        <button
-          onClick={onClose}
-          className="rounded-full bg-white/90 px-4 py-2 text-sm font-medium"
-        >
-          Fechar
+        <button onClick={onClose} aria-label="Fechar" className="rounded-full bg-white/90 p-2.5">
+          <CloseIcon className="h-4 w-4 text-stone-800" />
         </button>
       </div>
     </div>

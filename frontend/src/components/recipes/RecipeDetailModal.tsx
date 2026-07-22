@@ -2,6 +2,8 @@ import { useState } from "react";
 import { api } from "../../lib/api";
 import { ProductSearchModal } from "../inventory/ProductSearchModal";
 import type { ProductSearchResult } from "../../lib/openFoodFacts";
+import { CloseIcon, TrashIcon } from "../icons";
+import { BowlIllustration } from "../illustrations";
 
 export type IngredientRow = {
   itemId: string;
@@ -195,20 +197,16 @@ export function RecipeDetailModal({
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{title}</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-sm text-stone-500 dark:text-stone-400"
-          >
-            Fechar
+          <button type="button" onClick={onClose} aria-label="Fechar" className="text-stone-500 dark:text-stone-400">
+            <CloseIcon className="h-4 w-4" />
           </button>
         </div>
 
         {imageUrl ? (
           <img src={imageUrl} alt="" className="h-32 w-full rounded-lg object-cover" />
         ) : (
-          <div className="flex h-32 w-full items-center justify-center rounded-lg bg-stone-100 text-xs text-stone-400 dark:bg-stone-800">
-            Sem foto
+          <div className="flex h-32 w-full items-center justify-center rounded-lg bg-mustard-100 dark:bg-mustard-900/30">
+            <BowlIllustration className="h-16 w-auto" />
           </div>
         )}
 
@@ -309,9 +307,9 @@ export function RecipeDetailModal({
                 type="button"
                 onClick={() => removeIngredient(index)}
                 aria-label="Remover ingrediente"
-                className="w-9 shrink-0 text-lg text-red-600"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rust-100 text-rust-600 dark:bg-rust-900/30"
               >
-                ×
+                <CloseIcon className="h-3.5 w-3.5" />
               </button>
             </div>
           ))}
@@ -354,9 +352,9 @@ export function RecipeDetailModal({
                 type="button"
                 onClick={() => removeStep(index)}
                 aria-label="Remover passo"
-                className="w-9 shrink-0 text-lg text-red-600"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rust-100 text-rust-600 dark:bg-rust-900/30"
               >
-                ×
+                <CloseIcon className="h-3.5 w-3.5" />
               </button>
             </div>
           ))}
@@ -376,8 +374,9 @@ export function RecipeDetailModal({
               type="button"
               onClick={handleDelete}
               disabled={deleting}
-              className="flex-1 rounded-lg border border-red-600 py-2.5 font-medium text-red-600 disabled:opacity-60"
+              className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-rust-600 py-2.5 font-medium text-rust-600 disabled:opacity-60"
             >
+              <TrashIcon className="h-4 w-4" />
               {deleting ? "Excluindo..." : "Excluir"}
             </button>
           )}

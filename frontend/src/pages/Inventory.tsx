@@ -3,7 +3,10 @@ import { api } from "../lib/api";
 import { lookupProduct } from "../lib/openFoodFacts";
 import type { ProductSearchResult } from "../lib/openFoodFacts";
 import { getExpirationWarning, isExpired } from "../lib/expiration";
-import { CartIcon, PencilIcon, TrashIcon } from "../components/icons";
+import { BarcodeIcon, CartIcon, CloseIcon, FilterIcon, MinusIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "../components/icons";
+import { getCategoryIcon } from "../lib/categoryIcon";
+import { EmptyState } from "../components/ui/EmptyState";
+import { EmptyShelfIllustration } from "../components/illustrations";
 import type { ItemFormData } from "../components/inventory/ItemDetailModal";
 import { ItemDetailModal } from "../components/inventory/ItemDetailModal";
 import { ProductSearchModal } from "../components/inventory/ProductSearchModal";
@@ -196,6 +199,7 @@ export function Inventory() {
       name: item.name,
       unit: item.unit,
       brand: item.brand,
+      imageUrl: item.imageUrl,
       sourceItemId: item._id,
     });
     setShoppingListMap((prev) => new Map(prev).set(item._id, entry._id));
@@ -269,26 +273,29 @@ export function Inventory() {
       <div className="flex gap-2">
         <button
           onClick={() => setProductSearchOpen(true)}
-          className="flex-1 rounded-lg bg-primary-600 py-2.5 font-medium text-white"
+          className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary-600 py-2.5 font-medium text-white"
         >
+          <PlusIcon className="h-4 w-4" />
           Adicionar item
         </button>
         <button
           onClick={() => setScanning(true)}
-          className="flex-1 rounded-lg border border-primary-600 py-2.5 font-medium text-primary-600"
+          className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-primary-600 py-2.5 font-medium text-primary-600"
         >
+          <BarcodeIcon className="h-4 w-4" />
           Escanear
         </button>
       </div>
 
       {items.length > 0 && (
         <div className="relative">
+          <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
           <input
             type="text"
             placeholder="Buscar por nome ou marca"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-stone-300 py-2 pl-3 pr-10 text-base dark:border-stone-700 dark:bg-stone-900"
+            className="w-full rounded-lg border border-stone-300 py-2 pl-9 pr-10 text-base dark:border-stone-700 dark:bg-stone-900"
           />
           {categories.length > 0 && (
             <button
@@ -297,15 +304,7 @@ export function Inventory() {
               aria-label="Abrir filtros"
               className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-stone-500 dark:text-stone-400"
             >
-              <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5">
-                <path
-                  d="M3 4.5h14l-5.5 6.5v5l-3 1.5v-6.5L3 4.5z"
-                  stroke="currentColor"
-                  strokeWidth="1.4"
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                />
-              </svg>
+              <FilterIcon className="h-5 w-5" />
               {categoryFilter && (
                 <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary-600" />
               )}
@@ -325,11 +324,8 @@ export function Inventory() {
           >
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold">Filtros</h2>
-              <button
-                onClick={() => setFiltersOpen(false)}
-                className="text-sm text-stone-500 dark:text-stone-400"
-              >
-                Fechar
+              <button onClick={() => setFiltersOpen(false)} aria-label="Fechar" className="text-stone-500 dark:text-stone-400">
+                <CloseIcon className="h-4 w-4" />
               </button>
             </div>
 
@@ -365,7 +361,11 @@ export function Inventory() {
       {loading ? (
         <p className="text-sm text-stone-500">Carregando...</p>
       ) : items.length === 0 ? (
-        <p className="text-sm text-stone-500">Nenhum item no estoque ainda.</p>
+        <EmptyState
+          illustration={<EmptyShelfIllustration />}
+          title="Seu estoque está vazio"
+          description="Escaneie um código de barras ou busque um produto pra começar."
+        />
       ) : filteredItems.length === 0 ? (
         <p className="text-sm text-stone-500">Nenhum item encontrado.</p>
       ) : (
@@ -378,6 +378,7 @@ export function Inventory() {
             const statusBadge =
               (settings.trackExpiration && getExpirationWarning(item.expirationDate)) ||
               (outOfStock ? "Sem estoque" : null);
+            const { Icon: CategoryIcon, tint } = getCategoryIcon(item.category);
 
             return (
               <li
@@ -388,7 +389,7 @@ export function Inventory() {
                 <div className="flex items-center justify-between gap-2">
                   <p className="truncate">{item.name}</p>
                   {statusBadge && (
-                    <span className="shrink-0 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/40 dark:text-red-400">
+                    <span className="shrink-0 rounded-full bg-rust-100 px-2 py-0.5 text-xs font-medium text-rust-700 dark:bg-rust-900/40 dark:text-rust-400">
                       {statusBadge}
                     </span>
                   )}
@@ -404,8 +405,15 @@ export function Inventory() {
                   )}
 
                   <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
-                    <span className="min-w-0 truncate text-xs text-stone-500">
-                      {secondaryInfo}
+                    <span className="flex min-w-0 items-center gap-1 truncate text-xs text-stone-500">
+                      {item.category && (
+                        <CategoryIcon
+                          className={`h-3.5 w-3.5 shrink-0 ${
+                            tint === "mustard" ? "text-mustard-600 dark:text-mustard-400" : "text-primary-600 dark:text-primary-400"
+                          }`}
+                        />
+                      )}
+                      <span className="truncate">{secondaryInfo}</span>
                     </span>
 
                     <div
@@ -421,7 +429,7 @@ export function Inventory() {
                               }
                             }}
                             aria-label={`Excluir ${item.name}`}
-                            className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-red-600 dark:border-stone-700"
+                            className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-rust-600 dark:border-stone-700"
                           >
                             <TrashIcon className="h-4 w-4" />
                           </button>
@@ -453,9 +461,9 @@ export function Inventory() {
                             onClick={() => handleStep(item, 1)}
                             disabled={pendingIds.has(item._id)}
                             aria-label={`Aumentar quantidade de ${item.name}`}
-                            className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-base leading-none disabled:opacity-40 dark:border-stone-700"
+                            className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 disabled:opacity-40 dark:border-stone-700"
                           >
-                            +
+                            <PlusIcon className="h-3 w-3" />
                           </button>
                         </>
                       ) : (
@@ -464,9 +472,9 @@ export function Inventory() {
                             onClick={() => handleStep(item, -1)}
                             disabled={pendingIds.has(item._id) || item.quantity <= 0}
                             aria-label={`Diminuir quantidade de ${item.name}`}
-                            className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-base leading-none disabled:opacity-40 dark:border-stone-700"
+                            className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 disabled:opacity-40 dark:border-stone-700"
                           >
-                            −
+                            <MinusIcon className="h-3 w-3" />
                           </button>
                           <span className="min-w-14 whitespace-nowrap text-center text-sm text-stone-500">
                             {item.quantity} {item.unit}
@@ -475,9 +483,9 @@ export function Inventory() {
                             onClick={() => handleStep(item, 1)}
                             disabled={pendingIds.has(item._id)}
                             aria-label={`Aumentar quantidade de ${item.name}`}
-                            className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-base leading-none disabled:opacity-40 dark:border-stone-700"
+                            className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 disabled:opacity-40 dark:border-stone-700"
                           >
-                            +
+                            <PlusIcon className="h-3 w-3" />
                           </button>
                         </>
                       )}

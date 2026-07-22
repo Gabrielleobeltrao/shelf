@@ -1,5 +1,5 @@
 import { NUTRITION_OPTIONS } from "../../lib/nutrition";
-import { CartIcon, TrashIcon } from "../icons";
+import { CartIcon, CloseIcon, MinusIcon, PencilIcon, PlusIcon, TrashIcon } from "../icons";
 
 type Item = {
   _id: string;
@@ -63,8 +63,8 @@ export function ItemViewModal({
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Detalhes do item</h2>
-          <button onClick={onClose} className="text-sm text-stone-500 dark:text-stone-400">
-            Fechar
+          <button onClick={onClose} aria-label="Fechar" className="text-stone-500 dark:text-stone-400">
+            <CloseIcon className="h-4 w-4" />
           </button>
         </div>
 
@@ -82,7 +82,7 @@ export function ItemViewModal({
             {item.brand && <p className="text-sm text-stone-500">{item.brand}</p>}
           </div>
           {statusBadge && (
-            <span className="shrink-0 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/40 dark:text-red-400">
+            <span className="shrink-0 rounded-full bg-rust-100 px-2 py-0.5 text-xs font-medium text-rust-700 dark:bg-rust-900/40 dark:text-rust-400">
               {statusBadge}
             </span>
           )}
@@ -146,9 +146,9 @@ export function ItemViewModal({
             onClick={() => onStep(-1)}
             disabled={pending || item.quantity <= 0}
             aria-label="Diminuir quantidade"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-300 text-lg leading-none disabled:opacity-40 dark:border-stone-700"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-300 disabled:opacity-40 dark:border-stone-700"
           >
-            −
+            <MinusIcon className="h-3.5 w-3.5" />
           </button>
           <span className="min-w-20 text-center text-lg">
             {item.quantity} {item.unit}
@@ -157,9 +157,9 @@ export function ItemViewModal({
             onClick={() => onStep(1)}
             disabled={pending}
             aria-label="Aumentar quantidade"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-300 text-lg leading-none disabled:opacity-40 dark:border-stone-700"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-300 disabled:opacity-40 dark:border-stone-700"
           >
-            +
+            <PlusIcon className="h-3.5 w-3.5" />
           </button>
         </div>
 
@@ -169,7 +169,7 @@ export function ItemViewModal({
               onClick={() => {
                 if (confirm(`Excluir "${item.name}" do estoque?`)) onDelete();
               }}
-              className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-red-600 py-2.5 text-sm font-medium text-red-600"
+              className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-rust-600 py-2.5 text-sm font-medium text-rust-600"
             >
               <TrashIcon className="h-4 w-4" />
               Excluir
@@ -190,8 +190,9 @@ export function ItemViewModal({
 
         <button
           onClick={onEdit}
-          className="w-full rounded-lg bg-primary-600 py-2.5 font-medium text-white"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 py-2.5 font-medium text-white"
         >
+          <PencilIcon className="h-4 w-4" />
           Editar
         </button>
       </div>

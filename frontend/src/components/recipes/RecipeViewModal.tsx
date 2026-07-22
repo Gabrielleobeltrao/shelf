@@ -1,3 +1,6 @@
+import { BowlIllustration } from "../illustrations";
+import { CloseIcon, PencilIcon, TrashIcon } from "../icons";
+
 type RecipeIngredient = {
   itemId: string;
   name?: string;
@@ -33,16 +36,16 @@ export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, on
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Detalhes da receita</h2>
-          <button onClick={onClose} className="text-sm text-stone-500 dark:text-stone-400">
-            Fechar
+          <button onClick={onClose} aria-label="Fechar" className="text-stone-500 dark:text-stone-400">
+            <CloseIcon className="h-4 w-4" />
           </button>
         </div>
 
         {recipe.imageUrl ? (
           <img src={recipe.imageUrl} alt="" className="h-48 w-full rounded-lg object-cover" />
         ) : (
-          <div className="flex h-48 w-full items-center justify-center rounded-lg bg-stone-100 text-xs text-stone-400 dark:bg-stone-800">
-            Sem foto
+          <div className="flex h-48 w-full items-center justify-center rounded-lg bg-mustard-100 dark:bg-mustard-900/30">
+            <BowlIllustration className="h-24 w-auto" />
           </div>
         )}
 
@@ -54,7 +57,7 @@ export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, on
                 Dá pra fazer
               </span>
             ) : (
-              <span className="shrink-0 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/40 dark:text-red-400">
+              <span className="shrink-0 rounded-full bg-rust-100 px-2 py-0.5 text-xs font-medium text-rust-700 dark:bg-rust-900/40 dark:text-rust-400">
                 Falta {missingIds.size}
               </span>
             ))}
@@ -76,7 +79,7 @@ export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, on
                 <li
                   key={`${row.itemId}-${index}`}
                   className={
-                    missingIds.has(row.itemId) ? "text-red-600 dark:text-red-400" : "text-stone-500"
+                    missingIds.has(row.itemId) ? "text-rust-600 dark:text-rust-400" : "text-stone-500"
                   }
                 >
                   {row.quantity} {row.unit} de {row.name || "Item removido"}
@@ -102,14 +105,16 @@ export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, on
             onClick={() => {
               if (confirm(`Excluir "${recipe.name}"?`)) onDelete();
             }}
-            className="flex-1 rounded-lg border border-red-600 py-2.5 text-sm font-medium text-red-600"
+            className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-rust-600 py-2.5 text-sm font-medium text-rust-600"
           >
+            <TrashIcon className="h-4 w-4" />
             Excluir
           </button>
           <button
             onClick={onEdit}
-            className="flex-1 rounded-lg bg-primary-600 py-2.5 text-sm font-medium text-white"
+            className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary-600 py-2.5 text-sm font-medium text-white"
           >
+            <PencilIcon className="h-4 w-4" />
             Editar
           </button>
         </div>

@@ -10,6 +10,7 @@ import {
 import { api } from "../lib/api";
 import { Switch } from "../components/ui/Switch";
 import { NutritionFieldsModal } from "../components/settings/NutritionFieldsModal";
+import { TrashIcon } from "../components/icons";
 
 export function Settings() {
   const navigate = useNavigate();
@@ -234,7 +235,7 @@ export function Settings() {
       </form>
 
       <div className="space-y-2 border-t border-stone-200 pt-6 dark:border-stone-800">
-        <label className="text-sm font-medium text-red-600">Excluir conta</label>
+        <label className="text-sm font-medium text-rust-600">Excluir conta</label>
         <p className="text-sm text-stone-500">
           Remove sua conta e todo o seu estoque e receitas permanentemente.
         </p>
@@ -250,7 +251,7 @@ export function Settings() {
               required
               className="w-full rounded-lg border border-stone-300 px-3 py-2 text-base dark:border-stone-700 dark:bg-stone-900"
             />
-            {deleteStatus && <p className="text-sm text-red-600">{deleteStatus}</p>}
+            {deleteStatus && <p className="text-sm text-rust-600">{deleteStatus}</p>}
             <div className="flex gap-2">
               <button
                 type="button"
@@ -262,7 +263,7 @@ export function Settings() {
               <button
                 type="submit"
                 disabled={deleting}
-                className="flex-1 rounded-lg bg-red-600 py-2 text-sm font-medium text-white disabled:opacity-60"
+                className="flex-1 rounded-lg bg-rust-600 py-2 text-sm font-medium text-white disabled:opacity-60"
               >
                 {deleting ? "Excluindo..." : "Confirmar exclusão"}
               </button>
@@ -271,8 +272,9 @@ export function Settings() {
         ) : (
           <button
             onClick={() => setConfirmingDelete(true)}
-            className="rounded-lg border border-red-600 px-4 py-2 text-sm font-medium text-red-600"
+            className="flex items-center gap-2 rounded-lg border border-rust-600 px-4 py-2 text-sm font-medium text-rust-600"
           >
+            <TrashIcon className="h-4 w-4" />
             Excluir conta
           </button>
         )}
