@@ -28,6 +28,15 @@ export const auth = betterAuth({
     // prefix this collides with any other "localhost" Better Auth app
     // (e.g. comunicacaoAI), each overwriting the other's session cookie.
     cookiePrefix: "shelf",
+    // In production the frontend (Vercel) and backend (own VPS) live on
+    // unrelated domains, not just different ports — the default
+    // sameSite: "lax" cookie is never sent on cross-site fetch() calls, so
+    // login would appear to work but the session wouldn't stick. sameSite
+    // "none" requires secure (HTTPS-only), which is why this only applies
+    // in production; localhost dev keeps the default "lax" over plain http.
+    ...(process.env.NODE_ENV === "production"
+      ? { defaultCookieAttributes: { sameSite: "none", secure: true } }
+      : {}),
   },
   user: {
     changeEmail: {
