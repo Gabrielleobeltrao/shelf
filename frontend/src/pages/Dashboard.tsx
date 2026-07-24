@@ -35,7 +35,7 @@ export function Dashboard() {
     .sort((a, b) => daysUntil(a.expirationDate!) - daysUntil(b.expirationDate!));
 
   return (
-    <div className="space-y-4">
+    <div className="mx-auto max-w-md space-y-4">
       <h1 className="text-lg font-semibold">Dashboard</h1>
 
       <div>

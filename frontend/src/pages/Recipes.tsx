@@ -6,6 +6,7 @@ import { RecipeDetailModal } from "../components/recipes/RecipeDetailModal";
 import { RecipeViewModal } from "../components/recipes/RecipeViewModal";
 import { PlusIcon, SearchIcon } from "../components/icons";
 import { EmptyState } from "../components/ui/EmptyState";
+import { Fab } from "../components/ui/Fab";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 
@@ -197,7 +198,7 @@ export function Recipes() {
       ) : filteredRecipes.length === 0 ? (
         <p className="text-sm text-muted">Nenhuma receita encontrada.</p>
       ) : (
-        <ul className="space-y-3">
+        <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
           {filteredRecipes.map((recipe) => {
             const missing = missingIngredients(recipe);
             const missingIds = new Set(missing.map((row) => row.itemId));
@@ -315,18 +316,16 @@ export function Recipes() {
         />
       )}
 
-      <button
+      <Fab
         onClick={() =>
           setModal({
             mode: "create",
             initial: { ingredients: [], imageUrl: "", steps: [] },
           })
         }
-        aria-label="Adicionar receita"
-        className="fixed bottom-6 right-4 z-20 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-lg"
-      >
-        <PlusIcon className="h-6 w-6" />
-      </button>
+        label="Adicionar receita"
+        icon={<PlusIcon className="h-6 w-6" />}
+      />
     </div>
   );
 }

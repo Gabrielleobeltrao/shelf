@@ -6,6 +6,7 @@ import { getExpirationWarning, isExpired } from "../lib/expiration";
 import { BarcodeIcon, CartIcon, MinusIcon, PlusIcon, SearchIcon } from "../components/icons";
 import { getCategoryIcon } from "../lib/categoryIcon";
 import { EmptyState } from "../components/ui/EmptyState";
+import { Fab } from "../components/ui/Fab";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 import { EmptyShelfIllustration } from "../components/illustrations";
 import type { ItemFormData } from "../components/inventory/ItemDetailModal";
@@ -333,7 +334,7 @@ export function Inventory() {
       ) : filteredItems.length === 0 ? (
         <p className="text-sm text-muted">Nenhum item encontrado.</p>
       ) : (
-        <ul className="space-y-2">
+        <ul className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
           {filteredItems.map((item) => {
             const secondaryInfo = item.brand || item.packageSize || "";
             const expired = settings.trackExpiration && isExpired(item.expirationDate);
@@ -507,13 +508,7 @@ export function Inventory() {
         />
       )}
 
-      <button
-        onClick={() => setProductSearchOpen(true)}
-        aria-label="Adicionar item"
-        className="fixed bottom-6 right-4 z-20 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-lg"
-      >
-        <PlusIcon className="h-6 w-6" />
-      </button>
+      <Fab onClick={() => setProductSearchOpen(true)} label="Adicionar item" icon={<PlusIcon className="h-6 w-6" />} />
     </div>
   );
 }

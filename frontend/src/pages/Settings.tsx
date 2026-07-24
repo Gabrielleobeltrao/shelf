@@ -120,7 +120,7 @@ export function Settings() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-md space-y-6">
       <h1 className="text-lg font-semibold">Configurações</h1>
 
       <div className="space-y-4">
