@@ -120,10 +120,11 @@ export function Settings() {
   }
 
   return (
-    <div className="mx-auto max-w-md space-y-6">
+    <div className="space-y-6">
       <h1 className="text-lg font-semibold">Configurações</h1>
 
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
+      <div className="space-y-4 rounded-2xl bg-surface-2 p-4">
         <h2 className="text-sm font-medium text-muted">Preferências</h2>
         <Switch
           checked={settings.trackExpiration}
@@ -162,14 +163,14 @@ export function Settings() {
         />
       </div>
 
-      <form onSubmit={handleSaveName} className="space-y-2 border-t border-line pt-6">
+      <form onSubmit={handleSaveName} className="space-y-2 rounded-2xl bg-surface-2 p-4">
         <label className="text-sm font-medium">Nome</label>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="w-full rounded-lg bg-surface-2 px-3 py-2 text-base"
+          className="w-full rounded-lg bg-surface px-3 py-2 text-base"
         />
         {nameStatus && <p className="text-sm text-muted">{nameStatus}</p>}
         <button
@@ -181,14 +182,14 @@ export function Settings() {
         </button>
       </form>
 
-      <form onSubmit={handleSaveEmail} className="space-y-2 border-t border-line pt-6">
+      <form onSubmit={handleSaveEmail} className="space-y-2 rounded-2xl bg-surface-2 p-4">
         <label className="text-sm font-medium">E-mail</label>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full rounded-lg bg-surface-2 px-3 py-2 text-base"
+          className="w-full rounded-lg bg-surface px-3 py-2 text-base"
         />
         {emailStatus && <p className="text-sm text-muted">{emailStatus}</p>}
         <button
@@ -202,7 +203,7 @@ export function Settings() {
 
       <form
         onSubmit={handleChangePassword}
-        className="space-y-2 border-t border-line pt-6"
+        className="space-y-2 rounded-2xl bg-surface-2 p-4"
       >
         <label className="text-sm font-medium">Trocar senha</label>
         <input
@@ -212,7 +213,7 @@ export function Settings() {
           onChange={(e) => setCurrentPassword(e.target.value)}
           autoComplete="current-password"
           required
-          className="w-full rounded-lg bg-surface-2 px-3 py-2 text-base"
+          className="w-full rounded-lg bg-surface px-3 py-2 text-base"
         />
         <input
           type="password"
@@ -222,7 +223,7 @@ export function Settings() {
           autoComplete="new-password"
           required
           minLength={8}
-          className="w-full rounded-lg bg-surface-2 px-3 py-2 text-base"
+          className="w-full rounded-lg bg-surface px-3 py-2 text-base"
         />
         {passwordStatus && <p className="text-sm text-muted">{passwordStatus}</p>}
         <button
@@ -234,7 +235,7 @@ export function Settings() {
         </button>
       </form>
 
-      <div className="space-y-2 border-t border-line pt-6">
+      <div className="space-y-2 rounded-2xl bg-surface-2 p-4">
         <label className="text-sm font-medium text-rust-600">Excluir conta</label>
         <p className="text-sm text-muted">
           Remove sua conta e todo o seu estoque e receitas permanentemente.
@@ -249,7 +250,7 @@ export function Settings() {
               onChange={(e) => setDeletePassword(e.target.value)}
               autoComplete="current-password"
               required
-              className="w-full rounded-lg bg-surface-2 px-3 py-2 text-base"
+              className="w-full rounded-lg bg-surface px-3 py-2 text-base"
             />
             {deleteStatus && <p className="text-sm text-rust-600">{deleteStatus}</p>}
             <div className="flex gap-2">
@@ -278,6 +279,7 @@ export function Settings() {
             Excluir conta
           </button>
         )}
+      </div>
       </div>
 
       {nutritionModalOpen && (

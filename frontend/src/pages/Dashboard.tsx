@@ -35,7 +35,7 @@ export function Dashboard() {
     .sort((a, b) => daysUntil(a.expirationDate!) - daysUntil(b.expirationDate!));
 
   return (
-    <div className="mx-auto max-w-md space-y-4">
+    <div className="space-y-4">
       <h1 className="text-lg font-semibold">Dashboard</h1>
 
       <div>
@@ -54,9 +54,9 @@ export function Dashboard() {
         ) : expiringSoon.length === 0 ? (
           <p className="text-sm text-muted">Nenhum produto vencendo em breve.</p>
         ) : (
-          <ul className="divide-y divide-line">
+          <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
             {expiringSoon.map((item) => (
-              <li key={item._id} className="flex items-center gap-3 py-2">
+              <li key={item._id} className="flex items-center gap-3 rounded-2xl bg-surface-2 p-3">
                 <PhotoOrFallback
                   src={item.imageUrl}
                   imgClassName="h-10 w-10 shrink-0 rounded-lg object-cover"

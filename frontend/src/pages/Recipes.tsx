@@ -198,7 +198,7 @@ export function Recipes() {
       ) : filteredRecipes.length === 0 ? (
         <p className="text-sm text-muted">Nenhuma receita encontrada.</p>
       ) : (
-        <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredRecipes.map((recipe) => {
             const missing = missingIngredients(recipe);
             const missingIds = new Set(missing.map((row) => row.itemId));

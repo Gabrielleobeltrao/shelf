@@ -9,8 +9,8 @@ export function AppLayout() {
   const [cartOpen, setCartOpen] = useState(false);
 
   return (
-    <div className="mx-auto flex min-h-svh max-w-md flex-col md:max-w-2xl lg:max-w-4xl">
-      <header className="grid grid-cols-3 items-center border-b border-line px-4 py-3 lg:px-6">
+    <div className="flex min-h-svh w-full flex-col">
+      <header className="grid grid-cols-3 items-center border-b border-line px-4 py-3 sm:px-6 lg:px-8">
         <button
           onClick={() => setSidebarOpen(true)}
           aria-label="Abrir menu"
@@ -33,7 +33,7 @@ export function AppLayout() {
         </button>
       </header>
 
-      <main className="flex-1 overflow-y-auto px-4 py-4 lg:px-6">
+      <main className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 lg:px-8">
         <Outlet />
       </main>
 
