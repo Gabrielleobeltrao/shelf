@@ -5,6 +5,7 @@ import { Item } from "../models/Item.js";
 import { Recipe } from "../models/Recipe.js";
 import { Settings } from "../models/Settings.js";
 import { ShoppingListItem } from "../models/ShoppingListItem.js";
+import { getAllowedOrigins } from "./origins.js";
 
 const uri = process.env.MONGODB_URI;
 
@@ -22,7 +23,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  trustedOrigins: [process.env.CLIENT_URL ?? "http://localhost:5183"],
+  trustedOrigins: getAllowedOrigins(),
   advanced: {
     // Cookies aren't scoped by port, only by host — without a distinct
     // prefix this collides with any other "localhost" Better Auth app

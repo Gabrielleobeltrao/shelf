@@ -4,6 +4,7 @@ import express from "express";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./config/auth.js";
 import { connectDB } from "./config/db.js";
+import { getAllowedOrigins } from "./config/origins.js";
 import itemsRouter from "./routes/items.routes.js";
 import recipesRouter from "./routes/recipes.routes.js";
 import settingsRouter from "./routes/settings.routes.js";
@@ -12,12 +13,12 @@ import productSearchRouter from "./routes/product-search.routes.js";
 
 const app = express();
 const PORT = process.env.PORT ?? 4001;
-const CLIENT_URL = process.env.CLIENT_URL ?? "http://localhost:5183";
 
 app.use(
   cors({
-    origin: CLIENT_URL,
+    origin: getAllowedOrigins(),
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   }),
 );
 
