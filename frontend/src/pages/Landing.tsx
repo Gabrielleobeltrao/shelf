@@ -4,18 +4,16 @@ import {
   BarcodeIcon,
   BookmarkIcon,
   CartIcon,
-  CloseIcon,
   ExploreIcon,
   LoginIcon,
   MenuIcon,
-  RoadmapIcon,
   ShelfLogo,
   StarIcon,
 } from "../components/icons";
 import { BowlIllustration, PantryShelfIllustration } from "../components/illustrations";
 import { useI18n } from "../lib/i18n";
-import { LanguageSelect } from "../components/ui/LanguageSelect";
 import { Header } from "../components/layout/Header";
+import { Sidebar } from "../components/layout/Sidebar";
 
 function StarRow() {
   return (
@@ -46,58 +44,7 @@ export function Landing() {
         }
       />
 
-      {menuOpen && (
-        <div className="fixed inset-0 z-50 flex" role="dialog" aria-modal="true">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setMenuOpen(false)} />
-          <aside className="relative flex h-full w-72 max-w-[80vw] flex-col gap-1 bg-surface p-4">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <ShelfLogo className="h-6 w-6" />
-                <span className="font-display text-lg font-semibold">Shelf</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setMenuOpen(false)}
-                aria-label={t.nav.closeMenu}
-                className="rounded-lg p-2 text-muted hover:bg-surface-2"
-              >
-                <CloseIcon className="h-5 w-5" />
-              </button>
-            </div>
-
-            <Link
-              to="/explorar"
-              onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-surface-2"
-            >
-              <ExploreIcon className="h-5 w-5" />
-              {t.landing.explore}
-            </Link>
-            <Link
-              to="/roadmap"
-              onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-surface-2"
-            >
-              <RoadmapIcon className="h-5 w-5" />
-              {t.nav.roadmap}
-            </Link>
-            <Link
-              to="/login"
-              onClick={() => setMenuOpen(false)}
-              className="mt-1 flex items-center justify-center rounded-lg bg-primary-600 px-3 py-2.5 text-sm font-medium text-white"
-            >
-              {t.landing.enter}
-            </Link>
-
-            <div className="mt-auto border-t border-line pt-4">
-              <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
-                {t.settings.language}
-              </p>
-              <LanguageSelect className="w-full" />
-            </div>
-          </aside>
-        </div>
-      )}
+      <Sidebar open={menuOpen} onClose={() => setMenuOpen(false)} />
 
       <main className="flex-1">
         {/* Hero */}

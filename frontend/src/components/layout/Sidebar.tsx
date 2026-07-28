@@ -1,7 +1,8 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { signOut, useSession } from "../../lib/auth-client";
 import { useI18n } from "../../lib/i18n";
 import { CloseIcon, LogoutIcon, ShelfLogo } from "../icons";
+import { LanguageSelect } from "../ui/LanguageSelect";
 
 function DashboardNavIcon({ className }: { className?: string }) {
   return (
@@ -69,7 +70,8 @@ function SettingsNavIcon({ className }: { className?: string }) {
   );
 }
 
-const links = [
+// Full app navigation — shown to signed-in users.
+const appLinks = [
   { to: "/dashboard", key: "dashboard", end: false, Icon: DashboardNavIcon },
   { to: "/estoque", key: "inventory", end: true, Icon: InventoryNavIcon },
   { to: "/receitas", key: "recipes", end: false, Icon: RecipesNavIcon },
@@ -78,18 +80,29 @@ const links = [
   { to: "/configuracoes", key: "settings", end: false, Icon: SettingsNavIcon },
 ] as const;
 
+// Public pages — the only ones reachable without an account.
+const publicLinks = [
+  { to: "/explorar", key: "explore", end: false, Icon: ExploreNavIcon },
+  { to: "/roadmap", key: "roadmap", end: false, Icon: RoadmapNavIcon },
+] as const;
+
 type Props = {
   open: boolean;
   onClose: () => void;
 };
 
+// One menu for the whole app: its contents depend only on auth state, never
+// on which page opened it, so it's identical everywhere when signed in and
+// identical everywhere when signed out.
 export function Sidebar({ open, onClose }: Props) {
   const { data: session } = useSession();
   const { t } = useI18n();
 
   if (!open) return null;
 
-  const initial = session?.user.name?.[0]?.toUpperCase() ?? session?.user.email[0]?.toUpperCase() ?? "?";
+  const links = session ? appLinks : publicLinks;
+  const initial =
+    session?.user.name?.[0]?.toUpperCase() ?? session?.user.email[0]?.toUpperCase() ?? "?";
 
   return (
     <div className="fixed inset-0 z-40 flex">
@@ -140,15 +153,34 @@ export function Sidebar({ open, onClose }: Props) {
           ))}
         </nav>
 
-        {session && (
-          <button
-            onClick={() => signOut()}
-            className="mt-auto flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-rust-600"
-          >
-            <LogoutIcon className="h-4.5 w-4.5" />
-            {t.nav.logout}
-          </button>
-        )}
+        <div className="mt-auto space-y-3 border-t border-line pt-4">
+          {!session && (
+            <Link
+              to="/login"
+              onClick={onClose}
+              className="flex items-center justify-center rounded-lg bg-primary-600 px-3 py-2.5 text-sm font-medium text-white"
+            >
+              {t.landing.enter}
+            </Link>
+          )}
+
+          <div>
+            <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
+              {t.settings.language}
+            </p>
+            <LanguageSelect className="w-full" />
+          </div>
+
+          {session && (
+            <button
+              onClick={() => signOut()}
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-rust-600"
+            >
+              <LogoutIcon className="h-4.5 w-4.5" />
+              {t.nav.logout}
+            </button>
+          )}
+        </div>
       </aside>
     </div>
   );
