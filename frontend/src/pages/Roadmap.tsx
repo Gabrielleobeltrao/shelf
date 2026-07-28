@@ -376,9 +376,11 @@ export function Roadmap() {
                 <article key={item.id} className="flex flex-col overflow-hidden rounded-lg border border-line">
                   <div className={`relative flex h-24 items-center justify-center ${tint.bg}`}>
                     <Icon className={`h-9 w-9 ${tint.fg}`} />
-                    <span className="absolute left-2 top-2 rounded-full bg-on-photo px-2 py-0.5 text-xs font-semibold tabular-nums text-ink">
-                      #{index + 1}
-                    </span>
+                    {index < 3 && (
+                      <span className="absolute left-2 top-2 rounded-full bg-on-photo px-2 py-0.5 text-xs font-semibold tabular-nums text-ink">
+                        #{index + 1}
+                      </span>
+                    )}
                     <span className="absolute right-2 top-2 rounded-full bg-on-photo px-2 py-0.5 text-xs font-medium text-ink">
                       {r.statusPlanned}
                     </span>
