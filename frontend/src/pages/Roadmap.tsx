@@ -253,6 +253,7 @@ export function Roadmap() {
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [voted, setVoted] = useState<Set<string>>(new Set());
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
 
   // A device-scoped id so the same browser can't stack votes on one feature.
   const [voterKey] = useState(() => {
@@ -316,6 +317,14 @@ export function Roadmap() {
     });
   }
 
+  function toggleSection(key: string) {
+    setCollapsedSections((prev) => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  }
+
   // Community decides the order: most-voted first, ties keep the source order.
   const rankedPlanned = [...(r.planned as PlannedFeature[])].sort(
     (a, b) => (counts[b.id] ?? 0) - (counts[a.id] ?? 0),
@@ -340,8 +349,21 @@ export function Roadmap() {
 
         {/* Próximas — no forno, votáveis e expansíveis */}
         <section>
-          <p className="text-xs font-medium uppercase tracking-wide text-muted">{r.plannedTitle}</p>
-          <p className="mb-3 text-sm text-muted">{r.plannedHint}</p>
+          <button
+            type="button"
+            onClick={() => toggleSection("planned")}
+            aria-expanded={!collapsedSections.has("planned")}
+            className="flex w-full items-center justify-between gap-2 text-left"
+          >
+            <span className="font-display text-xl font-semibold">{r.plannedTitle}</span>
+            <ChevronIcon
+              className={`h-5 w-5 shrink-0 text-muted transition-transform ${
+                collapsedSections.has("planned") ? "-rotate-90" : ""
+              }`}
+            />
+          </button>
+          <p className="mb-3 mt-0.5 text-sm text-muted">{r.plannedHint}</p>
+          {!collapsedSections.has("planned") && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {rankedPlanned.map((item, index) => {
               const Icon = PLANNED_ICON[item.id] ?? CalendarIcon;
@@ -421,12 +443,26 @@ export function Roadmap() {
               );
             })}
           </div>
+          )}
         </section>
 
         {/* Já feitas — riscadas */}
         <section>
-          <p className="text-xs font-medium uppercase tracking-wide text-muted">{r.doneTitle}</p>
-          <p className="mb-3 text-sm text-muted">{r.doneHint}</p>
+          <button
+            type="button"
+            onClick={() => toggleSection("done")}
+            aria-expanded={!collapsedSections.has("done")}
+            className="flex w-full items-center justify-between gap-2 text-left"
+          >
+            <span className="font-display text-xl font-semibold">{r.doneTitle}</span>
+            <ChevronIcon
+              className={`h-5 w-5 shrink-0 text-muted transition-transform ${
+                collapsedSections.has("done") ? "-rotate-90" : ""
+              }`}
+            />
+          </button>
+          <p className="mb-3 mt-0.5 text-sm text-muted">{r.doneHint}</p>
+          {!collapsedSections.has("done") && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {(r.done as DoneFeature[]).map((feature, index) => (
               <DoneCard
@@ -439,6 +475,7 @@ export function Roadmap() {
               />
             ))}
           </div>
+          )}
         </section>
       </main>
     </div>
