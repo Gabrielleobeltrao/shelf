@@ -4,7 +4,7 @@ import { api } from "../lib/api";
 import { hasEnoughStock } from "../lib/units";
 import type { RecipeFormData } from "../components/recipes/RecipeDetailModal";
 import { RecipeDetailModal } from "../components/recipes/RecipeDetailModal";
-import { FilterIcon, PencilIcon, PlusIcon, SearchIcon } from "../components/icons";
+import { ExploreIcon, FilterIcon, PencilIcon, PlusIcon, SearchIcon } from "../components/icons";
 import { EmptyState } from "../components/ui/EmptyState";
 import { Fab } from "../components/ui/Fab";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
@@ -177,7 +177,16 @@ export function Recipes() {
 
   return (
     <div className="space-y-4 pb-16">
-      <h1 className="text-lg font-semibold">Receitas</h1>
+      <div className="flex items-center justify-between gap-2">
+        <h1 className="text-lg font-semibold">Receitas</h1>
+        <button
+          onClick={() => navigate("/explorar")}
+          className="flex items-center gap-1.5 rounded-lg bg-surface-2 px-3 py-1.5 text-sm font-medium text-primary-600"
+        >
+          <ExploreIcon className="h-4 w-4" />
+          Explorar
+        </button>
+      </div>
 
       {recipes.length > 0 && (
         <div className="flex gap-2">

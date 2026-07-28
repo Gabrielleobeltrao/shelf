@@ -124,6 +124,15 @@ export function CheckIcon({ className }: IconProps) {
   );
 }
 
+export function ExploreIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <circle cx="10" cy="10" r="7.5" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M13 7l-2 4-4 2 2-4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function StarIcon({ className, filled }: IconProps & { filled?: boolean }) {
   return (
     <svg viewBox="0 0 20 20" fill={filled ? "currentColor" : "none"} className={className}>
