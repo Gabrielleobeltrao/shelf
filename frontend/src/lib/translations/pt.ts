@@ -16,6 +16,7 @@ export const pt = {
     loadMore: "Carregar mais",
   },
   nav: {
+    home: "Início",
     dashboard: "Dashboard",
     inventory: "Estoque",
     recipes: "Receitas",

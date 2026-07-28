@@ -70,6 +70,20 @@ function SettingsNavIcon({ className }: { className?: string }) {
   );
 }
 
+function HomeNavIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path
+        d="M3.5 9.5 10 4l6.5 5.5M5 8.2V16h4v-4h2v4h4V8.2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 // Full app navigation — shown to signed-in users.
 const appLinks = [
   { to: "/dashboard", key: "dashboard", end: false, Icon: DashboardNavIcon },
@@ -82,6 +96,7 @@ const appLinks = [
 
 // Public pages — the only ones reachable without an account.
 const publicLinks = [
+  { to: "/", key: "home", end: true, Icon: HomeNavIcon },
   { to: "/explorar", key: "explore", end: false, Icon: ExploreNavIcon },
   { to: "/roadmap", key: "roadmap", end: false, Icon: RoadmapNavIcon },
 ] as const;

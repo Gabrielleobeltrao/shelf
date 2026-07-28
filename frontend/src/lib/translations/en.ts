@@ -18,6 +18,7 @@ export const en: Dict = {
     loadMore: "Load more",
   },
   nav: {
+    home: "Home",
     dashboard: "Dashboard",
     inventory: "Pantry",
     recipes: "Recipes",
