@@ -42,7 +42,7 @@ export function Login() {
       return;
     }
 
-    navigate("/", { replace: true });
+    navigate("/estoque", { replace: true });
   }
 
   return (

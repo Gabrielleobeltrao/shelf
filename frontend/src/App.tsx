@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AppLayout } from "./components/layout/AppLayout";
+import { useSession } from "./lib/auth-client";
+import { Landing } from "./pages/Landing";
 import { Login } from "./pages/Login";
 import { Inventory } from "./pages/Inventory";
 import { Recipes } from "./pages/Recipes";
@@ -9,9 +11,26 @@ import { Dashboard } from "./pages/Dashboard";
 import { PublicRecipe } from "./pages/PublicRecipe";
 import { ExploreRecipes } from "./pages/ExploreRecipes";
 
+// Root shows the marketing landing to logged-out visitors and sends
+// logged-in users straight into the app (Estoque).
+function RootRoute() {
+  const { data: session, isPending } = useSession();
+
+  if (isPending) {
+    return (
+      <div className="flex min-h-svh items-center justify-center text-sm text-muted">
+        Carregando...
+      </div>
+    );
+  }
+
+  return session ? <Navigate to="/estoque" replace /> : <Landing />;
+}
+
 function App() {
   return (
     <Routes>
+      <Route path="/" element={<RootRoute />} />
       <Route path="/login" element={<Login />} />
       {/* Páginas públicas — acessíveis sem login. */}
       <Route path="/receita/:id" element={<PublicRecipe />} />
@@ -24,7 +43,7 @@ function App() {
           </ProtectedRoute>
         }
       >
-        <Route path="/" element={<Inventory />} />
+        <Route path="/estoque" element={<Inventory />} />
         <Route path="/receitas" element={<Recipes />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/configuracoes" element={<Settings />} />

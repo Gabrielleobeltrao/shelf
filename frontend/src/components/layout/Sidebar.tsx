@@ -56,7 +56,7 @@ function SettingsNavIcon({ className }: { className?: string }) {
 
 const links = [
   { to: "/dashboard", label: "Dashboard", end: false, Icon: DashboardNavIcon },
-  { to: "/", label: "Estoque", end: true, Icon: InventoryNavIcon },
+  { to: "/estoque", label: "Estoque", end: true, Icon: InventoryNavIcon },
   { to: "/receitas", label: "Receitas", end: false, Icon: RecipesNavIcon },
   { to: "/explorar", label: "Explorar", end: false, Icon: ExploreNavIcon },
   { to: "/configuracoes", label: "Configurações", end: false, Icon: SettingsNavIcon },
