@@ -5,9 +5,11 @@ import type { ProductSearchResult } from "../lib/openFoodFacts";
 import { getExpirationWarning, isExpired } from "../lib/expiration";
 import { BarcodeIcon, CartIcon, MinusIcon, PlusIcon, SearchIcon } from "../components/icons";
 import { getCategoryIcon } from "../lib/categoryIcon";
+import { categoryLabel } from "../lib/labels";
 import { EmptyState } from "../components/ui/EmptyState";
 import { Fab } from "../components/ui/Fab";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
+import { useI18n } from "../lib/i18n";
 import { EmptyShelfIllustration } from "../components/illustrations";
 import type { ItemFormData } from "../components/inventory/ItemDetailModal";
 import { ItemDetailModal } from "../components/inventory/ItemDetailModal";
@@ -63,6 +65,7 @@ function toFormData(item: Item): Partial<ItemFormData> {
 }
 
 export function Inventory() {
+  const { t } = useI18n();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [scanning, setScanning] = useState(false);
@@ -276,10 +279,10 @@ export function Inventory() {
   return (
     <div className="space-y-4 pb-16">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold">Estoque</h1>
+        <h1 className="text-lg font-semibold">{t.inventory.title}</h1>
         <button
           onClick={() => setScanning(true)}
-          aria-label="Escanear código de barras"
+          aria-label={t.inventory.scan}
           className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-2 text-ink"
         >
           <BarcodeIcon className="h-4 w-4" />
@@ -291,7 +294,7 @@ export function Inventory() {
           <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
             type="text"
-            placeholder="Buscar por nome ou marca"
+            placeholder={t.inventory.searchPlaceholder}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full rounded-lg bg-surface-2 py-2 pl-9 pr-3 text-base"
@@ -316,7 +319,7 @@ export function Inventory() {
                 } ${active ? "ring-2 ring-primary-600" : ""}`}
               >
                 <ChipIcon className="h-4 w-4" />
-                {category}
+                {categoryLabel(t, category)}
               </button>
             );
           })}
@@ -324,15 +327,15 @@ export function Inventory() {
       )}
 
       {loading ? (
-        <p className="text-sm text-muted">Carregando...</p>
+        <p className="text-sm text-muted">{t.common.loading}</p>
       ) : items.length === 0 ? (
         <EmptyState
           illustration={<EmptyShelfIllustration />}
-          title="Seu estoque está vazio"
-          description="Escaneie um código de barras ou busque um produto pra começar."
+          title={t.inventory.emptyTitle}
+          description={t.inventory.emptyDesc}
         />
       ) : filteredItems.length === 0 ? (
-        <p className="text-sm text-muted">Nenhum item encontrado.</p>
+        <p className="text-sm text-muted">{t.inventory.notFound}</p>
       ) : (
         <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {filteredItems.map((item) => {
@@ -341,8 +344,8 @@ export function Inventory() {
             const outOfStock = item.quantity <= 0;
             const showActions = expired || outOfStock;
             const statusBadge =
-              (settings.trackExpiration && getExpirationWarning(item.expirationDate)) ||
-              (outOfStock ? "Sem estoque" : null);
+              (settings.trackExpiration && getExpirationWarning(t, item.expirationDate)) ||
+              (outOfStock ? t.inventory.outOfStock : null);
             const { Icon: CategoryIcon, tint } = getCategoryIcon(item.category);
 
             return (
@@ -376,7 +379,9 @@ export function Inventory() {
                           }`}
                         />
                       )}
-                      <span className="truncate">{item.category || secondaryInfo}</span>
+                      <span className="truncate">
+                        {item.category ? categoryLabel(t, item.category) : secondaryInfo}
+                      </span>
                     </span>
 
                     <div onClick={(e) => e.stopPropagation()} className="flex shrink-0 items-center gap-1.5">
@@ -384,7 +389,7 @@ export function Inventory() {
                         <>
                           <button
                             onClick={() => handleToggleRestock(item)}
-                            aria-label={`Adicionar ${item.name} à lista de compras`}
+                            aria-label={t.inventory.addToListAria(item.name)}
                             className={`flex h-8 w-16 items-center justify-center rounded-lg border bg-surface ${
                               shoppingListMap.has(item._id)
                                 ? "border-primary-600 text-primary-600"
@@ -396,7 +401,7 @@ export function Inventory() {
                           <button
                             onClick={() => handleStep(item, 1)}
                             disabled={pendingIds.has(item._id)}
-                            aria-label={`Aumentar quantidade de ${item.name}`}
+                            aria-label={t.inventory.increaseAria(item.name)}
                             className="flex h-8 w-8 items-center justify-center rounded-lg border border-line bg-surface disabled:opacity-40"
                           >
                             <PlusIcon className="h-3.5 w-3.5" />
@@ -407,7 +412,7 @@ export function Inventory() {
                           <button
                             onClick={() => handleStep(item, -1)}
                             disabled={pendingIds.has(item._id) || item.quantity <= 0}
-                            aria-label={`Diminuir quantidade de ${item.name}`}
+                            aria-label={t.inventory.decreaseAria(item.name)}
                             className="flex h-8 w-8 items-center justify-center rounded-lg border border-line bg-surface disabled:opacity-40"
                           >
                             <MinusIcon className="h-3.5 w-3.5" />
@@ -418,7 +423,7 @@ export function Inventory() {
                           <button
                             onClick={() => handleStep(item, 1)}
                             disabled={pendingIds.has(item._id)}
-                            aria-label={`Aumentar quantidade de ${item.name}`}
+                            aria-label={t.inventory.increaseAria(item.name)}
                             className="flex h-8 w-8 items-center justify-center rounded-lg border border-line bg-surface disabled:opacity-40"
                           >
                             <PlusIcon className="h-3.5 w-3.5" />
@@ -442,8 +447,8 @@ export function Inventory() {
           const viewExpired = settings.trackExpiration && isExpired(viewingItem.expirationDate);
           const viewOutOfStock = viewingItem.quantity <= 0;
           const viewStatusBadge =
-            (settings.trackExpiration && getExpirationWarning(viewingItem.expirationDate)) ||
-            (viewOutOfStock ? "Sem estoque" : null);
+            (settings.trackExpiration && getExpirationWarning(t, viewingItem.expirationDate)) ||
+            (viewOutOfStock ? t.inventory.outOfStock : null);
 
           return (
             <ItemViewModal
@@ -479,7 +484,7 @@ export function Inventory() {
 
       {modal && (
         <ItemDetailModal
-          title={modal.mode === "edit" ? "Editar item" : "Novo item"}
+          title={modal.mode === "edit" ? t.itemForm.editItem : t.itemForm.newItem}
           initial={modal.initial}
           visibleFields={{
             expirationDate: settings.trackExpiration,
@@ -508,7 +513,7 @@ export function Inventory() {
         />
       )}
 
-      <Fab onClick={() => setProductSearchOpen(true)} label="Adicionar item" icon={<PlusIcon className="h-6 w-6" />} />
+      <Fab onClick={() => setProductSearchOpen(true)} label={t.inventory.addItem} icon={<PlusIcon className="h-6 w-6" />} />
     </div>
   );
 }

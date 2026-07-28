@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { API_URL } from "../lib/api";
+import { useI18n } from "../lib/i18n";
+import { tagLabel } from "../lib/labels";
 import { BackIcon, BookmarkIcon, CheckIcon, PencilIcon, ShelfLogo, StarIcon } from "../components/icons";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 import { EmptyState } from "../components/ui/EmptyState";
@@ -36,10 +38,10 @@ type PublicRecipeData = {
 
 const STARS = [1, 2, 3, 4, 5, 6];
 
-function formatCommentDate(iso: string) {
+function formatCommentDate(iso: string, locale: string) {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "";
-  return date.toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
+  return date.toLocaleDateString(locale, { day: "2-digit", month: "short", year: "numeric" });
 }
 
 async function apiCall(path: string, options?: RequestInit) {
@@ -55,6 +57,7 @@ async function apiCall(path: string, options?: RequestInit) {
 export function PublicRecipe() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t, lang } = useI18n();
   const [data, setData] = useState<PublicRecipeData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -122,7 +125,7 @@ export function PublicRecipe() {
       <header className="grid grid-cols-3 items-center border-b border-line px-4 py-3">
         <button
           onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/receitas"))}
-          aria-label="Voltar"
+          aria-label={t.common.back}
           className="justify-self-start text-muted"
         >
           <BackIcon className="h-5 w-5" />
@@ -139,7 +142,7 @@ export function PublicRecipe() {
             className="flex items-center gap-1.5 justify-self-end rounded-lg bg-primary-600 px-3 py-1.5 text-sm font-medium text-white"
           >
             <PencilIcon className="h-3.5 w-3.5" />
-            Editar
+            {t.publicRecipe.edit}
           </button>
         ) : (
           <span />
@@ -148,19 +151,18 @@ export function PublicRecipe() {
 
       <main className="flex-1 space-y-4 px-4 py-4">
         {loading ? (
-          <p className="text-sm text-muted">Carregando...</p>
+          <p className="text-sm text-muted">{t.common.loading}</p>
         ) : !data ? (
           <EmptyState
             illustration={<EmptyShelfIllustration />}
-            title="Receita não encontrada"
-            description="Essa receita não existe ou não está pública."
+            title={t.publicRecipe.notFoundTitle}
+            description={t.publicRecipe.notFoundDesc}
           />
         ) : (
           <>
             {data.isOwner && !data.recipe.isPublic && (
               <p className="rounded-lg bg-mustard-100 px-3 py-2 text-sm text-mustard-700 dark:bg-mustard-900/40 dark:text-mustard-400">
-                Esta receita está privada — só você consegue ver esta página. Torne-a pública
-                ao editar pra compartilhar o link.
+                {t.publicRecipe.privateNotice}
               </p>
             )}
 
@@ -178,7 +180,7 @@ export function PublicRecipe() {
               <div className="min-w-0">
                 <h1 className="text-2xl font-semibold">{data.recipe.name}</h1>
                 {data.authorName && (
-                  <p className="mt-0.5 text-sm text-muted">por {data.authorName}</p>
+                  <p className="mt-0.5 text-sm text-muted">{t.publicRecipe.by(data.authorName)}</p>
                 )}
               </div>
 
@@ -193,28 +195,28 @@ export function PublicRecipe() {
                   }`}
                 >
                   <BookmarkIcon className="h-4 w-4" filled={data.saved} />
-                  {data.saved ? "Salva" : "Salvar"}
+                  {data.saved ? t.publicRecipe.saved : t.publicRecipe.save}
                 </button>
               )}
             </div>
 
             {(data.recipe.category || data.recipe.prepTime != null || data.recipe.servings != null) && (
               <div className="flex flex-wrap gap-x-3 text-sm text-muted">
-                {data.recipe.category && <span>{data.recipe.category}</span>}
-                {data.recipe.prepTime != null && <span>{data.recipe.prepTime} min</span>}
-                {data.recipe.servings != null && <span>{data.recipe.servings} porções</span>}
+                {data.recipe.category && <span>{tagLabel(t, data.recipe.category)}</span>}
+                {data.recipe.prepTime != null && <span>{data.recipe.prepTime} {t.units.min}</span>}
+                {data.recipe.servings != null && <span>{t.units.servings(data.recipe.servings)}</span>}
               </div>
             )}
 
             {data.recipe.ingredients.length > 0 && (
               <div>
                 <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
-                  Ingredientes
+                  {t.publicRecipe.ingredients}
                 </p>
                 <ul className="space-y-0.5 text-sm">
                   {data.recipe.ingredients.map((row, index) => (
                     <li key={index} className="text-muted">
-                      {row.quantity} {row.unit} de {row.name || "Item removido"}
+                      {row.quantity} {row.unit} de {row.name || t.publicRecipe.removedItem}
                     </li>
                   ))}
                 </ul>
@@ -224,7 +226,7 @@ export function PublicRecipe() {
             {data.recipe.steps.length > 0 && (
               <div>
                 <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
-                  Modo de preparo
+                  {t.publicRecipe.steps}
                 </p>
                 <ol className="list-inside list-decimal space-y-1 text-sm">
                   {data.recipe.steps.map((step, index) => (
@@ -243,15 +245,15 @@ export function PublicRecipe() {
                 </span>
                 <span className="text-sm text-muted">
                   {data.rating.count === 0
-                    ? "Sem avaliações"
-                    : `${data.rating.count} ${data.rating.count === 1 ? "avaliação" : "avaliações"}`}
+                    ? t.publicRecipe.noRatings
+                    : t.publicRecipe.ratings(data.rating.count)}
                 </span>
               </div>
 
               {canInteract ? (
                 <div className="mt-2">
                   <p className="mb-1 text-xs text-muted">
-                    {data.rating.mine ? "Sua avaliação" : "Avalie esta receita"}
+                    {data.rating.mine ? t.publicRecipe.yourRating : t.publicRecipe.rateThis}
                   </p>
                   <div className="flex gap-1" onMouseLeave={() => setRatingHover(0)}>
                     {STARS.map((star) => {
@@ -261,7 +263,7 @@ export function PublicRecipe() {
                           key={star}
                           onClick={() => handleRate(star)}
                           onMouseEnter={() => setRatingHover(star)}
-                          aria-label={`${star} estrelas`}
+                          aria-label={t.publicRecipe.starsAria(star)}
                           className={active ? "text-mustard-500" : "text-muted"}
                         >
                           <StarIcon className="h-7 w-7" filled={active} />
@@ -287,9 +289,9 @@ export function PublicRecipe() {
               {!data.isLoggedIn && (
                 <p className="mt-2 text-xs text-muted">
                   <Link to="/login" className="text-primary-600 underline">
-                    Entre
+                    {t.publicRecipe.loginLink}
                   </Link>{" "}
-                  para avaliar, comentar e salvar.
+                  {t.publicRecipe.loginPrompt}
                 </p>
               )}
             </div>
@@ -298,7 +300,7 @@ export function PublicRecipe() {
             {/* Comentários */}
             <div>
               <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">
-                Comentários ({data.comments.length})
+                {t.publicRecipe.comments(data.comments.length)}
               </p>
 
               {canInteract && (
@@ -307,7 +309,7 @@ export function PublicRecipe() {
                     type="text"
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
-                    placeholder="Deixe um comentário"
+                    placeholder={t.publicRecipe.commentPlaceholder}
                     maxLength={1000}
                     className="min-w-0 flex-1 rounded-lg bg-surface-2 px-3 py-2 text-sm"
                   />
@@ -322,7 +324,7 @@ export function PublicRecipe() {
               )}
 
               {data.comments.length === 0 ? (
-                <p className="text-sm text-muted">Nenhum comentário ainda.</p>
+                <p className="text-sm text-muted">{t.publicRecipe.noComments}</p>
               ) : (
                 <ul className="space-y-3">
                   {data.comments.map((comment) => (
@@ -330,14 +332,14 @@ export function PublicRecipe() {
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-baseline gap-2">
                           <p className="text-sm font-medium">{comment.authorName}</p>
-                          <span className="text-xs text-muted">{formatCommentDate(comment.createdAt)}</span>
+                          <span className="text-xs text-muted">{formatCommentDate(comment.createdAt, lang === "pt" ? "pt-BR" : "en-US")}</span>
                         </div>
                         {comment.mine && (
                           <button
                             onClick={() => handleDeleteComment(comment._id)}
                             className="text-xs text-rust-600"
                           >
-                            Excluir
+                            {t.common.delete}
                           </button>
                         )}
                       </div>

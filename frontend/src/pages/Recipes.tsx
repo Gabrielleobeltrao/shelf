@@ -8,6 +8,8 @@ import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { BookmarkIcon, ExploreIcon, FilterIcon, PencilIcon, PlusIcon, SearchIcon } from "../components/icons";
 import { EmptyState } from "../components/ui/EmptyState";
 import { FabMenu } from "../components/ui/FabMenu";
+import { useI18n } from "../lib/i18n";
+import { tagLabel } from "../lib/labels";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 
@@ -53,7 +55,7 @@ function getSteps(recipe: Recipe): string[] {
   return [];
 }
 
-function editInitialFor(recipe: Recipe): Partial<RecipeFormData> {
+function editInitialFor(recipe: Recipe, removedLabel: string): Partial<RecipeFormData> {
   return {
     name: recipe.name,
     steps: getSteps(recipe),
@@ -64,7 +66,7 @@ function editInitialFor(recipe: Recipe): Partial<RecipeFormData> {
     isPublic: recipe.isPublic ?? false,
     ingredients: recipe.ingredients.map((row) => ({
       itemId: row.itemId,
-      name: row.name || "Item removido",
+      name: row.name || removedLabel,
       quantity: String(row.quantity),
       unit: row.unit,
     })),
@@ -73,6 +75,7 @@ function editInitialFor(recipe: Recipe): Partial<RecipeFormData> {
 
 export function Recipes() {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [items, setItems] = useState<StockItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,7 +104,7 @@ export function Recipes() {
 
     const recipe = recipes.find((r) => r._id === editId);
     if (recipe) {
-      setModal({ mode: "edit", recipeId: recipe._id, initial: editInitialFor(recipe) });
+      setModal({ mode: "edit", recipeId: recipe._id, initial: editInitialFor(recipe, t.recipes.removedItem) });
     }
     setSearchParams({}, { replace: true });
   }, [loading, recipes, searchParams, setSearchParams]);
@@ -189,7 +192,7 @@ export function Recipes() {
 
   return (
     <div className="space-y-4 pb-16">
-      <h1 className="text-lg font-semibold">Receitas</h1>
+      <h1 className="text-lg font-semibold">{t.recipes.title}</h1>
 
       {recipes.length > 0 && (
         <div className="flex gap-2">
@@ -197,7 +200,7 @@ export function Recipes() {
             <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
             <input
               type="text"
-              placeholder="Buscar por nome ou ingrediente"
+              placeholder={t.recipes.searchPlaceholder}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full rounded-lg bg-surface-2 py-2 pl-9 pr-3 text-base"
@@ -207,7 +210,7 @@ export function Recipes() {
             <button
               type="button"
               onClick={() => setFilterOpen((v) => !v)}
-              aria-label="Filtrar receitas"
+              aria-label={t.recipes.filter}
               className={`relative flex h-full w-11 items-center justify-center rounded-lg bg-surface-2 ${
                 hasActiveFilter ? "text-primary-600" : "text-muted"
               }`}
@@ -225,14 +228,14 @@ export function Recipes() {
                   {hasSaved && (
                     <div>
                       <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
-                        Origem
+                        {t.recipes.origin}
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {(
                           [
-                            ["all", "Todas"],
-                            ["mine", "Minhas"],
-                            ["saved", "Salvas"],
+                            ["all", t.recipes.all],
+                            ["mine", t.recipes.mine],
+                            ["saved", t.recipes.saved],
                           ] as const
                         ).map(([value, label]) => (
                           <button
@@ -255,7 +258,7 @@ export function Recipes() {
                   {categories.length > 0 && (
                     <div>
                       <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
-                        Categoria
+                        {t.recipes.category}
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {categories.map((category) => {
@@ -269,7 +272,7 @@ export function Recipes() {
                                 active ? "bg-primary-600 text-white" : "bg-surface-2 text-muted"
                               }`}
                             >
-                              {category}
+                              {tagLabel(t, category)}
                             </button>
                           );
                         })}
@@ -286,7 +289,7 @@ export function Recipes() {
                       }}
                       className="text-xs font-medium text-primary-600"
                     >
-                      Limpar filtros
+                      {t.recipes.clearFilters}
                     </button>
                   )}
                 </div>
@@ -297,15 +300,15 @@ export function Recipes() {
       )}
 
       {loading ? (
-        <p className="text-sm text-muted">Carregando...</p>
+        <p className="text-sm text-muted">{t.common.loading}</p>
       ) : recipes.length === 0 ? (
         <EmptyState
           illustration={<EmptyShelfIllustration />}
-          title="Nenhuma receita ainda"
-          description="Adicione sua primeira receita pra começar a cozinhar."
+          title={t.recipes.emptyTitle}
+          description={t.recipes.emptyDesc}
         />
       ) : filteredRecipes.length === 0 ? (
-        <p className="text-sm text-muted">Nenhuma receita encontrada.</p>
+        <p className="text-sm text-muted">{t.recipes.notFound}</p>
       ) : (
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {visibleRecipes.map((recipe) => {
@@ -327,7 +330,7 @@ export function Recipes() {
                       e.stopPropagation();
                       setUnsaving(recipe);
                     }}
-                    aria-label={`Remover ${recipe.name} das salvas`}
+                    aria-label={t.recipes.unsaveAria(recipe.name)}
                     className="absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-on-photo text-primary-600 shadow-sm"
                   >
                     <BookmarkIcon className="h-4 w-4" filled />
@@ -336,9 +339,9 @@ export function Recipes() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      setModal({ mode: "edit", recipeId: recipe._id, initial: editInitialFor(recipe) });
+                      setModal({ mode: "edit", recipeId: recipe._id, initial: editInitialFor(recipe, t.recipes.removedItem) });
                     }}
-                    aria-label={`Editar ${recipe.name}`}
+                    aria-label={t.recipes.editAria(recipe.name)}
                     className="absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-on-photo text-ink shadow-sm"
                   >
                     <PencilIcon className="h-4 w-4" />
@@ -365,11 +368,11 @@ export function Recipes() {
                       recipe.ingredients.length > 0 &&
                       (missing.length === 0 ? (
                         <span className="shrink-0 rounded-full bg-primary-100 px-2 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
-                          Dá pra fazer
+                          {t.recipes.canMake}
                         </span>
                       ) : (
                         <span className="shrink-0 rounded-full bg-rust-100 px-2 py-0.5 text-xs font-medium text-rust-700 dark:bg-rust-900/40 dark:text-rust-400">
-                          Falta {missing.length}
+                          {t.recipes.missing(missing.length)}
                         </span>
                       ))}
                   </div>
@@ -382,17 +385,17 @@ export function Recipes() {
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
                       {recipe.savedFrom && (
                         <span className="rounded-full bg-primary-100 px-2 py-0.5 font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
-                          Salva
+                          {t.recipes.savedBadge}
                         </span>
                       )}
                       {recipe.isPublic && (
                         <span className="rounded-full bg-mustard-100 px-2 py-0.5 font-medium text-mustard-700 dark:bg-mustard-900/40 dark:text-mustard-400">
-                          Pública
+                          {t.recipes.publicBadge}
                         </span>
                       )}
-                      {recipe.category && <span>{recipe.category}</span>}
-                      {recipe.prepTime != null && <span>{recipe.prepTime} min</span>}
-                      {recipe.servings != null && <span>{recipe.servings} porções</span>}
+                      {recipe.category && <span>{tagLabel(t, recipe.category)}</span>}
+                      {recipe.prepTime != null && <span>{recipe.prepTime} {t.units.min}</span>}
+                      {recipe.servings != null && <span>{t.units.servings(recipe.servings)}</span>}
                     </div>
                   )}
 
@@ -407,7 +410,7 @@ export function Recipes() {
                               : "text-muted"
                           }
                         >
-                          {row.quantity} {row.unit} de {row.name || "Item removido"}
+                          {row.quantity} {row.unit} de {row.name || t.recipes.removedItem}
                         </li>
                       ))}
                     </ul>
@@ -432,13 +435,13 @@ export function Recipes() {
           onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
           className="mx-auto block rounded-lg bg-surface-2 px-4 py-2 text-sm font-medium"
         >
-          Carregar mais
+          {t.common.loadMore}
         </button>
       )}
 
       {modal && (
         <RecipeDetailModal
-          title={modal.mode === "edit" ? "Editar receita" : "Nova receita"}
+          title={modal.mode === "edit" ? t.recipeForm.editRecipe : t.recipeForm.newRecipe}
           initial={modal.initial}
           stockItems={items}
           onClose={() => setModal(null)}
@@ -450,9 +453,9 @@ export function Recipes() {
 
       {unsaving && (
         <ConfirmDialog
-          title={`Remover "${unsaving.name}" das salvas?`}
-          description="Ela sai da sua lista, mas continua disponível em Explorar."
-          confirmLabel="Remover"
+          title={t.recipes.removeSavedTitle(unsaving.name)}
+          description={t.recipes.removeSavedDesc}
+          confirmLabel={t.common.remove}
           onConfirm={() => {
             handleDeleteRecipe(unsaving._id);
             setUnsaving(null);
@@ -462,14 +465,15 @@ export function Recipes() {
       )}
 
       <FabMenu
+        label={t.recipes.openActions}
         actions={[
           {
-            label: "Explorar receitas",
+            label: t.recipes.exploreRecipes,
             icon: <ExploreIcon className="h-5 w-5" />,
             onClick: () => navigate("/explorar"),
           },
           {
-            label: "Adicionar receita",
+            label: t.recipes.addRecipe,
             icon: <PlusIcon className="h-5 w-5" />,
             onClick: () =>
               setModal({

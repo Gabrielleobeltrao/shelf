@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { BrowserMultiFormatReader } from "@zxing/browser";
 import { CloseIcon } from "../icons";
+import { useI18n } from "../../lib/i18n";
 
 type Props = {
   onDetected: (code: string) => void;
@@ -8,6 +9,7 @@ type Props = {
 };
 
 export function BarcodeScanner({ onDetected, onClose }: Props) {
+  const { t } = useI18n();
   const videoRef = useRef<HTMLVideoElement>(null);
   const onDetectedRef = useRef(onDetected);
   onDetectedRef.current = onDetected;
@@ -23,7 +25,7 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
         if (cancelled) return;
 
         if (found.length === 0) {
-          setError("Nenhuma câmera encontrada.");
+          setError(t.barcode.noCamera);
           return;
         }
 
@@ -31,7 +33,7 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
         const backIndex = found.findIndex((d) => /back|traseira|rear|environment/i.test(d.label));
         if (backIndex >= 0) setDeviceIndex(backIndex);
       })
-      .catch(() => setError("Não foi possível acessar a câmera."));
+      .catch(() => setError(t.barcode.cameraError));
 
     return () => {
       cancelled = true;
@@ -71,7 +73,7 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
         controls = c;
       })
       .catch(() => {
-        setError("Não foi possível acessar a câmera.");
+        setError(t.barcode.cameraError);
       });
 
     return () => {
@@ -86,7 +88,7 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
 
       <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-linear-to-b from-black/70 to-transparent" />
       <p className="pointer-events-none absolute inset-x-0 top-5 text-center font-display text-base font-semibold text-white">
-        Escanear código de barras
+        {t.barcode.title}
       </p>
 
       {!error && (
@@ -98,7 +100,7 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
             <span className="absolute bottom-0 right-0 h-8 w-8 rounded-br-lg border-b-4 border-r-4 border-primary-400" />
           </div>
           <p className="mt-3 text-center text-sm text-white/90">
-            Aproxime o código de barras dessa área
+            {t.barcode.hint}
           </p>
         </div>
       )}
@@ -117,13 +119,13 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
             onClick={() => setDeviceIndex((i) => (i + 1) % devices.length)}
             className="rounded-full bg-on-photo px-4 py-2 text-sm font-medium text-ink"
           >
-            Trocar câmera
+            {t.barcode.changeCamera}
           </button>
         ) : (
           <span />
         )}
 
-        <button onClick={onClose} aria-label="Fechar" className="rounded-full bg-on-photo p-2.5">
+        <button onClick={onClose} aria-label={t.common.close} className="rounded-full bg-on-photo p-2.5">
           <CloseIcon className="h-4 w-4 text-ink" />
         </button>
       </div>

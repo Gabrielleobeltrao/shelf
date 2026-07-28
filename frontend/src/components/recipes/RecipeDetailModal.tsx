@@ -8,6 +8,8 @@ import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 import { Switch } from "../ui/Switch";
 import { RECIPE_TAGS } from "../../lib/recipeTags";
+import { useI18n } from "../../lib/i18n";
+import { tagLabel } from "../../lib/labels";
 
 function FieldLabel({ children }: { children: string }) {
   return <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted">{children}</label>;
@@ -76,6 +78,7 @@ export function RecipeDetailModal({
   onDelete,
   onItemCreated,
 }: Props) {
+  const { t } = useI18n();
   const [name, setName] = useState(initial.name ?? "");
   const [steps, setSteps] = useState<string[]>(initial.steps ?? []);
   const [prepTime, setPrepTime] = useState(initial.prepTime ?? "");
@@ -115,8 +118,8 @@ export function RecipeDetailModal({
     // If this ingredient's original stock item was deleted, keep it visible
     // (via its saved name) instead of silently swapping the selection.
     if (row.itemId && !available.some((item) => item._id === row.itemId)) {
-      const label = row.name || "Item removido";
-      return [{ _id: row.itemId, name: `${label} (removido do estoque)` }, ...available];
+      const label = row.name || t.recipes.removedItem;
+      return [{ _id: row.itemId, name: t.recipeForm.removedFromStock(label) }, ...available];
     }
 
     return available;
@@ -207,7 +210,7 @@ export function RecipeDetailModal({
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{title}</h2>
-          <button type="button" onClick={onClose} aria-label="Fechar" className="text-muted">
+          <button type="button" onClick={onClose} aria-label={t.common.close} className="text-muted">
             <CloseIcon className="h-4 w-4" />
           </button>
         </div>
@@ -224,7 +227,7 @@ export function RecipeDetailModal({
           />
           <input
             type="text"
-            placeholder="URL da foto do prato"
+            placeholder={t.recipeForm.photoUrl}
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
             className="w-full rounded-lg bg-surface-2 px-3 py-2 text-sm"
@@ -232,7 +235,7 @@ export function RecipeDetailModal({
         </div>
 
         <div>
-          <FieldLabel>Nome*</FieldLabel>
+          <FieldLabel>{t.recipeForm.name}</FieldLabel>
           <input
             type="text"
             value={name}
@@ -243,7 +246,7 @@ export function RecipeDetailModal({
         </div>
 
         <div>
-          <FieldLabel>Tipo</FieldLabel>
+          <FieldLabel>{t.recipeForm.type}</FieldLabel>
           <div className="flex flex-wrap gap-2">
             {RECIPE_TAGS.map((tag) => {
               const active = category === tag;
@@ -258,7 +261,7 @@ export function RecipeDetailModal({
                       : "bg-surface-2 text-muted"
                   }`}
                 >
-                  {tag}
+                  {tagLabel(t, tag)}
                 </button>
               );
             })}
@@ -267,7 +270,7 @@ export function RecipeDetailModal({
 
         <div className="flex gap-2">
           <div className="w-1/2">
-            <FieldLabel>Tempo (min)</FieldLabel>
+            <FieldLabel>{t.recipeForm.timeMin}</FieldLabel>
             <input
               type="number"
               min={0}
@@ -277,7 +280,7 @@ export function RecipeDetailModal({
             />
           </div>
           <div className="w-1/2">
-            <FieldLabel>Porções</FieldLabel>
+            <FieldLabel>{t.recipeForm.servings}</FieldLabel>
             <input
               type="number"
               min={0}
@@ -289,7 +292,7 @@ export function RecipeDetailModal({
         </div>
 
         <div className="space-y-2">
-          <p className="text-sm font-medium">Ingredientes</p>
+          <p className="text-sm font-medium">{t.recipeForm.ingredients}</p>
 
           {ingredients.map((row, index) => (
             <div key={index} className="flex gap-2">
@@ -315,7 +318,7 @@ export function RecipeDetailModal({
                 type="number"
                 min={0}
                 step="any"
-                placeholder="Qtd."
+                placeholder={t.itemForm.quantity}
                 value={row.quantity}
                 onChange={(e) => updateIngredient(index, { quantity: e.target.value })}
                 className="w-16 rounded-lg bg-surface-2 px-2 py-2 text-base"
@@ -334,7 +337,7 @@ export function RecipeDetailModal({
               <button
                 type="button"
                 onClick={() => removeIngredient(index)}
-                aria-label="Remover ingrediente"
+                aria-label={t.common.remove}
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rust-100 text-rust-600 dark:bg-rust-900/30"
               >
                 <CloseIcon className="h-3.5 w-3.5" />
@@ -350,7 +353,7 @@ export function RecipeDetailModal({
                 className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-dashed border-primary-600 py-2 text-sm font-medium text-primary-700 dark:text-primary-400"
               >
                 <PlusIcon className="h-3.5 w-3.5" />
-                Do estoque
+                {t.recipeForm.fromStock}
               </button>
             )}
             <button
@@ -360,20 +363,20 @@ export function RecipeDetailModal({
               className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-dashed border-primary-600 py-2 text-sm font-medium text-primary-700 disabled:opacity-60 dark:text-primary-400"
             >
               <PlusIcon className="h-3.5 w-3.5" />
-              {creatingItem ? "Adicionando..." : "Buscar produto"}
+              {creatingItem ? t.recipeForm.adding : t.recipeForm.searchProduct}
             </button>
           </div>
         </div>
 
         <div className="space-y-2">
-          <p className="text-sm font-medium">Modo de preparo</p>
+          <p className="text-sm font-medium">{t.recipeForm.steps}</p>
 
           {steps.map((step, index) => (
             <div key={index} className="flex items-center gap-2">
               <span className="w-5 shrink-0 text-sm text-muted">{index + 1}.</span>
               <input
                 type="text"
-                placeholder={`Passo ${index + 1}`}
+                placeholder={t.recipeForm.stepPlaceholder(index + 1)}
                 value={step}
                 onChange={(e) => updateStep(index, e.target.value)}
                 className="min-w-0 flex-1 rounded-lg bg-surface-2 px-3 py-2 text-base"
@@ -381,7 +384,7 @@ export function RecipeDetailModal({
               <button
                 type="button"
                 onClick={() => removeStep(index)}
-                aria-label="Remover passo"
+                aria-label={t.common.remove}
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rust-100 text-rust-600 dark:bg-rust-900/30"
               >
                 <CloseIcon className="h-3.5 w-3.5" />
@@ -395,7 +398,7 @@ export function RecipeDetailModal({
             className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-primary-600 py-2 text-sm font-medium text-primary-700 dark:text-primary-400"
           >
             <PlusIcon className="h-3.5 w-3.5" />
-            Adicionar passo
+            {t.recipeForm.addStep}
           </button>
         </div>
 
@@ -403,8 +406,8 @@ export function RecipeDetailModal({
           <Switch
             checked={isPublic}
             onChange={setIsPublic}
-            label="Receita pública"
-            description="Qualquer pessoa com o link pode ver esta receita."
+            label={t.recipeForm.publicLabel}
+            description={t.recipeForm.publicDesc}
           />
         </div>
 
@@ -417,7 +420,7 @@ export function RecipeDetailModal({
               className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-rust-600 py-2.5 font-medium text-rust-600 disabled:opacity-60"
             >
               <TrashIcon className="h-4 w-4" />
-              {deleting ? "Excluindo..." : "Excluir"}
+              {deleting ? t.common.deleting : t.common.delete}
             </button>
           )}
           <button
@@ -425,14 +428,14 @@ export function RecipeDetailModal({
             disabled={saving}
             className="flex-1 rounded-lg bg-primary-600 py-2.5 font-medium text-white disabled:opacity-60"
           >
-            {saving ? "Salvando..." : "Salvar"}
+            {saving ? t.common.saving : t.common.save}
           </button>
         </div>
       </form>
 
       {productSearchOpen && (
         <ProductSearchModal
-          title="Buscar ingrediente"
+          title={t.productSearch.searchIngredient}
           onSelect={handleSelectProduct}
           onClose={() => setProductSearchOpen(false)}
           localItems={stockItems}
@@ -441,8 +444,8 @@ export function RecipeDetailModal({
 
       {confirmingDelete && (
         <ConfirmDialog
-          title={`Excluir "${name}"?`}
-          description="A receita será removida permanentemente."
+          title={t.recipeForm.confirmDeleteTitle(name)}
+          description={t.recipeForm.confirmDeleteDesc}
           onConfirm={handleDelete}
           onCancel={() => setConfirmingDelete(false)}
         />

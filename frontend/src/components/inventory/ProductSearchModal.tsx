@@ -5,6 +5,7 @@ import { CloseIcon, SearchIcon } from "../icons";
 import { EmptyState } from "../ui/EmptyState";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 import { EmptyShelfIllustration } from "../illustrations";
+import { useI18n } from "../../lib/i18n";
 
 export type LocalStockItem = {
   _id: string;
@@ -36,7 +37,9 @@ function toSearchResult(item: LocalStockItem): ProductSearchResult {
   };
 }
 
-export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddManually, onClose, localItems = [] }: Props) {
+export function ProductSearchModal({ title, onSelect, onAddManually, onClose, localItems = [] }: Props) {
+  const { t } = useI18n();
+  const heading = title ?? t.productSearch.addItem;
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<ProductSearchResult[]>([]);
   const [page, setPage] = useState(1);
@@ -98,8 +101,8 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
         className="flex max-h-[85vh] w-full flex-col space-y-3 rounded-t-2xl bg-surface p-4"
       >
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">{title}</h2>
-          <button onClick={onClose} aria-label="Fechar" className="text-muted">
+          <h2 className="text-lg font-semibold">{heading}</h2>
+          <button onClick={onClose} aria-label={t.common.close} className="text-muted">
             <CloseIcon className="h-4 w-4" />
           </button>
         </div>
@@ -110,7 +113,7 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
             onClick={onAddManually}
             className="w-full rounded-lg border border-primary-600 py-2.5 font-medium text-primary-600"
           >
-            Adicionar manualmente
+            {t.productSearch.addManually}
           </button>
         )}
 
@@ -118,7 +121,7 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
           <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
             type="text"
-            placeholder="Buscar produto por nome"
+            placeholder={t.productSearch.searchPlaceholder}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             autoFocus
@@ -129,7 +132,9 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
         <div className="flex-1 space-y-1 overflow-y-auto">
           {localMatches.length > 0 && (
             <div className="space-y-1 pb-2">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted">Já no seu estoque</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-muted">
+                {t.productSearch.inStockSection}
+              </p>
               {localMatches.map((product) => (
                 <ProductRow key={`local-${product.localItemId}`} product={product} onSelect={onSelect} />
               ))}
@@ -137,31 +142,32 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
           )}
 
           {loading ? (
-            <p className="text-sm text-muted">Carregando...</p>
+            <p className="text-sm text-muted">{t.common.loading}</p>
           ) : error && results.length === 0 ? (
             <div className="space-y-2">
               <p className="text-sm text-muted">
-                Não foi possível buscar produtos agora
-                {onAddManually ? " — tente de novo ou adicione manualmente." : ". Tente de novo."}
+                {onAddManually ? t.productSearch.errorWithManual : t.productSearch.errorNoManual}
               </p>
               <button
                 type="button"
                 onClick={() => setRetryToken((prev) => prev + 1)}
                 className="text-sm font-medium text-primary-600"
               >
-                Tentar de novo
+                {t.common.tryAgain}
               </button>
             </div>
           ) : noResults ? (
             <EmptyState
               illustration={<EmptyShelfIllustration />}
-              title="Nenhum produto encontrado"
-              description={`Tente outro nome${onAddManually ? " ou adicione manualmente." : "."}`}
+              title={t.productSearch.notFoundTitle}
+              description={onAddManually ? t.productSearch.notFoundWithManual : t.productSearch.notFoundNoManual}
             />
           ) : (
             <>
               {results.length > 0 && localMatches.length > 0 && (
-                <p className="pt-1 text-xs font-medium uppercase tracking-wide text-muted">Buscar produto</p>
+                <p className="pt-1 text-xs font-medium uppercase tracking-wide text-muted">
+                  {t.productSearch.searchSection}
+                </p>
               )}
               {results.map((product, index) => (
                 <ProductRow key={`${product.barcode}-${index}`} product={product} onSelect={onSelect} />
@@ -174,7 +180,7 @@ export function ProductSearchModal({ title = "Adicionar item", onSelect, onAddMa
                   disabled={loadingMore}
                   className="w-full py-2 text-sm font-medium text-primary-600 disabled:opacity-60"
                 >
-                  {loadingMore ? "Carregando..." : "Carregar mais"}
+                  {loadingMore ? t.common.loading : t.common.loadMore}
                 </button>
               )}
             </>

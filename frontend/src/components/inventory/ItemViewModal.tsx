@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { NUTRITION_OPTIONS } from "../../lib/nutrition";
+import { useI18n } from "../../lib/i18n";
+import { categoryLabel } from "../../lib/labels";
 import { BackIcon, CartIcon, MinusIcon, PencilIcon, PlusIcon, TrashIcon } from "../icons";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
@@ -56,6 +58,7 @@ export function ItemViewModal({
   onToggleRestock,
   onStep,
 }: Props) {
+  const { t, lang } = useI18n();
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const nutritionEntries = visibleFields.nutritionFields
@@ -63,13 +66,15 @@ export function ItemViewModal({
     .filter((entry) => entry.option && entry.value != null);
 
   const infoLines = [
-    item.category && { label: "Categoria", value: item.category },
-    item.packageSize && { label: "Embalagem", value: item.packageSize },
-    item.barcode && { label: "Código de barras", value: item.barcode },
+    item.category && { label: t.itemView.category, value: categoryLabel(t, item.category) },
+    item.packageSize && { label: t.itemView.packageSize, value: item.packageSize },
+    item.barcode && { label: t.itemView.barcode, value: item.barcode },
     visibleFields.expirationDate &&
       item.expirationDate && {
-        label: "Validade",
-        value: new Date(`${item.expirationDate}T00:00:00`).toLocaleDateString("pt-BR"),
+        label: t.itemView.expiration,
+        value: new Date(`${item.expirationDate}T00:00:00`).toLocaleDateString(
+          lang === "pt" ? "pt-BR" : "en-US",
+        ),
       },
   ].filter(Boolean) as { label: string; value: string }[];
 
@@ -87,20 +92,20 @@ export function ItemViewModal({
           />
 
           <div className="absolute inset-0 flex items-start justify-between p-3">
-            <button onClick={onClose} aria-label="Fechar" className={infoIconBtn}>
+            <button onClick={onClose} aria-label={t.common.close} className={infoIconBtn}>
               <BackIcon className="h-4 w-4" />
             </button>
             <div className="flex gap-2">
               {showActions && (
                 <button
                   onClick={() => setConfirmingDelete(true)}
-                  aria-label="Excluir"
+                  aria-label={t.common.delete}
                   className={`${infoIconBtn} text-rust-600 dark:text-rust-400`}
                 >
                   <TrashIcon className="h-4 w-4" />
                 </button>
               )}
-              <button onClick={onEdit} aria-label="Editar" className={infoIconBtn}>
+              <button onClick={onEdit} aria-label={t.common.edit} className={infoIconBtn}>
                 <PencilIcon className="h-4 w-4" />
               </button>
             </div>
@@ -123,7 +128,7 @@ export function ItemViewModal({
           <button
             onClick={() => onStep(-1)}
             disabled={pending || item.quantity <= 0}
-            aria-label="Diminuir quantidade"
+            aria-label={t.common.remove}
             className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2 disabled:opacity-40"
           >
             <MinusIcon className="h-4 w-4" />
@@ -134,7 +139,7 @@ export function ItemViewModal({
           <button
             onClick={() => onStep(1)}
             disabled={pending}
-            aria-label="Aumentar quantidade"
+            aria-label={t.common.add}
             className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2 disabled:opacity-40"
           >
             <PlusIcon className="h-4 w-4" />
@@ -145,12 +150,12 @@ export function ItemViewModal({
           <div className="flex gap-2">
             {visibleFields.glutenFree && item.glutenFree && (
               <span className="rounded-full bg-primary-100 px-2 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
-                Sem glúten
+                {t.itemView.glutenFree}
               </span>
             )}
             {visibleFields.vegan && item.vegan && (
               <span className="rounded-full bg-primary-100 px-2 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
-                Vegano
+                {t.itemView.vegan}
               </span>
             )}
           </div>
@@ -170,12 +175,12 @@ export function ItemViewModal({
         {nutritionEntries.length > 0 && (
           <div>
             <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
-              Informações nutricionais
+              {t.itemView.nutritionInfo}
             </p>
             <div className="grid grid-cols-2 gap-2">
               {nutritionEntries.map(({ option, value }) => (
                 <div key={option!.key} className="rounded-lg bg-surface-2 px-3 py-2">
-                  <p className="text-[0.65rem] font-medium uppercase tracking-wide text-muted">{option!.label}</p>
+                  <p className="text-[0.65rem] font-medium uppercase tracking-wide text-muted">{t.nutrition[option!.key]}</p>
                   <p className="text-sm font-semibold tabular-nums">
                     {value} {option!.unit}
                   </p>
@@ -195,15 +200,15 @@ export function ItemViewModal({
             }`}
           >
             <CartIcon className="h-4 w-4" />
-            {inShoppingList ? "Na lista de compras" : "Adicionar à lista de compras"}
+            {inShoppingList ? t.itemView.inList : t.itemView.addToList}
           </button>
         )}
       </div>
 
       {confirmingDelete && (
         <ConfirmDialog
-          title={`Excluir "${item.name}"?`}
-          description="O item será removido do seu estoque permanentemente."
+          title={t.itemView.confirmDeleteTitle(item.name)}
+          description={t.itemView.confirmDeleteDesc}
           onConfirm={onDelete}
           onCancel={() => setConfirmingDelete(false)}
         />

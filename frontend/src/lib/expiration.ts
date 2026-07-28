@@ -9,11 +9,16 @@ export function isExpired(expirationDate?: string): boolean {
   return !!expirationDate && daysUntil(expirationDate) < 0;
 }
 
-export function getExpirationWarning(expirationDate?: string): string | null {
+import type { Dict } from "./i18n";
+
+// Returns a translated expiration label, or null when the item isn't
+// close enough to expiry to warn about. Takes the dictionary so the
+// wording follows the selected language.
+export function getExpirationWarning(t: Dict, expirationDate?: string): string | null {
   if (!expirationDate) return null;
   const days = daysUntil(expirationDate);
-  if (days < 0) return "Vencido";
-  if (days === 0) return "Vence hoje";
-  if (days <= 7) return `Vence em ${days}d`;
+  if (days < 0) return t.expiration.expired;
+  if (days === 0) return t.expiration.today;
+  if (days <= 7) return t.expiration.inDays(days);
   return null;
 }

@@ -5,6 +5,7 @@ import { CloseIcon, TrashIcon } from "../icons";
 import { Switch } from "../ui/Switch";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
+import { useI18n } from "../../lib/i18n";
 
 export type ItemFormData = {
   name: string;
@@ -52,6 +53,7 @@ export function ItemDetailModal({
   onSave,
   onDelete,
 }: Props) {
+  const { t } = useI18n();
   const [name, setName] = useState(initial.name ?? "");
   const [brand, setBrand] = useState(initial.brand ?? "");
   const [category, setCategory] = useState(initial.category ?? "");
@@ -107,7 +109,7 @@ export function ItemDetailModal({
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{title}</h2>
-          <button type="button" onClick={onClose} aria-label="Fechar" className="text-muted">
+          <button type="button" onClick={onClose} aria-label={t.common.close} className="text-muted">
             <CloseIcon className="h-4 w-4" />
           </button>
         </div>
@@ -128,7 +130,7 @@ export function ItemDetailModal({
           />
           <input
             type="text"
-            placeholder="URL da foto do produto"
+            placeholder={t.itemForm.photoUrl}
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
             className="w-full rounded-lg bg-surface-2 px-3 py-2 text-sm"
@@ -136,7 +138,7 @@ export function ItemDetailModal({
         </div>
 
         <div>
-          <FieldLabel>Nome*</FieldLabel>
+          <FieldLabel>{t.itemForm.name}</FieldLabel>
           <input
             type="text"
             value={name}
@@ -147,12 +149,12 @@ export function ItemDetailModal({
         </div>
 
         <div>
-          <FieldLabel>Marca</FieldLabel>
+          <FieldLabel>{t.itemForm.brand}</FieldLabel>
           <input type="text" value={brand} onChange={(e) => setBrand(e.target.value)} className={inputClass} />
         </div>
 
         <div>
-          <FieldLabel>Categoria</FieldLabel>
+          <FieldLabel>{t.itemForm.category}</FieldLabel>
           <input
             type="text"
             list="category-suggestions"
@@ -168,10 +170,10 @@ export function ItemDetailModal({
         </div>
 
         <div>
-          <FieldLabel>Tamanho da embalagem</FieldLabel>
+          <FieldLabel>{t.itemForm.packageSize}</FieldLabel>
           <input
             type="text"
-            placeholder="ex: 500g, 1L"
+            placeholder={t.itemForm.packageSizeExample}
             value={packageSize}
             onChange={(e) => setPackageSize(e.target.value)}
             className={inputClass}
@@ -180,7 +182,7 @@ export function ItemDetailModal({
 
         <div className="flex gap-2">
           <div className="w-1/2">
-            <FieldLabel>Quantidade</FieldLabel>
+            <FieldLabel>{t.itemForm.quantity}</FieldLabel>
             <input
               type="number"
               min={0}
@@ -190,19 +192,19 @@ export function ItemDetailModal({
             />
           </div>
           <div className="w-1/2">
-            <FieldLabel>Unidade</FieldLabel>
+            <FieldLabel>{t.itemForm.unit}</FieldLabel>
             <input type="text" value={unit} onChange={(e) => setUnit(e.target.value)} className={inputClass} />
           </div>
         </div>
 
         <div>
-          <FieldLabel>Código de barras</FieldLabel>
+          <FieldLabel>{t.itemForm.barcode}</FieldLabel>
           <input type="text" value={barcode} onChange={(e) => setBarcode(e.target.value)} className={inputClass} />
         </div>
 
         {visibleFields.expirationDate && (
           <div>
-            <FieldLabel>Validade</FieldLabel>
+            <FieldLabel>{t.itemForm.expiration}</FieldLabel>
             <input
               type="date"
               value={expirationDate}
@@ -214,7 +216,7 @@ export function ItemDetailModal({
 
         {visibleFields.nutritionFields.length > 0 && (
           <div>
-            <FieldLabel>Informações nutricionais</FieldLabel>
+            <FieldLabel>{t.itemForm.nutritionInfo}</FieldLabel>
             <div className="grid grid-cols-2 gap-2">
               {NUTRITION_OPTIONS.filter((option) =>
                 visibleFields.nutritionFields.includes(option.key),
@@ -224,7 +226,7 @@ export function ItemDetailModal({
                   type="number"
                   min={0}
                   step="any"
-                  placeholder={`${option.label} (${option.unit})`}
+                  placeholder={`${t.nutrition[option.key]} (${option.unit})`}
                   value={nutrition[option.key] ?? ""}
                   onChange={(e) =>
                     setNutrition((prev) => ({ ...prev, [option.key]: e.target.value }))
@@ -239,9 +241,9 @@ export function ItemDetailModal({
         {(visibleFields.glutenFree || visibleFields.vegan) && (
           <div className="space-y-3 border-t border-line pt-3">
             {visibleFields.glutenFree && (
-              <Switch checked={glutenFree} onChange={setGlutenFree} label="Sem glúten" />
+              <Switch checked={glutenFree} onChange={setGlutenFree} label={t.itemForm.glutenFree} />
             )}
-            {visibleFields.vegan && <Switch checked={vegan} onChange={setVegan} label="Vegano" />}
+            {visibleFields.vegan && <Switch checked={vegan} onChange={setVegan} label={t.itemForm.vegan} />}
           </div>
         )}
 
@@ -254,7 +256,7 @@ export function ItemDetailModal({
               className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-rust-600 py-2.5 font-medium text-rust-600 disabled:opacity-60"
             >
               <TrashIcon className="h-4 w-4" />
-              {deleting ? "Excluindo..." : "Excluir"}
+              {deleting ? t.common.deleting : t.common.delete}
             </button>
           )}
           <button
@@ -262,15 +264,17 @@ export function ItemDetailModal({
             disabled={saving}
             className="flex-1 rounded-lg bg-primary-600 py-2.5 font-medium text-white disabled:opacity-60"
           >
-            {saving ? "Salvando..." : "Salvar"}
+            {saving ? t.common.saving : t.common.save}
           </button>
         </div>
       </form>
 
       {confirmingDelete && (
         <ConfirmDialog
-          title={`Excluir "${name}"?`}
-          description="O item será removido do seu estoque permanentemente."
+          title={t.itemView.confirmDeleteTitle(name)}
+          description={t.itemView.confirmDeleteDesc}
+          confirmLabel={t.common.delete}
+          cancelLabel={t.common.cancel}
           onConfirm={handleDelete}
           onCancel={() => setConfirmingDelete(false)}
         />

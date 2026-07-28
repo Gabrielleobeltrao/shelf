@@ -1,13 +1,18 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   BarcodeIcon,
   BookmarkIcon,
   CartIcon,
+  CloseIcon,
   ExploreIcon,
+  MenuIcon,
   ShelfLogo,
   StarIcon,
 } from "../components/icons";
 import { BowlIllustration, PantryShelfIllustration } from "../components/illustrations";
+import { useI18n } from "../lib/i18n";
+import { LanguageSelect } from "../components/ui/LanguageSelect";
 
 function StarRow() {
   return (
@@ -20,28 +25,71 @@ function StarRow() {
 }
 
 export function Landing() {
+  const { t } = useI18n();
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <div className="flex min-h-svh flex-col bg-bg">
-      <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-4">
-        <div className="flex items-center gap-2">
+      <header className="mx-auto grid w-full max-w-5xl grid-cols-3 items-center px-4 py-4">
+        <button
+          type="button"
+          onClick={() => setMenuOpen(true)}
+          aria-label={t.nav.openMenu}
+          className="justify-self-start rounded-lg p-2 text-ink hover:bg-surface-2"
+        >
+          <MenuIcon className="h-6 w-6" />
+        </button>
+        <div className="flex items-center justify-self-center gap-2">
           <ShelfLogo className="h-7 w-7" />
           <span className="font-display text-xl font-semibold">Shelf</span>
         </div>
-        <div className="flex items-center gap-2">
-          <Link
-            to="/explorar"
-            className="hidden rounded-lg px-3 py-2 text-sm font-medium text-muted sm:block"
-          >
-            Explorar
-          </Link>
-          <Link
-            to="/login"
-            className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white"
-          >
-            Entrar
-          </Link>
-        </div>
+        <span />
       </header>
+
+      {menuOpen && (
+        <div className="fixed inset-0 z-50 flex" role="dialog" aria-modal="true">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setMenuOpen(false)} />
+          <aside className="relative flex h-full w-72 max-w-[80vw] flex-col gap-1 bg-surface p-4">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ShelfLogo className="h-6 w-6" />
+                <span className="font-display text-lg font-semibold">Shelf</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMenuOpen(false)}
+                aria-label={t.nav.closeMenu}
+                className="rounded-lg p-2 text-muted hover:bg-surface-2"
+              >
+                <CloseIcon className="h-5 w-5" />
+              </button>
+            </div>
+
+            <Link
+              to="/explorar"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-surface-2"
+            >
+              <ExploreIcon className="h-5 w-5" />
+              {t.landing.explore}
+            </Link>
+            <Link
+              to="/login"
+              onClick={() => setMenuOpen(false)}
+              className="mt-1 flex items-center justify-center rounded-lg bg-primary-600 px-3 py-2.5 text-sm font-medium text-white"
+            >
+              {t.landing.enter}
+            </Link>
+
+            <div className="mt-auto border-t border-line pt-4">
+              <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
+                {t.settings.language}
+              </p>
+              <LanguageSelect className="w-full" />
+            </div>
+          </aside>
+        </div>
+      )}
 
       <main className="flex-1">
         {/* Hero */}
@@ -49,25 +97,24 @@ export function Landing() {
           <div className="grid items-center gap-8 lg:grid-cols-2">
             <div>
               <h1 className="font-display text-4xl font-bold leading-tight text-ink sm:text-5xl">
-                Descubra, compartilhe e organize suas receitas
+                {t.landing.heroTitle}
               </h1>
               <p className="mt-4 max-w-md text-base text-muted sm:text-lg">
-                Uma comunidade pra encontrar receitas de outras pessoas, avaliar, comentar e
-                salvar as suas favoritas — e ainda manter a cozinha organizada.
+                {t.landing.heroSubtitle}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   to="/login"
                   className="rounded-lg bg-primary-600 px-5 py-2.5 font-medium text-white"
                 >
-                  Criar conta grátis
+                  {t.landing.createFree}
                 </Link>
                 <Link
                   to="/explorar"
                   className="flex items-center gap-2 rounded-lg bg-surface-2 px-5 py-2.5 font-medium text-primary-600"
                 >
                   <ExploreIcon className="h-4 w-4" />
-                  Explorar receitas
+                  {t.landing.exploreRecipes}
                 </Link>
               </div>
             </div>
@@ -78,12 +125,12 @@ export function Landing() {
                 <BowlIllustration className="h-24 w-auto" />
               </div>
               <div className="mt-3 space-y-1">
-                <h3 className="font-display text-lg font-semibold">Bolo de cenoura</h3>
-                <p className="text-sm text-muted">por Marina Costa</p>
+                <h3 className="font-display text-lg font-semibold">{t.landing.previewName}</h3>
+                <p className="text-sm text-muted">{t.landing.previewAuthor}</p>
                 <div className="flex items-center gap-2 pt-1">
                   <StarRow />
                   <span className="text-sm font-medium tabular-nums">5.0</span>
-                  <span className="text-sm text-muted">· 12 comentários</span>
+                  <span className="text-sm text-muted">· {t.landing.previewComments}</span>
                 </div>
               </div>
             </div>
@@ -94,27 +141,25 @@ export function Landing() {
         <section className="border-y border-line bg-surface py-14">
           <div className="mx-auto max-w-5xl px-4">
             <h2 className="font-display text-2xl font-semibold sm:text-3xl">
-              Uma comunidade de quem gosta de cozinhar
+              {t.landing.communityTitle}
             </h2>
-            <p className="mt-2 max-w-xl text-muted">
-              Explore receitas compartilhadas por outras pessoas e interaja com elas.
-            </p>
+            <p className="mt-2 max-w-xl text-muted">{t.landing.communitySubtitle}</p>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               <FeatureCard
                 icon={<ExploreIcon className="h-5 w-5" />}
-                title="Explorar e buscar"
-                text="Encontre receitas por nome ou categoria, feitas por toda a comunidade."
+                title={t.landing.featExploreTitle}
+                text={t.landing.featExploreText}
               />
               <FeatureCard
                 icon={<StarIcon className="h-5 w-5" filled />}
-                title="Avaliar e comentar"
-                text="Dê de 1 a 6 estrelas e deixe seu comentário nas receitas que testar."
+                title={t.landing.featRateTitle}
+                text={t.landing.featRateText}
               />
               <FeatureCard
                 icon={<BookmarkIcon className="h-5 w-5" filled />}
-                title="Salvar favoritas"
-                text="Guarde as receitas que gostou pra encontrar rapidinho na sua lista."
+                title={t.landing.featSaveTitle}
+                text={t.landing.featSaveText}
               />
             </div>
           </div>
@@ -128,21 +173,19 @@ export function Landing() {
             </div>
             <div className="order-1 lg:order-2">
               <h2 className="font-display text-2xl font-semibold sm:text-3xl">
-                E a sua cozinha, sempre organizada
+                {t.landing.kitchenTitle}
               </h2>
-              <p className="mt-2 max-w-md text-muted">
-                Além das receitas, o Shelf te ajuda a controlar o que tem em casa.
-              </p>
+              <p className="mt-2 max-w-md text-muted">{t.landing.kitchenSubtitle}</p>
               <ul className="mt-6 space-y-4">
                 <FeatureRow
                   icon={<BarcodeIcon className="h-5 w-5" />}
-                  title="Estoque com código de barras"
-                  text="Escaneie os produtos e acompanhe quantidades e validades."
+                  title={t.landing.kitchenStockTitle}
+                  text={t.landing.kitchenStockText}
                 />
                 <FeatureRow
                   icon={<CartIcon className="h-5 w-5" />}
-                  title="Lista de compras"
-                  text="Marque o que precisa comprar e atualize o estoque ao voltar do mercado."
+                  title={t.landing.kitchenCartTitle}
+                  text={t.landing.kitchenCartText}
                 />
               </ul>
             </div>
@@ -153,14 +196,14 @@ export function Landing() {
         <section className="border-t border-line bg-surface py-14">
           <div className="mx-auto max-w-2xl px-4 text-center">
             <h2 className="font-display text-2xl font-semibold sm:text-3xl">
-              Comece a cozinhar com o Shelf
+              {t.landing.ctaTitle}
             </h2>
-            <p className="mt-2 text-muted">É grátis. Crie sua conta em segundos.</p>
+            <p className="mt-2 text-muted">{t.landing.ctaSubtitle}</p>
             <Link
               to="/login"
               className="mt-6 inline-block rounded-lg bg-primary-600 px-6 py-3 font-medium text-white"
             >
-              Criar conta grátis
+              {t.landing.createFree}
             </Link>
           </div>
         </section>
@@ -172,7 +215,7 @@ export function Landing() {
           <span className="font-display font-semibold">Shelf</span>
         </div>
         <Link to="/explorar" className="font-medium text-primary-600">
-          Explorar receitas
+          {t.landing.exploreRecipes}
         </Link>
       </footer>
     </div>

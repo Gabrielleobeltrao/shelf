@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { daysUntil, getExpirationWarning } from "../lib/expiration";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
+import { useI18n } from "../lib/i18n";
 
 type Item = {
   _id: string;
@@ -13,6 +14,7 @@ type Item = {
 };
 
 export function Dashboard() {
+  const { t } = useI18n();
   const [items, setItems] = useState<Item[]>([]);
   const [trackExpiration, setTrackExpiration] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -36,23 +38,23 @@ export function Dashboard() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-lg font-semibold">Dashboard</h1>
+      <h1 className="text-lg font-semibold">{t.dashboard.title}</h1>
 
       <div>
-        <h2 className="mb-2 text-sm font-medium text-muted">Vencendo em breve</h2>
+        <h2 className="mb-2 text-sm font-medium text-muted">{t.dashboard.expiringSoon}</h2>
 
         {!trackExpiration ? (
           <p className="text-sm text-muted">
-            Ative o controle de validade em{" "}
+            {t.dashboard.enablePrefix}{" "}
             <Link to="/configuracoes" className="text-primary-600 underline">
-              Configurações
+              {t.dashboard.settingsLink}
             </Link>{" "}
-            pra acompanhar aqui.
+            {t.dashboard.enableSuffix}
           </p>
         ) : loading ? (
-          <p className="text-sm text-muted">Carregando...</p>
+          <p className="text-sm text-muted">{t.common.loading}</p>
         ) : expiringSoon.length === 0 ? (
-          <p className="text-sm text-muted">Nenhum produto vencendo em breve.</p>
+          <p className="text-sm text-muted">{t.dashboard.none}</p>
         ) : (
           <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
             {expiringSoon.map((item) => (
@@ -67,7 +69,7 @@ export function Dashboard() {
                   {item.brand && <p className="truncate text-xs text-muted">{item.brand}</p>}
                 </div>
                 <span className="shrink-0 rounded-full bg-rust-100 px-2 py-0.5 text-xs font-medium text-rust-700 dark:bg-rust-900/40 dark:text-rust-400">
-                  {getExpirationWarning(item.expirationDate)}
+                  {getExpirationWarning(t, item.expirationDate)}
                 </span>
               </li>
             ))}

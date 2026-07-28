@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { signOut, useSession } from "../../lib/auth-client";
+import { useI18n } from "../../lib/i18n";
 import { CloseIcon, LogoutIcon, ShelfLogo } from "../icons";
 
 function DashboardNavIcon({ className }: { className?: string }) {
@@ -55,12 +56,12 @@ function SettingsNavIcon({ className }: { className?: string }) {
 }
 
 const links = [
-  { to: "/dashboard", label: "Dashboard", end: false, Icon: DashboardNavIcon },
-  { to: "/estoque", label: "Estoque", end: true, Icon: InventoryNavIcon },
-  { to: "/receitas", label: "Receitas", end: false, Icon: RecipesNavIcon },
-  { to: "/explorar", label: "Explorar", end: false, Icon: ExploreNavIcon },
-  { to: "/configuracoes", label: "Configurações", end: false, Icon: SettingsNavIcon },
-];
+  { to: "/dashboard", key: "dashboard", end: false, Icon: DashboardNavIcon },
+  { to: "/estoque", key: "inventory", end: true, Icon: InventoryNavIcon },
+  { to: "/receitas", key: "recipes", end: false, Icon: RecipesNavIcon },
+  { to: "/explorar", key: "explore", end: false, Icon: ExploreNavIcon },
+  { to: "/configuracoes", key: "settings", end: false, Icon: SettingsNavIcon },
+] as const;
 
 type Props = {
   open: boolean;
@@ -69,6 +70,7 @@ type Props = {
 
 export function Sidebar({ open, onClose }: Props) {
   const { data: session } = useSession();
+  const { t } = useI18n();
 
   if (!open) return null;
 
@@ -84,7 +86,7 @@ export function Sidebar({ open, onClose }: Props) {
             <ShelfLogo className="h-6 w-6" />
             <span className="font-display text-lg font-semibold">Shelf</span>
           </div>
-          <button onClick={onClose} aria-label="Fechar menu" className="text-muted">
+          <button onClick={onClose} aria-label={t.nav.closeMenu} className="text-muted">
             <CloseIcon className="h-4 w-4" />
           </button>
         </div>
@@ -99,7 +101,7 @@ export function Sidebar({ open, onClose }: Props) {
         )}
 
         <nav className="mt-6 flex flex-col gap-1">
-          {links.map(({ to, label, end, Icon }) => (
+          {links.map(({ to, key, end, Icon }) => (
             <NavLink
               key={to}
               to={to}
@@ -116,7 +118,7 @@ export function Sidebar({ open, onClose }: Props) {
               {({ isActive }) => (
                 <>
                   <Icon className={`h-4.5 w-4.5 ${isActive ? "" : "text-muted"}`} />
-                  {label}
+                  {t.nav[key]}
                 </>
               )}
             </NavLink>
@@ -128,7 +130,7 @@ export function Sidebar({ open, onClose }: Props) {
           className="mt-auto flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-rust-600"
         >
           <LogoutIcon className="h-4.5 w-4.5" />
-          Sair
+          {t.nav.logout}
         </button>
       </aside>
     </div>

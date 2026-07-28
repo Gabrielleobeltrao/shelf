@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AppLayout } from "./components/layout/AppLayout";
 import { useSession } from "./lib/auth-client";
+import { useI18n } from "./lib/i18n";
 import { Landing } from "./pages/Landing";
 import { Login } from "./pages/Login";
 import { Inventory } from "./pages/Inventory";
@@ -15,11 +16,12 @@ import { ExploreRecipes } from "./pages/ExploreRecipes";
 // logged-in users straight into the app (Estoque).
 function RootRoute() {
   const { data: session, isPending } = useSession();
+  const { t } = useI18n();
 
   if (isPending) {
     return (
       <div className="flex min-h-svh items-center justify-center text-sm text-muted">
-        Carregando...
+        {t.common.loading}
       </div>
     );
   }

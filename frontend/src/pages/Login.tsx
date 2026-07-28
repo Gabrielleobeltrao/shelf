@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signIn, signUp } from "../lib/auth-client";
+import { useI18n } from "../lib/i18n";
 import { PantryShelfIllustration } from "../components/illustrations";
 
 export function Login() {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -38,7 +40,7 @@ export function Login() {
     setLoading(false);
 
     if (authError) {
-      setError(authError.message ?? "Não foi possível continuar.");
+      setError(authError.message ?? t.auth.cannotContinue);
       return;
     }
 
@@ -51,13 +53,9 @@ export function Login() {
         <PantryShelfIllustration className="h-28 w-auto" />
         <div>
           <h1 className="font-display text-xl font-semibold">
-            {mode === "signin" ? "Bem-vindo de volta" : "Criar conta"}
+            {mode === "signin" ? t.auth.welcomeBack : t.auth.signup}
           </h1>
-          {mode === "signin" && (
-            <p className="mt-1 text-sm text-muted">
-              Sua cozinha organizada te espera.
-            </p>
-          )}
+          {mode === "signin" && <p className="mt-1 text-sm text-muted">{t.auth.tagline}</p>}
         </div>
       </div>
 
@@ -70,7 +68,7 @@ export function Login() {
             type="text"
             name="name"
             autoComplete="name"
-            placeholder="Nome"
+            placeholder={t.auth.name}
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -82,7 +80,7 @@ export function Login() {
           type="email"
           name="email"
           autoComplete="email"
-          placeholder="E-mail"
+          placeholder={t.auth.email}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -93,7 +91,7 @@ export function Login() {
           type="password"
           name="password"
           autoComplete={mode === "signin" ? "current-password" : "new-password"}
-          placeholder="Senha"
+          placeholder={t.auth.password}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -109,7 +107,7 @@ export function Login() {
               onChange={(e) => setRememberMe(e.target.checked)}
               className="h-4 w-4 rounded border-line"
             />
-            Manter conectado
+            {t.auth.keepConnected}
           </label>
         )}
 
@@ -120,7 +118,7 @@ export function Login() {
           disabled={loading}
           className="w-full rounded-lg bg-primary-600 py-2.5 font-medium text-white disabled:opacity-60"
         >
-          {loading ? "Aguarde..." : mode === "signin" ? "Entrar" : "Criar conta"}
+          {loading ? t.auth.wait : mode === "signin" ? t.auth.signin : t.auth.signup}
         </button>
 
         <button
@@ -128,9 +126,7 @@ export function Login() {
           onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
           className="w-full text-center text-sm text-muted"
         >
-          {mode === "signin"
-            ? "Não tem conta? Criar agora"
-            : "Já tem conta? Entrar"}
+          {mode === "signin" ? t.auth.noAccount : t.auth.haveAccount}
         </button>
       </form>
     </div>

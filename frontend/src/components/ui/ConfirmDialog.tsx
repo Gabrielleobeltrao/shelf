@@ -1,4 +1,5 @@
 import { TrashIcon } from "../icons";
+import { useI18n } from "../../lib/i18n";
 
 type Props = {
   title: string;
@@ -12,11 +13,14 @@ type Props = {
 export function ConfirmDialog({
   title,
   description,
-  confirmLabel = "Excluir",
-  cancelLabel = "Cancelar",
+  confirmLabel,
+  cancelLabel,
   onConfirm,
   onCancel,
 }: Props) {
+  const { t } = useI18n();
+  const confirm = confirmLabel ?? t.common.delete;
+  const cancel = cancelLabel ?? t.common.cancel;
   return (
     <div
       className="fixed inset-0 z-50 flex items-end bg-black/50"
@@ -45,14 +49,14 @@ export function ConfirmDialog({
             onClick={onCancel}
             className="flex-1 rounded-lg border border-line py-2.5 font-medium"
           >
-            {cancelLabel}
+            {cancel}
           </button>
           <button
             type="button"
             onClick={onConfirm}
             className="flex-1 rounded-lg bg-rust-600 py-2.5 font-medium text-white"
           >
-            {confirmLabel}
+            {confirm}
           </button>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { CheckIcon, CloseIcon, MinusIcon, PlusIcon } from "../icons";
 import { EmptyState } from "../ui/EmptyState";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 import { EmptyShelfIllustration } from "../illustrations";
+import { useI18n } from "../../lib/i18n";
 
 type ShoppingListEntry = {
   _id: string;
@@ -25,6 +26,7 @@ type Props = {
 };
 
 export function ShoppingCartModal({ open, onClose }: Props) {
+  const { t } = useI18n();
   const [entries, setEntries] = useState<ShoppingListEntry[]>([]);
   const [stockById, setStockById] = useState<Map<string, StockItem>>(new Map());
   const [buyQuantities, setBuyQuantities] = useState<Record<string, number>>({});
@@ -106,20 +108,20 @@ export function ShoppingCartModal({ open, onClose }: Props) {
 
       <aside className="relative flex h-full w-80 max-w-[85vw] flex-col bg-surface p-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Lista de compras</h2>
-          <button onClick={onClose} aria-label="Fechar" className="text-muted">
+          <h2 className="text-lg font-semibold">{t.shoppingList.title}</h2>
+          <button onClick={onClose} aria-label={t.common.close} className="text-muted">
             <CloseIcon className="h-4 w-4" />
           </button>
         </div>
 
         <div className="mt-4 flex-1 overflow-y-auto">
           {loading ? (
-            <p className="text-sm text-muted">Carregando...</p>
+            <p className="text-sm text-muted">{t.common.loading}</p>
           ) : entries.length === 0 ? (
             <EmptyState
               illustration={<EmptyShelfIllustration />}
-              title="Sua lista está vazia"
-              description="Marque itens como 'Comprar' no estoque pra vê-los aqui."
+              title={t.shoppingList.emptyTitle}
+              description={t.shoppingList.emptyDesc}
             />
           ) : (
             <ul className="space-y-2">
@@ -171,7 +173,7 @@ export function ShoppingCartModal({ open, onClose }: Props) {
                       <button
                         onClick={() => adjustBuyQuantity(entry._id, -1)}
                         disabled={checked || (buyQuantities[entry._id] ?? 0) <= 0}
-                        aria-label={`Diminuir quantidade de ${entry.name}`}
+                        aria-label={t.shoppingList.decreaseAria(entry.name)}
                         className="flex h-7 w-7 items-center justify-center rounded-lg border border-line bg-surface disabled:opacity-40"
                       >
                         <MinusIcon className="h-3 w-3" />
@@ -182,7 +184,7 @@ export function ShoppingCartModal({ open, onClose }: Props) {
                       <button
                         onClick={() => adjustBuyQuantity(entry._id, 1)}
                         disabled={checked}
-                        aria-label={`Aumentar quantidade de ${entry.name}`}
+                        aria-label={t.shoppingList.increaseAria(entry.name)}
                         className="flex h-7 w-7 items-center justify-center rounded-lg border border-line bg-surface disabled:opacity-40"
                       >
                         <PlusIcon className="h-3 w-3" />
@@ -204,13 +206,13 @@ export function ShoppingCartModal({ open, onClose }: Props) {
             >
               <CheckIcon className="h-4 w-4" />
               {finishing
-                ? "Atualizando estoque..."
+                ? t.shoppingList.updatingStock
                 : checkedCount > 0
-                  ? `Compra concluída (${checkedCount})`
-                  : "Compra concluída"}
+                  ? t.shoppingList.finishCount(checkedCount)
+                  : t.shoppingList.finish}
             </button>
             <p className="mt-2 text-center text-xs text-muted">
-              Risque o que você comprou — o estoque é atualizado e o resto continua na lista.
+              {t.shoppingList.hint}
             </p>
           </div>
         )}

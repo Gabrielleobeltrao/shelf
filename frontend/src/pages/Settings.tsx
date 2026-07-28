@@ -4,11 +4,14 @@ import { deleteUser, updateUser, useSession } from "../lib/auth-client";
 import { api } from "../lib/api";
 import { Switch } from "../components/ui/Switch";
 import { NutritionFieldsModal } from "../components/settings/NutritionFieldsModal";
+import { LanguageSelect } from "../components/ui/LanguageSelect";
 import { TrashIcon } from "../components/icons";
+import { useI18n } from "../lib/i18n";
 
 export function Settings() {
   const navigate = useNavigate();
   const { data: session } = useSession();
+  const { t } = useI18n();
 
   const [settings, setSettings] = useState({
     trackExpiration: false,
@@ -57,7 +60,7 @@ export function Settings() {
     const { error } = await updateUser({ name: name.trim() });
 
     setNameSaving(false);
-    setNameStatus(error ? error.message ?? "Não foi possível salvar." : "Nome atualizado.");
+    setNameStatus(error ? error.message ?? t.settings.cannotSave : t.settings.nameUpdated);
   }
 
   async function handleDeleteAccount(e: React.FormEvent) {
@@ -69,7 +72,7 @@ export function Settings() {
 
     if (error) {
       setDeleting(false);
-      setDeleteStatus(error.message ?? "Não foi possível excluir a conta.");
+      setDeleteStatus(error.message ?? t.settings.cannotDelete);
       return;
     }
 
@@ -78,23 +81,23 @@ export function Settings() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-lg font-semibold">Configurações</h1>
+      <h1 className="text-lg font-semibold">{t.settings.title}</h1>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
       <div className="space-y-4 rounded-2xl bg-surface-2 p-4">
-        <h2 className="text-sm font-medium text-muted">Preferências</h2>
+        <h2 className="text-sm font-medium text-muted">{t.settings.preferences}</h2>
         <Switch
           checked={settings.trackExpiration}
           onChange={(value) => handleToggle("trackExpiration", value)}
-          label="Data de validade"
-          description="Adiciona um campo de validade nos itens do estoque."
+          label={t.settings.expirationLabel}
+          description={t.settings.expirationDesc}
         />
         <div>
           <Switch
             checked={settings.trackNutrition}
             onChange={handleToggleNutrition}
-            label="Informações nutricionais"
-            description="Escolha quais dados (açúcar, sódio, etc.) aparecem nos itens do estoque."
+            label={t.settings.nutritionLabel}
+            description={t.settings.nutritionDesc}
           />
           {settings.trackNutrition && (
             <button
@@ -102,26 +105,31 @@ export function Settings() {
               onClick={() => setNutritionModalOpen(true)}
               className="mt-1 text-sm font-medium text-primary-600"
             >
-              Editar campos
+              {t.settings.editFields}
             </button>
           )}
         </div>
         <Switch
           checked={settings.trackGlutenFree}
           onChange={(value) => handleToggle("trackGlutenFree", value)}
-          label="Sem glúten"
-          description="Adiciona uma marcação de sem glúten nos itens do estoque."
+          label={t.settings.glutenLabel}
+          description={t.settings.glutenDesc}
         />
         <Switch
           checked={settings.trackVegan}
           onChange={(value) => handleToggle("trackVegan", value)}
-          label="Vegano"
-          description="Adiciona uma marcação de vegano nos itens do estoque."
+          label={t.settings.veganLabel}
+          description={t.settings.veganDesc}
         />
       </div>
 
+      <div className="space-y-2 rounded-2xl bg-surface-2 p-4">
+        <label className="text-sm font-medium">{t.settings.language}</label>
+        <LanguageSelect className="w-full rounded-lg bg-surface px-3 py-2 text-base" />
+      </div>
+
       <form onSubmit={handleSaveName} className="space-y-2 rounded-2xl bg-surface-2 p-4">
-        <label className="text-sm font-medium">Nome</label>
+        <label className="text-sm font-medium">{t.settings.name}</label>
         <input
           type="text"
           value={name}
@@ -135,28 +143,28 @@ export function Settings() {
           disabled={nameSaving}
           className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
         >
-          {nameSaving ? "Salvando..." : "Salvar nome"}
+          {nameSaving ? t.common.saving : t.settings.saveName}
         </button>
       </form>
 
       <div className="space-y-2 rounded-2xl bg-surface-2 p-4">
-        <p className="text-sm font-medium">E-mail</p>
+        <p className="text-sm font-medium">{t.settings.email}</p>
         <p className="truncate rounded-lg bg-surface px-3 py-2 text-base text-muted">
           {session?.user.email}
         </p>
       </div>
 
       <div className="space-y-2 rounded-2xl bg-surface-2 p-4">
-        <label className="text-sm font-medium text-rust-600">Excluir conta</label>
+        <label className="text-sm font-medium text-rust-600">{t.settings.deleteAccount}</label>
         <p className="text-sm text-muted">
-          Remove sua conta e todo o seu estoque e receitas permanentemente.
+          {t.settings.deleteAccountDesc}
         </p>
 
         {confirmingDelete ? (
           <form onSubmit={handleDeleteAccount} className="space-y-2">
             <input
               type="password"
-              placeholder="Confirme sua senha"
+              placeholder={t.settings.confirmPassword}
               value={deletePassword}
               onChange={(e) => setDeletePassword(e.target.value)}
               autoComplete="current-password"
@@ -170,14 +178,14 @@ export function Settings() {
                 onClick={() => setConfirmingDelete(false)}
                 className="flex-1 rounded-lg border border-line py-2 text-sm font-medium"
               >
-                Cancelar
+                {t.common.cancel}
               </button>
               <button
                 type="submit"
                 disabled={deleting}
                 className="flex-1 rounded-lg bg-rust-600 py-2 text-sm font-medium text-white disabled:opacity-60"
               >
-                {deleting ? "Excluindo..." : "Confirmar exclusão"}
+                {deleting ? t.common.deleting : t.settings.deleteConfirm}
               </button>
             </div>
           </form>
@@ -187,7 +195,7 @@ export function Settings() {
             className="flex items-center gap-2 rounded-lg border border-rust-600 px-4 py-2 text-sm font-medium text-rust-600"
           >
             <TrashIcon className="h-4 w-4" />
-            Excluir conta
+            {t.settings.deleteAccount}
           </button>
         )}
       </div>
