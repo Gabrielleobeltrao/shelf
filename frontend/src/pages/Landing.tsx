@@ -6,6 +6,7 @@ import {
   CartIcon,
   CloseIcon,
   ExploreIcon,
+  LoginIcon,
   MenuIcon,
   ShelfLogo,
   StarIcon,
@@ -43,7 +44,13 @@ export function Landing() {
           <ShelfLogo className="h-7 w-7" />
           <span className="font-display text-xl font-semibold">Shelf</span>
         </div>
-        <span />
+        <Link
+          to="/login"
+          aria-label={t.landing.enter}
+          className="justify-self-end rounded-lg p-2 text-ink hover:bg-surface-2"
+        >
+          <LoginIcon className="h-6 w-6" />
+        </Link>
       </header>
 
       {menuOpen && (
