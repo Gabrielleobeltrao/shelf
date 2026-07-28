@@ -201,6 +201,20 @@ export function LogoutIcon({ className }: IconProps) {
   );
 }
 
+export function RoadmapIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path
+        d="M5 3v14M5 4h9l-2 3 2 3H5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function LoginIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 20 20" fill="none" className={className}>

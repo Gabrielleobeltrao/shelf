@@ -41,6 +41,20 @@ function ExploreNavIcon({ className }: { className?: string }) {
   );
 }
 
+function RoadmapNavIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path
+        d="M5 3v14M5 4h9l-2 3 2 3H5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function SettingsNavIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 20 20" fill="none" className={className}>
@@ -60,6 +74,7 @@ const links = [
   { to: "/estoque", key: "inventory", end: true, Icon: InventoryNavIcon },
   { to: "/receitas", key: "recipes", end: false, Icon: RecipesNavIcon },
   { to: "/explorar", key: "explore", end: false, Icon: ExploreNavIcon },
+  { to: "/roadmap", key: "roadmap", end: false, Icon: RoadmapNavIcon },
   { to: "/configuracoes", key: "settings", end: false, Icon: SettingsNavIcon },
 ] as const;
 

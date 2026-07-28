@@ -8,6 +8,7 @@ import {
   ExploreIcon,
   LoginIcon,
   MenuIcon,
+  RoadmapIcon,
   ShelfLogo,
   StarIcon,
 } from "../components/icons";
@@ -71,6 +72,14 @@ export function Landing() {
             >
               <ExploreIcon className="h-5 w-5" />
               {t.landing.explore}
+            </Link>
+            <Link
+              to="/roadmap"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-surface-2"
+            >
+              <RoadmapIcon className="h-5 w-5" />
+              {t.nav.roadmap}
             </Link>
             <Link
               to="/login"
