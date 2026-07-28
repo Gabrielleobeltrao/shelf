@@ -66,24 +66,6 @@ export function Roadmap() {
           <p className="mt-1 text-sm text-muted">{r.subtitle}</p>
         </div>
 
-        {/* Já feitas — riscadas */}
-        <section>
-          <p className="text-xs font-medium uppercase tracking-wide text-muted">{r.doneTitle}</p>
-          <p className="mb-3 text-sm text-muted">{r.doneHint}</p>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {r.done.map((feature, index) => (
-              <FeatureCard
-                key={feature.name}
-                name={feature.name}
-                desc={feature.desc}
-                done
-                status={r.statusDone}
-                tint={TINTS[index % TINTS.length]}
-              />
-            ))}
-          </div>
-        </section>
-
         {/* Próximas — no forno */}
         <section>
           <p className="text-xs font-medium uppercase tracking-wide text-muted">{r.plannedTitle}</p>
@@ -96,6 +78,24 @@ export function Roadmap() {
                 desc={feature.desc}
                 done={false}
                 status={r.statusPlanned}
+                tint={TINTS[index % TINTS.length]}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Já feitas — riscadas */}
+        <section>
+          <p className="text-xs font-medium uppercase tracking-wide text-muted">{r.doneTitle}</p>
+          <p className="mb-3 text-sm text-muted">{r.doneHint}</p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {r.done.map((feature, index) => (
+              <FeatureCard
+                key={feature.name}
+                name={feature.name}
+                desc={feature.desc}
+                done
+                status={r.statusDone}
                 tint={TINTS[index % TINTS.length]}
               />
             ))}
