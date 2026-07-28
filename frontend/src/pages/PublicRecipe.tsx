@@ -3,11 +3,12 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { API_URL } from "../lib/api";
 import { useI18n } from "../lib/i18n";
 import { tagLabel } from "../lib/labels";
-import { BackIcon, BookmarkIcon, ChatIcon, CheckIcon, CookedIcon, PencilIcon, StarIcon } from "../components/icons";
+import { BackIcon, BookmarkIcon, ChatIcon, CheckIcon, CookedIcon, MenuIcon, PencilIcon, StarIcon } from "../components/icons";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 import { EmptyState } from "../components/ui/EmptyState";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 import { Header } from "../components/layout/Header";
+import { Sidebar } from "../components/layout/Sidebar";
 
 type Comment = {
   _id: string;
@@ -64,6 +65,7 @@ export function PublicRecipe() {
   const { t, lang } = useI18n();
   const [data, setData] = useState<PublicRecipeData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [commentText, setCommentText] = useState("");
   const [postingComment, setPostingComment] = useState(false);
@@ -140,12 +142,8 @@ export function PublicRecipe() {
     <div className="mx-auto flex min-h-svh max-w-2xl flex-col">
       <Header
         left={
-          <button
-            onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/receitas"))}
-            aria-label={t.common.back}
-            className="text-muted"
-          >
-            <BackIcon className="h-6 w-6" />
+          <button onClick={() => setSidebarOpen(true)} aria-label={t.nav.openMenu} className="text-muted">
+            <MenuIcon className="h-6 w-6" />
           </button>
         }
         right={
@@ -160,6 +158,7 @@ export function PublicRecipe() {
           ) : undefined
         }
       />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <main className="flex-1 space-y-4 px-4 py-4">
         {loading ? (
@@ -172,6 +171,14 @@ export function PublicRecipe() {
           />
         ) : (
           <>
+            <Link
+              to="/explorar"
+              className="flex w-fit items-center gap-1.5 text-sm font-medium text-muted hover:text-ink"
+            >
+              <BackIcon className="h-4 w-4" />
+              {t.explore.backToExplore}
+            </Link>
+
             {data.isOwner && !data.recipe.isPublic && (
               <p className="rounded-lg bg-mustard-100 px-3 py-2 text-sm text-mustard-700 dark:bg-mustard-900/40 dark:text-mustard-400">
                 {t.publicRecipe.privateNotice}

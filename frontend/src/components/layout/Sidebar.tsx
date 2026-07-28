@@ -140,13 +140,15 @@ export function Sidebar({ open, onClose }: Props) {
           ))}
         </nav>
 
-        <button
-          onClick={() => signOut()}
-          className="mt-auto flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-rust-600"
-        >
-          <LogoutIcon className="h-4.5 w-4.5" />
-          {t.nav.logout}
-        </button>
+        {session && (
+          <button
+            onClick={() => signOut()}
+            className="mt-auto flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-rust-600"
+          >
+            <LogoutIcon className="h-4.5 w-4.5" />
+            {t.nav.logout}
+          </button>
+        )}
       </aside>
     </div>
   );

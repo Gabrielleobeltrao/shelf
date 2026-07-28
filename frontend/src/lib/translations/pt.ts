@@ -214,6 +214,7 @@ export const pt = {
     emptyTitle: "Nenhuma receita encontrada",
     emptyDesc: "Tente outra busca ou categoria.",
     by: (name: string) => `por ${name}`,
+    backToExplore: "Voltar ao Explorar",
   },
   shoppingList: {
     title: "Lista de compras",

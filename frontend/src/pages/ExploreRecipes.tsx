@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { API_URL } from "../lib/api";
 import { RECIPE_TAGS } from "../lib/recipeTags";
-import { BackIcon, BookmarkIcon, ChatIcon, CookedIcon, SearchIcon, StarIcon } from "../components/icons";
+import { BookmarkIcon, ChatIcon, CookedIcon, MenuIcon, SearchIcon, StarIcon } from "../components/icons";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 import { EmptyState } from "../components/ui/EmptyState";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 import { Header } from "../components/layout/Header";
+import { Sidebar } from "../components/layout/Sidebar";
 import { useI18n } from "../lib/i18n";
 import { tagLabel } from "../lib/labels";
 
@@ -25,8 +26,8 @@ type ExploreRecipe = {
 };
 
 export function ExploreRecipes() {
-  const navigate = useNavigate();
   const { t } = useI18n();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [recipes, setRecipes] = useState<ExploreRecipe[]>([]);
   const [search, setSearch] = useState("");
   const [tag, setTag] = useState("");
@@ -78,15 +79,12 @@ export function ExploreRecipes() {
     <div className="mx-auto flex min-h-svh max-w-5xl flex-col">
       <Header
         left={
-          <button
-            onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/receitas"))}
-            aria-label={t.common.back}
-            className="text-muted"
-          >
-            <BackIcon className="h-6 w-6" />
+          <button onClick={() => setSidebarOpen(true)} aria-label={t.nav.openMenu} className="text-muted">
+            <MenuIcon className="h-6 w-6" />
           </button>
         }
       />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <main className="flex-1 space-y-4 px-4 py-4">
         <div>

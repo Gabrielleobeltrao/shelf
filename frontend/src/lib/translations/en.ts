@@ -216,6 +216,7 @@ export const en: Dict = {
     emptyTitle: "No recipes found",
     emptyDesc: "Try another search or category.",
     by: (name: string) => `by ${name}`,
+    backToExplore: "Back to Explore",
   },
   shoppingList: {
     title: "Shopping list",
