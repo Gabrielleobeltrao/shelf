@@ -7,7 +7,7 @@ import { RecipeDetailModal } from "../components/recipes/RecipeDetailModal";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { BookmarkIcon, ExploreIcon, FilterIcon, PencilIcon, PlusIcon, SearchIcon } from "../components/icons";
 import { EmptyState } from "../components/ui/EmptyState";
-import { Fab } from "../components/ui/Fab";
+import { FabMenu } from "../components/ui/FabMenu";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 
@@ -127,6 +127,7 @@ export function Recipes() {
   }, [recipes, search, categoryFilter, originFilter]);
 
   const hasSaved = useMemo(() => recipes.some((r) => r.savedFrom), [recipes]);
+  const hasActiveFilter = originFilter !== "all" || categoryFilter !== "";
 
   function missingIngredients(recipe: Recipe) {
     return recipe.ingredients.filter((row) => {
@@ -179,16 +180,7 @@ export function Recipes() {
 
   return (
     <div className="space-y-4 pb-16">
-      <div className="flex items-center justify-between gap-2">
-        <h1 className="text-lg font-semibold">Receitas</h1>
-        <button
-          onClick={() => navigate("/explorar")}
-          className="flex items-center gap-1.5 rounded-lg bg-surface-2 px-3 py-1.5 text-sm font-medium text-primary-600"
-        >
-          <ExploreIcon className="h-4 w-4" />
-          Explorar
-        </button>
-      </div>
+      <h1 className="text-lg font-semibold">Receitas</h1>
 
       {recipes.length > 0 && (
         <div className="flex gap-2">
@@ -202,74 +194,96 @@ export function Recipes() {
               className="w-full rounded-lg bg-surface-2 py-2 pl-9 pr-3 text-base"
             />
           </div>
-          {hasSaved && (
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setFilterOpen((v) => !v)}
-                aria-label="Filtrar receitas"
-                className={`relative flex h-full w-11 items-center justify-center rounded-lg bg-surface-2 ${
-                  originFilter !== "all" ? "text-primary-600" : "text-muted"
-                }`}
-              >
-                <FilterIcon className="h-5 w-5" />
-                {originFilter !== "all" && (
-                  <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-primary-600" />
-                )}
-              </button>
-
-              {filterOpen && (
-                <>
-                  <div className="fixed inset-0 z-10" onClick={() => setFilterOpen(false)} />
-                  <div className="absolute right-0 z-20 mt-1 w-44 overflow-hidden rounded-lg border border-line bg-surface shadow-lg">
-                    {(
-                      [
-                        ["all", "Todas"],
-                        ["mine", "Criadas por mim"],
-                        ["saved", "Salvas de outros"],
-                      ] as const
-                    ).map(([value, label]) => (
-                      <button
-                        key={value}
-                        type="button"
-                        onClick={() => {
-                          setOriginFilter(value);
-                          setFilterOpen(false);
-                        }}
-                        className={`block w-full px-3 py-2 text-left text-sm ${
-                          originFilter === value
-                            ? "bg-primary-100 font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-400"
-                            : "hover:bg-surface-2"
-                        }`}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setFilterOpen((v) => !v)}
+              aria-label="Filtrar receitas"
+              className={`relative flex h-full w-11 items-center justify-center rounded-lg bg-surface-2 ${
+                hasActiveFilter ? "text-primary-600" : "text-muted"
+              }`}
+            >
+              <FilterIcon className="h-5 w-5" />
+              {hasActiveFilter && (
+                <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-primary-600" />
               )}
-            </div>
-          )}
-        </div>
-      )}
+            </button>
 
-      {categories.length > 0 && (
-        <div className="-mx-1 flex gap-2 overflow-x-auto overflow-y-visible px-1 py-1.5">
-          {categories.map((category) => {
-            const active = categoryFilter === category;
-            return (
-              <button
-                key={category}
-                type="button"
-                onClick={() => setCategoryFilter(active ? "" : category!)}
-                className={`shrink-0 rounded-full bg-primary-100 px-3 py-1.5 text-xs font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-400 ${
-                  active ? "ring-2 ring-primary-600" : ""
-                }`}
-              >
-                {category}
-              </button>
-            );
-          })}
+            {filterOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setFilterOpen(false)} />
+                <div className="absolute right-0 z-20 mt-1 w-64 space-y-3 rounded-lg border border-line bg-surface p-3 shadow-lg">
+                  {hasSaved && (
+                    <div>
+                      <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
+                        Origem
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {(
+                          [
+                            ["all", "Todas"],
+                            ["mine", "Minhas"],
+                            ["saved", "Salvas"],
+                          ] as const
+                        ).map(([value, label]) => (
+                          <button
+                            key={value}
+                            type="button"
+                            onClick={() => setOriginFilter(value)}
+                            className={`rounded-full px-3 py-1.5 text-xs font-medium ${
+                              originFilter === value
+                                ? "bg-primary-600 text-white"
+                                : "bg-surface-2 text-muted"
+                            }`}
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {categories.length > 0 && (
+                    <div>
+                      <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
+                        Categoria
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {categories.map((category) => {
+                          const active = categoryFilter === category;
+                          return (
+                            <button
+                              key={category}
+                              type="button"
+                              onClick={() => setCategoryFilter(active ? "" : category!)}
+                              className={`rounded-full px-3 py-1.5 text-xs font-medium ${
+                                active ? "bg-primary-600 text-white" : "bg-surface-2 text-muted"
+                              }`}
+                            >
+                              {category}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {hasActiveFilter && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOriginFilter("all");
+                        setCategoryFilter("");
+                      }}
+                      className="text-xs font-medium text-primary-600"
+                    >
+                      Limpar filtros
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
 
@@ -429,15 +443,23 @@ export function Recipes() {
         />
       )}
 
-      <Fab
-        onClick={() =>
-          setModal({
-            mode: "create",
-            initial: { ingredients: [], imageUrl: "", steps: [] },
-          })
-        }
-        label="Adicionar receita"
-        icon={<PlusIcon className="h-6 w-6" />}
+      <FabMenu
+        actions={[
+          {
+            label: "Explorar receitas",
+            icon: <ExploreIcon className="h-5 w-5" />,
+            onClick: () => navigate("/explorar"),
+          },
+          {
+            label: "Adicionar receita",
+            icon: <PlusIcon className="h-5 w-5" />,
+            onClick: () =>
+              setModal({
+                mode: "create",
+                initial: { ingredients: [], imageUrl: "", steps: [] },
+              }),
+          },
+        ]}
       />
     </div>
   );
