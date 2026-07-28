@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { api } from "../lib/api";
 import { hasEnoughStock } from "../lib/units";
 import type { RecipeFormData } from "../components/recipes/RecipeDetailModal";
@@ -29,6 +30,7 @@ type Recipe = {
   category?: string;
   ingredients: RecipeIngredient[];
   imageUrl?: string;
+  isPublic?: boolean;
 };
 
 type StockItem = {
@@ -57,6 +59,7 @@ function editInitialFor(recipe: Recipe): Partial<RecipeFormData> {
     servings: recipe.servings != null ? String(recipe.servings) : "",
     category: recipe.category ?? "",
     imageUrl: recipe.imageUrl ?? "",
+    isPublic: recipe.isPublic ?? false,
     ingredients: recipe.ingredients.map((row) => ({
       itemId: row.itemId,
       name: row.name || "Item removido",
@@ -74,6 +77,7 @@ export function Recipes() {
   const [viewingRecipeId, setViewingRecipeId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     Promise.all([api.get<Recipe[]>("/api/recipes"), api.get<StockItem[]>("/api/items")])
@@ -83,6 +87,19 @@ export function Recipes() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  // The public recipe page's "Editar" button lands here as /receitas?editar=<id>
+  // — open the edit form directly once the data is in.
+  useEffect(() => {
+    const editId = searchParams.get("editar");
+    if (!editId || loading) return;
+
+    const recipe = recipes.find((r) => r._id === editId);
+    if (recipe) {
+      setModal({ mode: "edit", recipeId: recipe._id, initial: editInitialFor(recipe) });
+    }
+    setSearchParams({}, { replace: true });
+  }, [loading, recipes, searchParams, setSearchParams]);
 
   const itemsById = useMemo(() => new Map(items.map((item) => [item._id, item])), [items]);
 
@@ -120,6 +137,7 @@ export function Recipes() {
       servings: data.servings.trim() ? Number(data.servings) : undefined,
       category: data.category.trim(),
       imageUrl: data.imageUrl.trim(),
+      isPublic: data.isPublic,
       ingredients: data.ingredients.map((row) => ({
         itemId: row.itemId,
         name: row.name,
@@ -235,8 +253,13 @@ export function Recipes() {
                       ))}
                   </div>
 
-                  {(recipe.category || recipe.prepTime || recipe.servings) && (
-                    <div className="flex flex-wrap gap-x-3 text-xs text-muted">
+                  {(recipe.category || recipe.prepTime || recipe.servings || recipe.isPublic) && (
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+                      {recipe.isPublic && (
+                        <span className="rounded-full bg-mustard-100 px-2 py-0.5 font-medium text-mustard-700 dark:bg-mustard-900/40 dark:text-mustard-400">
+                          Pública
+                        </span>
+                      )}
                       {recipe.category && <span>{recipe.category}</span>}
                       {recipe.prepTime != null && <span>{recipe.prepTime} min</span>}
                       {recipe.servings != null && <span>{recipe.servings} porções</span>}

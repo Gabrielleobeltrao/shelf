@@ -6,6 +6,7 @@ import { CloseIcon, PlusIcon, TrashIcon } from "../icons";
 import { BowlIllustration } from "../illustrations";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
+import { Switch } from "../ui/Switch";
 
 function FieldLabel({ children }: { children: string }) {
   return <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted">{children}</label>;
@@ -53,6 +54,7 @@ export type RecipeFormData = {
   category: string;
   ingredients: IngredientRow[];
   imageUrl: string;
+  isPublic: boolean;
 };
 
 type StockItem = {
@@ -89,6 +91,7 @@ export function RecipeDetailModal({
   const [category, setCategory] = useState(initial.category ?? "");
   const [ingredients, setIngredients] = useState<IngredientRow[]>(initial.ingredients ?? []);
   const [imageUrl, setImageUrl] = useState(initial.imageUrl ?? "");
+  const [isPublic, setIsPublic] = useState(initial.isPublic ?? false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
@@ -190,6 +193,7 @@ export function RecipeDetailModal({
       category,
       ingredients: ingredients.filter((row) => row.itemId),
       imageUrl,
+      isPublic,
     });
     setSaving(false);
   }
@@ -395,6 +399,15 @@ export function RecipeDetailModal({
             <PlusIcon className="h-3.5 w-3.5" />
             Adicionar passo
           </button>
+        </div>
+
+        <div className="border-t border-line pt-3">
+          <Switch
+            checked={isPublic}
+            onChange={setIsPublic}
+            label="Receita pública"
+            description="Qualquer pessoa com o link pode ver esta receita."
+          />
         </div>
 
         <div className="flex gap-2 pt-2">

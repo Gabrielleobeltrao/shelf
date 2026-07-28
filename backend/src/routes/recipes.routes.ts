@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { name, ingredients, steps, prepTime, servings, category, imageUrl } = req.body;
+  const { name, ingredients, steps, prepTime, servings, category, imageUrl, isPublic } = req.body;
   const recipe = await Recipe.create({
     name,
     ingredients,
@@ -21,16 +21,17 @@ router.post("/", async (req, res) => {
     servings,
     category,
     imageUrl,
+    isPublic,
     userId: req.userId,
   });
   res.status(201).json(recipe);
 });
 
 router.patch("/:id", async (req, res) => {
-  const { name, ingredients, steps, prepTime, servings, category, imageUrl } = req.body;
+  const { name, ingredients, steps, prepTime, servings, category, imageUrl, isPublic } = req.body;
   const recipe = await Recipe.findOneAndUpdate(
     { _id: req.params.id, userId: req.userId },
-    { $set: { name, ingredients, steps, prepTime, servings, category, imageUrl } },
+    { $set: { name, ingredients, steps, prepTime, servings, category, imageUrl, isPublic } },
     { new: true, omitUndefined: true },
   );
 

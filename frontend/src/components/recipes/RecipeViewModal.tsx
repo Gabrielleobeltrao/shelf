@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { BowlIllustration } from "../illustrations";
 import { BackIcon, PencilIcon, TrashIcon } from "../icons";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
@@ -39,9 +40,14 @@ export function RecipeViewModal({ recipe, steps, missingIds, onClose, onEdit, on
         onClick={(e) => e.stopPropagation()}
         className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-surface p-4"
       >
-        <button onClick={onClose} aria-label="Voltar" className="text-muted">
-          <BackIcon className="h-5 w-5" />
-        </button>
+        <div className="flex items-center justify-between">
+          <button onClick={onClose} aria-label="Voltar" className="text-muted">
+            <BackIcon className="h-5 w-5" />
+          </button>
+          <Link to={`/receita/${recipe._id}`} className="text-sm font-medium text-primary-600">
+            Abrir página
+          </Link>
+        </div>
 
         <PhotoOrFallback
           src={recipe.imageUrl}

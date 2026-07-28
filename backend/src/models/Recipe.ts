@@ -23,6 +23,9 @@ const recipeSchema = new Schema(
     servings: { type: Number },
     category: { type: String },
     imageUrl: { type: String },
+    // Public recipes get a shareable page and (later) show up in
+    // cross-user search; private ones are only visible to their owner.
+    isPublic: { type: Boolean, default: false },
     userId: { type: String, required: true },
   },
   { timestamps: true },
