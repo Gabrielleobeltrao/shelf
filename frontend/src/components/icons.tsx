@@ -231,8 +231,21 @@ export function ChatIcon({ className }: IconProps) {
 export function CookedIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 20 20" fill="none" className={className}>
-      <circle cx="8.5" cy="10.5" r="5" stroke="currentColor" strokeWidth="1.4" />
-      <path d="M13 8.8l4.5-2.2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      {/* Chef's hat — the puffy top... */}
+      <path
+        d="M7 11V8.8A3 3 0 0 1 6.6 3.2 3.3 3.3 0 0 1 10 1.8a3.3 3.3 0 0 1 3.4 1.4 3 3 0 0 1-.4 5.8V11"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* ...and the band. */}
+      <path
+        d="M7 11h6v3A1.5 1.5 0 0 1 11.5 15.5h-3A1.5 1.5 0 0 1 7 14V11Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

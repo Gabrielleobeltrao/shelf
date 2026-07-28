@@ -220,22 +220,6 @@ export function PublicRecipe() {
               </div>
             )}
 
-            {data.isLoggedIn && (
-              <button
-                onClick={handleToggleCooked}
-                disabled={cooking}
-                aria-pressed={data.cooked}
-                className={`flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium disabled:opacity-60 ${
-                  data.cooked
-                    ? "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-400"
-                    : "bg-primary-600 text-white"
-                }`}
-              >
-                {data.cooked ? <CheckIcon className="h-4 w-4" /> : <CookedIcon className="h-4 w-4" />}
-                {data.cooked ? t.publicRecipe.cookedDone : t.publicRecipe.cookedMark}
-              </button>
-            )}
-
             {(data.cookedCount > 0 || data.savedCount > 0 || data.comments.length > 0) && (
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">
                 {data.cookedCount > 0 && (
@@ -285,6 +269,23 @@ export function PublicRecipe() {
                   ))}
                 </ol>
               </div>
+            )}
+
+            {/* "Fiz esta receita" — no fim, depois do modo de preparo. */}
+            {data.isLoggedIn && (
+              <button
+                onClick={handleToggleCooked}
+                disabled={cooking}
+                aria-pressed={data.cooked}
+                className={`flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium disabled:opacity-60 ${
+                  data.cooked
+                    ? "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-400"
+                    : "bg-primary-600 text-white"
+                }`}
+              >
+                {data.cooked ? <CheckIcon className="h-4 w-4" /> : <CookedIcon className="h-4 w-4" />}
+                {data.cooked ? t.publicRecipe.cookedDone : t.publicRecipe.cookedMark}
+              </button>
             )}
 
             {/* Avaliação */}
