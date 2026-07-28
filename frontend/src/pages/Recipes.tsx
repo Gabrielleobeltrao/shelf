@@ -4,7 +4,7 @@ import { api } from "../lib/api";
 import { hasEnoughStock } from "../lib/units";
 import type { RecipeFormData } from "../components/recipes/RecipeDetailModal";
 import { RecipeDetailModal } from "../components/recipes/RecipeDetailModal";
-import { ExploreIcon, FilterIcon, PencilIcon, PlusIcon, SearchIcon } from "../components/icons";
+import { BookmarkIcon, ExploreIcon, FilterIcon, PencilIcon, PlusIcon, SearchIcon } from "../components/icons";
 import { EmptyState } from "../components/ui/EmptyState";
 import { Fab } from "../components/ui/Fab";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
@@ -288,22 +288,37 @@ export function Recipes() {
             const missingIds = new Set(missing.map((row) => row.itemId));
             const steps = getSteps(recipe);
 
+            const isSaved = !!recipe.savedFrom;
+
             return (
               <li
                 key={recipe._id}
-                onClick={() => navigate(`/receita/${recipe._id}`)}
+                onClick={() => navigate(`/receita/${isSaved ? recipe.savedFrom : recipe._id}`)}
                 className="relative cursor-pointer overflow-hidden rounded-lg border border-line"
               >
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setModal({ mode: "edit", recipeId: recipe._id, initial: editInitialFor(recipe) });
-                  }}
-                  aria-label={`Editar ${recipe.name}`}
-                  className="absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-on-photo text-ink shadow-sm"
-                >
-                  <PencilIcon className="h-4 w-4" />
-                </button>
+                {isSaved ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteRecipe(recipe._id);
+                    }}
+                    aria-label={`Remover ${recipe.name} das salvas`}
+                    className="absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-on-photo text-primary-600 shadow-sm"
+                  >
+                    <BookmarkIcon className="h-4 w-4" filled />
+                  </button>
+                ) : (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setModal({ mode: "edit", recipeId: recipe._id, initial: editInitialFor(recipe) });
+                    }}
+                    aria-label={`Editar ${recipe.name}`}
+                    className="absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-on-photo text-ink shadow-sm"
+                  >
+                    <PencilIcon className="h-4 w-4" />
+                  </button>
+                )}
 
                 <PhotoOrFallback
                   src={recipe.imageUrl}
@@ -318,7 +333,11 @@ export function Recipes() {
                 <div className="space-y-2 p-3">
                   <div className="flex items-center justify-between gap-2">
                     <h2 className="font-medium">{recipe.name}</h2>
-                    {recipe.ingredients.length > 0 &&
+                    {/* Saved recipes are reference-only (ingredients aren't
+                        linked to the user's stock), so the stock-availability
+                        badge only applies to the user's own recipes. */}
+                    {!isSaved &&
+                      recipe.ingredients.length > 0 &&
                       (missing.length === 0 ? (
                         <span className="shrink-0 rounded-full bg-primary-100 px-2 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
                           Dá pra fazer
