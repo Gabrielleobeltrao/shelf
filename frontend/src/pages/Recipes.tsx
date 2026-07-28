@@ -4,6 +4,7 @@ import { api } from "../lib/api";
 import { hasEnoughStock } from "../lib/units";
 import type { RecipeFormData } from "../components/recipes/RecipeDetailModal";
 import { RecipeDetailModal } from "../components/recipes/RecipeDetailModal";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { BookmarkIcon, ExploreIcon, FilterIcon, PencilIcon, PlusIcon, SearchIcon } from "../components/icons";
 import { EmptyState } from "../components/ui/EmptyState";
 import { Fab } from "../components/ui/Fab";
@@ -80,6 +81,7 @@ export function Recipes() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [originFilter, setOriginFilter] = useState<"all" | "mine" | "saved">("all");
   const [filterOpen, setFilterOpen] = useState(false);
+  const [unsaving, setUnsaving] = useState<Recipe | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
@@ -300,7 +302,7 @@ export function Recipes() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDeleteRecipe(recipe._id);
+                      setUnsaving(recipe);
                     }}
                     aria-label={`Remover ${recipe.name} das salvas`}
                     className="absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-on-photo text-primary-600 shadow-sm"
@@ -411,6 +413,19 @@ export function Recipes() {
           onSave={handleSave}
           onDelete={modal.mode === "edit" ? handleDelete : undefined}
           onItemCreated={(item) => setItems((prev) => [item, ...prev])}
+        />
+      )}
+
+      {unsaving && (
+        <ConfirmDialog
+          title={`Remover "${unsaving.name}" das salvas?`}
+          description="Ela sai da sua lista, mas continua disponível em Explorar."
+          confirmLabel="Remover"
+          onConfirm={() => {
+            handleDeleteRecipe(unsaving._id);
+            setUnsaving(null);
+          }}
+          onCancel={() => setUnsaving(null)}
         />
       )}
 
