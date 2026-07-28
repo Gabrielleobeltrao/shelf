@@ -7,6 +7,7 @@ import { BowlIllustration } from "../illustrations";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 import { Switch } from "../ui/Switch";
+import { RECIPE_TAGS } from "../../lib/recipeTags";
 
 function FieldLabel({ children }: { children: string }) {
   return <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted">{children}</label>;
@@ -36,15 +37,6 @@ const UNIT_SUGGESTIONS = [
   "fatia",
 ];
 
-const CATEGORY_SUGGESTIONS = [
-  "Café da manhã",
-  "Almoço",
-  "Jantar",
-  "Lanche",
-  "Sobremesa",
-  "Bebida",
-  "Outro",
-];
 
 export type RecipeFormData = {
   name: string;
@@ -252,19 +244,25 @@ export function RecipeDetailModal({
 
         <div>
           <FieldLabel>Tipo</FieldLabel>
-          <input
-            type="text"
-            list="recipe-category-suggestions"
-            placeholder="ex: Almoço, Sobremesa"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className={inputClass}
-          />
-          <datalist id="recipe-category-suggestions">
-            {CATEGORY_SUGGESTIONS.map((c) => (
-              <option key={c} value={c} />
-            ))}
-          </datalist>
+          <div className="flex flex-wrap gap-2">
+            {RECIPE_TAGS.map((tag) => {
+              const active = category === tag;
+              return (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => setCategory(active ? "" : tag)}
+                  className={`rounded-full px-3 py-1.5 text-xs font-medium ${
+                    active
+                      ? "bg-primary-600 text-white"
+                      : "bg-surface-2 text-muted"
+                  }`}
+                >
+                  {tag}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div className="flex gap-2">

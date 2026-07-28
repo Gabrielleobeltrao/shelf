@@ -31,6 +31,15 @@ function RecipesNavIcon({ className }: { className?: string }) {
   );
 }
 
+function ExploreNavIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <circle cx="10" cy="10" r="7.5" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M13 7l-2 4-4 2 2-4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function SettingsNavIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 20 20" fill="none" className={className}>
@@ -49,6 +58,7 @@ const links = [
   { to: "/dashboard", label: "Dashboard", end: false, Icon: DashboardNavIcon },
   { to: "/", label: "Estoque", end: true, Icon: InventoryNavIcon },
   { to: "/receitas", label: "Receitas", end: false, Icon: RecipesNavIcon },
+  { to: "/explorar", label: "Explorar", end: false, Icon: ExploreNavIcon },
   { to: "/configuracoes", label: "Configurações", end: false, Icon: SettingsNavIcon },
 ];
 

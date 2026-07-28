@@ -22,6 +22,75 @@ async function ratingSummary(recipeId: string, viewerId: string | null) {
   return { average, count, mine };
 }
 
+const PAGE_SIZE = 24;
+
+// Public, unauthenticated recipe browse/search. Lists every public recipe
+// (across all users) with its rating summary, author name, and comment
+// count, filterable by tag and searchable by name.
+router.get("/", async (req, res) => {
+  const term = typeof req.query.q === "string" ? req.query.q.trim() : "";
+  const tag = typeof req.query.tag === "string" ? req.query.tag.trim() : "";
+  const page = Math.max(1, Number(req.query.page) || 1);
+
+  const filter: Record<string, unknown> = { isPublic: true };
+  if (tag) filter.category = tag;
+  if (term) filter.name = { $regex: term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" };
+
+  const total = await Recipe.countDocuments(filter);
+  const recipes = await Recipe.find(filter)
+    .sort({ createdAt: -1 })
+    .skip((page - 1) * PAGE_SIZE)
+    .limit(PAGE_SIZE);
+
+  // Batch the per-recipe extras instead of N queries each.
+  const recipeIds = recipes.map((r) => r.id);
+  const authorIds = [...new Set(recipes.map((r) => r.userId))];
+
+  const [ratings, commentCounts, authors] = await Promise.all([
+    RecipeRating.find({ recipeId: { $in: recipeIds } }),
+    RecipeComment.aggregate<{ _id: string; count: number }>([
+      { $match: { recipeId: { $in: recipeIds } } },
+      { $group: { _id: "$recipeId", count: { $sum: 1 } } },
+    ]),
+    mongoose.connection
+      .db!.collection("user")
+      .find({ _id: { $in: authorIds.map((id) => new ObjectId(id)) } })
+      .toArray(),
+  ]);
+
+  const ratingByRecipe = new Map<string, { sum: number; count: number }>();
+  for (const r of ratings) {
+    const acc = ratingByRecipe.get(r.recipeId) ?? { sum: 0, count: 0 };
+    acc.sum += r.stars;
+    acc.count += 1;
+    ratingByRecipe.set(r.recipeId, acc);
+  }
+  const commentCountByRecipe = new Map(commentCounts.map((c) => [c._id, c.count]));
+  const authorNameById = new Map(authors.map((a) => [a._id.toString(), a.name as string]));
+
+  res.json({
+    recipes: recipes.map((recipe) => {
+      const agg = ratingByRecipe.get(recipe.id);
+      return {
+        _id: recipe._id,
+        name: recipe.name,
+        category: recipe.category,
+        prepTime: recipe.prepTime,
+        servings: recipe.servings,
+        imageUrl: recipe.imageUrl,
+        authorName: authorNameById.get(recipe.userId) ?? null,
+        rating: {
+          average: agg ? agg.sum / agg.count : 0,
+          count: agg?.count ?? 0,
+        },
+        commentCount: commentCountByRecipe.get(recipe.id) ?? 0,
+      };
+    }),
+    hasMore: page * PAGE_SIZE < total,
+    total,
+  });
+});
+
 // Deliberately unauthenticated GET: a public recipe page is meant to be
 // shareable with anyone by link. The session is still read (when present)
 // so the page can tell the owner apart and personalize interactions.
