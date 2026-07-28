@@ -1,7 +1,7 @@
 import { useEffect, useState, type ComponentType } from "react";
-import { useNavigate } from "react-router-dom";
-import { BackIcon, BarcodeIcon, CartIcon, CheckIcon, ExploreIcon, StarIcon } from "../components/icons";
+import { BarcodeIcon, CartIcon, CheckIcon, ExploreIcon, MenuIcon, StarIcon } from "../components/icons";
 import { Header } from "../components/layout/Header";
+import { Sidebar } from "../components/layout/Sidebar";
 import { api } from "../lib/api";
 import { useI18n } from "../lib/i18n";
 
@@ -173,10 +173,10 @@ function DoneCard({ name, desc, status, Icon, tint }: {
 }
 
 export function Roadmap() {
-  const navigate = useNavigate();
   const { t } = useI18n();
   const r = t.roadmap;
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [voted, setVoted] = useState<Set<string>>(new Set());
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
@@ -252,15 +252,12 @@ export function Roadmap() {
     <div className="mx-auto flex min-h-svh max-w-3xl flex-col">
       <Header
         left={
-          <button
-            onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/"))}
-            aria-label={t.common.back}
-            className="text-muted"
-          >
-            <BackIcon className="h-6 w-6" />
+          <button onClick={() => setSidebarOpen(true)} aria-label={t.nav.openMenu} className="text-muted">
+            <MenuIcon className="h-6 w-6" />
           </button>
         }
       />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <main className="flex-1 space-y-8 px-4 py-5">
         <div>
