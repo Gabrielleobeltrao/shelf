@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { signIn, signUp } from "../lib/auth-client";
 import { useI18n } from "../lib/i18n";
 import { PantryShelfIllustration } from "../components/illustrations";
+import { Checkbox } from "../components/ui/Checkbox";
 
 export function Login() {
   const navigate = useNavigate();
@@ -100,15 +101,11 @@ export function Login() {
         />
 
         {mode === "signin" && (
-          <label className="flex items-center gap-2 text-sm text-muted">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="h-4 w-4 rounded border-line"
-            />
-            {t.auth.keepConnected}
-          </label>
+          <Checkbox
+            checked={rememberMe}
+            onChange={setRememberMe}
+            label={t.auth.keepConnected}
+          />
         )}
 
         {error && <p className="text-sm text-rust-600">{error}</p>}

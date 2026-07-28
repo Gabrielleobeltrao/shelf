@@ -125,7 +125,7 @@ export function Settings() {
 
       <div className="space-y-2 rounded-2xl bg-surface-2 p-4">
         <label className="text-sm font-medium">{t.settings.language}</label>
-        <LanguageSelect className="w-full rounded-lg bg-surface px-3 py-2 text-base" />
+        <LanguageSelect className="w-full" />
       </div>
 
       <form onSubmit={handleSaveName} className="space-y-2 rounded-2xl bg-surface-2 p-4">
