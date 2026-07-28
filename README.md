@@ -1,11 +1,12 @@
 # Shelf
 
-Organização de cozinha: estoque, receitas, lista de compras e mais, mobile first.
+Organização de cozinha: estoque, receitas, lista de compras e uma comunidade de
+receitas — mobile first, mas responsivo em telas maiores.
 
 ## Estrutura
 
-- `frontend/` — React + TypeScript, Tailwind CSS v4, React Router, Better Auth (client)
-- `backend/` — Node.js + TypeScript, Express, MongoDB Atlas (Mongoose), Better Auth (server)
+- `frontend/` — React 19 + TypeScript, Vite, Tailwind CSS v4, React Router, Better Auth (client)
+- `backend/` — Node.js + TypeScript, Express 5, MongoDB Atlas (Mongoose), Better Auth (server)
 
 ## Como rodar
 
@@ -25,6 +26,18 @@ Isso sobe frontend e backend juntos:
 Portas escolhidas de propósito fora dos defaults comuns (4000/5173) para não
 conflitar com outros projetos rodando na mesma máquina.
 
+### Variáveis de ambiente (backend)
+
+- `MONGODB_URI` — string de conexão do MongoDB Atlas (obrigatória).
+- `BETTER_AUTH_SECRET` — segredo aleatório pra assinar sessões, ex: `openssl rand -base64 32` (obrigatória).
+- `CLIENT_URL` — origem do frontend (aceita lista separada por vírgula pra autorizar
+  produção + localhost ao mesmo tempo). Padrão: `http://localhost:5183`.
+- `BETTER_AUTH_URL` — URL pública do próprio backend. Padrão: `http://localhost:4001`.
+- `NODE_ENV=production` — em produção, ativa cookies de sessão `sameSite=none; secure`
+  (necessário quando frontend e backend ficam em domínios diferentes).
+
+No frontend, `VITE_API_URL` aponta pra URL pública do backend (padrão `http://localhost:4001`).
+
 ## Funcionalidades
 
 ### Autenticação
@@ -40,31 +53,54 @@ conflitar com outros projetos rodando na mesma máquina.
 - **Escanear código de barras** pela câmera (celular ou webcam) — se o produto já
   existe no estoque, só soma na quantidade; se é novo, busca nome/marca/categoria/foto
   na Open Food Facts e pré-preenche o cadastro.
-- Lista única (sem separar por categoria), com busca por nome/marca e um popup de
-  filtro por categoria (ícone no canto da busca).
+- **Buscar produto** ao adicionar item: procura primeiro nos itens que você já cadastrou
+  (instantâneo) e depois na Open Food Facts. As categorias bagunçadas da OFF são
+  normalizadas pra um vocabulário fixo em português, e resultados sem foto/categoria
+  ficam por último pra reduzir duplicatas.
+- Lista em cards, com busca por nome/marca e chips de filtro por categoria (com ícone
+  por tipo de produto).
 - Cada item mostra `− quantidade +` pra ajustar o estoque na hora, direto na lista.
-- Quando o item está **vencido** (com controle de validade ativo), o `− +` vira três
-  botões: excluir, editar e adicionar à lista de compras.
+- Quando o item está **vencido** ou **sem estoque**, o card mostra um botão de carrinho
+  (adicionar à lista de compras). Excluir/editar ficam na página de detalhes do item.
+- Clicar num item abre a página de detalhes (foto grande, infos, nutrição, ações), com
+  botão de editar e confirmação antes de excluir.
 
 ### Receitas
 
-- CRUD de receitas: nome, foto do prato, modo de preparo.
-- Ingredientes são escolhidos a partir dos itens do estoque (não texto livre), com
-  quantidade e unidade próprias por receita — não precisa ser a mesma unidade em que
-  o item está armazenado. Não deixa repetir o mesmo ingrediente na receita.
+- CRUD de receitas: nome, foto do prato, modo de preparo em passos numerados,
+  tempo de preparo, porções e uma **tag fixa** de categoria (você escolhe a que melhor
+  representa entre uma lista fixa — Café da manhã, Almoço, Massas, Sobremesa, etc.).
+- Ingredientes vêm dos itens do estoque **ou** de uma busca de produto (que cria o item
+  com quantidade 0 se ainda não existir), com quantidade e unidade próprias por receita.
+- Indicador **"Dá pra fazer?"**: compara os ingredientes com o estoque atual (convertendo
+  g/kg e ml/L) e mostra "Dá pra fazer" ou "Falta N" no card.
 - Excluir um item do estoque **não** apaga ele da receita: o nome do ingrediente fica
-  salvo na própria receita, mostrando "(removido do estoque)" se for editar depois.
-- Busca por nome da receita ou nome de ingrediente.
+  salvo na própria receita.
+- Busca por nome/ingrediente e um popup de filtros (origem: minhas/salvas, e categoria).
+- Paginação ("Carregar mais") e um FAB que abre "Explorar receitas" ou "Adicionar receita".
 
-### Lista de compras (carrinho)
+### Receitas públicas & comunidade
+
+- Cada receita pode ser **pública ou privada** (switch no formulário). Privada só o dono vê.
+- Toda receita tem uma **página compartilhável** (`/receita/:id`) que funciona por link,
+  sem login. Só o dono vê o botão de editar.
+- **Explorar** (`/explorar`): página pública onde qualquer um busca e navega pelas receitas
+  públicas de todos, filtrando por tag, com foto, autor, média de estrelas e nº de comentários.
+- Usuários logados (que não são o autor) podem, na página da receita:
+  - **Avaliar de 1 a 6 estrelas** (uma avaliação por pessoa; a média aparece pra todos).
+  - **Comentar** (com data) e apagar os próprios comentários.
+  - **Salvar** na própria lista — vira uma referência de leitura pra encontrar a receita
+    depois; abrir a receita salva leva à página original (com as avaliações e comentários dela).
+
+### Lista de compras
 
 - Ícone de carrinho no header abre um painel lateral (direita) com os itens marcados
   pra comprar.
-- Adicionar um item à lista de compras **não** depende do item continuar existindo no
-  estoque — a lista guarda seu próprio registro, então excluir o item do estoque não
-  tira ele do carrinho.
-- Cada item tem um `− quantidade +` pra definir quanto comprar; o botão "Comprado"
-  soma essa quantidade no estoque (se o item ainda existir) e tira da lista.
+- Adicionar um item à lista **não** depende dele continuar existindo no estoque — a lista
+  guarda seu próprio registro (nome, unidade, foto).
+- Funciona como uma lista de mercado: você **risca** os itens que comprou (toque no item),
+  ajusta a quantidade de cada um, e no final o botão **"Compra concluída"** soma ao estoque
+  o que foi riscado e remove da lista; o que não foi riscado continua pra próxima vez.
 
 ### Dashboard
 
@@ -75,24 +111,37 @@ conflitar com outros projetos rodando na mesma máquina.
 
 ### Configurações
 
-- **Conta**: editar nome e e-mail, trocar senha, excluir conta (remove estoque,
-  receitas, lista de compras e preferências junto).
+- **Conta**: editar o nome, ver o e-mail (somente leitura) e excluir a conta (remove
+  estoque, receitas, lista de compras, avaliações, comentários e preferências junto).
 - **Preferências** (switches independentes, cada um liga um campo extra no estoque):
   - **Data de validade** — adiciona validade no item, badge de aviso na lista e
     alimenta o Dashboard.
   - **Informações nutricionais** — ao ativar, abre um popup pra escolher quais campos
     quer acompanhar (calorias, carboidratos, açúcares, proteínas, gorduras totais,
     gorduras saturadas, fibra alimentar, sódio); só os escolhidos aparecem no item.
-    Um botão "Editar campos" deixa mudar a seleção depois.
-  - **Sem glúten** — checkbox no item.
-  - **Vegano** — checkbox no item.
+  - **Sem glúten** / **Vegano** — marcações no item.
 
-### Navegação
+### Navegação & visual
 
-- Sidebar (ícone ☰ no header) com Dashboard, Estoque, Receitas, Configurações e Sair.
-- Ícone de carrinho no header abre a lista de compras.
+- Header com logo centralizado, menu (☰) à esquerda e carrinho à direita.
+- Sidebar com Dashboard, Estoque, Receitas, Explorar, Configurações e Sair.
+- Tema visual sálvia/mostarda com tipografia Bricolage Grotesque + Karla (fontes
+  self-hosted), ilustrações nos estados vazios, ícones consistentes e suporte a tema
+  claro/escuro do sistema.
+
+## Scripts úteis
+
+- `backend/scripts/seed-public-recipes.mjs` — injeta receitas públicas de exemplo (com
+  autores fake, avaliações e comentários) pra visualizar o layout do Explorar:
+
+  ```bash
+  cd backend
+  node scripts/seed-public-recipes.mjs          # inserir dados de exemplo
+  node scripts/seed-public-recipes.mjs --clean  # remover (só toca no que ele criou)
+  ```
 
 ## Status
 
-MVP completo com estoque, receitas, lista de compras, dashboard de validade e
-preferências configuráveis. Próximos módulos entram por aqui conforme forem pedidos.
+Estoque, receitas, lista de compras, dashboard de validade, preferências configuráveis e
+uma camada de comunidade (receitas públicas, busca em Explorar, avaliações, comentários e
+salvar). Próximos módulos entram por aqui conforme forem pedidos.
