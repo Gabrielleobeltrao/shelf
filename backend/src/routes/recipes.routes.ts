@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { Recipe } from "../models/Recipe.js";
+import { RecipeRating } from "../models/RecipeRating.js";
+import { RecipeComment } from "../models/RecipeComment.js";
 import { requireAuth } from "../middleware/requireAuth.js";
 
 const router = Router();
@@ -44,7 +46,12 @@ router.patch("/:id", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
-  await Recipe.deleteOne({ _id: req.params.id, userId: req.userId });
+  const result = await Recipe.deleteOne({ _id: req.params.id, userId: req.userId });
+  // Only clear ratings/comments if this user actually owned & deleted it.
+  if (result.deletedCount > 0) {
+    await RecipeRating.deleteMany({ recipeId: req.params.id });
+    await RecipeComment.deleteMany({ recipeId: req.params.id });
+  }
   res.status(204).end();
 });
 

@@ -4,7 +4,7 @@ import { api } from "../lib/api";
 import { hasEnoughStock } from "../lib/units";
 import type { RecipeFormData } from "../components/recipes/RecipeDetailModal";
 import { RecipeDetailModal } from "../components/recipes/RecipeDetailModal";
-import { PencilIcon, PlusIcon, SearchIcon } from "../components/icons";
+import { FilterIcon, PencilIcon, PlusIcon, SearchIcon } from "../components/icons";
 import { EmptyState } from "../components/ui/EmptyState";
 import { Fab } from "../components/ui/Fab";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
@@ -30,6 +30,8 @@ type Recipe = {
   ingredients: RecipeIngredient[];
   imageUrl?: string;
   isPublic?: boolean;
+  // Set on copies saved from another user's public recipe.
+  savedFrom?: string;
 };
 
 type StockItem = {
@@ -76,6 +78,8 @@ export function Recipes() {
   const [modal, setModal] = useState<ModalState | null>(null);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [originFilter, setOriginFilter] = useState<"all" | "mine" | "saved">("all");
+  const [filterOpen, setFilterOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
@@ -112,11 +116,15 @@ export function Recipes() {
 
     return recipes.filter((recipe) => {
       if (categoryFilter && (recipe.category?.trim() || "") !== categoryFilter) return false;
+      if (originFilter === "mine" && recipe.savedFrom) return false;
+      if (originFilter === "saved" && !recipe.savedFrom) return false;
       if (!term) return true;
       if (recipe.name.toLowerCase().includes(term)) return true;
       return recipe.ingredients.some((row) => row.name?.toLowerCase().includes(term));
     });
-  }, [recipes, search, categoryFilter]);
+  }, [recipes, search, categoryFilter, originFilter]);
+
+  const hasSaved = useMemo(() => recipes.some((r) => r.savedFrom), [recipes]);
 
   function missingIngredients(recipe: Recipe) {
     return recipe.ingredients.filter((row) => {
@@ -172,15 +180,65 @@ export function Recipes() {
       <h1 className="text-lg font-semibold">Receitas</h1>
 
       {recipes.length > 0 && (
-        <div className="relative">
-          <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-          <input
-            type="text"
-            placeholder="Buscar por nome ou ingrediente"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg bg-surface-2 py-2 pl-9 pr-3 text-base"
-          />
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <input
+              type="text"
+              placeholder="Buscar por nome ou ingrediente"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-lg bg-surface-2 py-2 pl-9 pr-3 text-base"
+            />
+          </div>
+          {hasSaved && (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setFilterOpen((v) => !v)}
+                aria-label="Filtrar receitas"
+                className={`relative flex h-full w-11 items-center justify-center rounded-lg bg-surface-2 ${
+                  originFilter !== "all" ? "text-primary-600" : "text-muted"
+                }`}
+              >
+                <FilterIcon className="h-5 w-5" />
+                {originFilter !== "all" && (
+                  <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-primary-600" />
+                )}
+              </button>
+
+              {filterOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setFilterOpen(false)} />
+                  <div className="absolute right-0 z-20 mt-1 w-44 overflow-hidden rounded-lg border border-line bg-surface shadow-lg">
+                    {(
+                      [
+                        ["all", "Todas"],
+                        ["mine", "Criadas por mim"],
+                        ["saved", "Salvas de outros"],
+                      ] as const
+                    ).map(([value, label]) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => {
+                          setOriginFilter(value);
+                          setFilterOpen(false);
+                        }}
+                        className={`block w-full px-3 py-2 text-left text-sm ${
+                          originFilter === value
+                            ? "bg-primary-100 font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-400"
+                            : "hover:bg-surface-2"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -263,8 +321,17 @@ export function Recipes() {
                       ))}
                   </div>
 
-                  {(recipe.category || recipe.prepTime || recipe.servings || recipe.isPublic) && (
+                  {(recipe.category ||
+                    recipe.prepTime ||
+                    recipe.servings ||
+                    recipe.isPublic ||
+                    recipe.savedFrom) && (
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+                      {recipe.savedFrom && (
+                        <span className="rounded-full bg-primary-100 px-2 py-0.5 font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
+                          Salva
+                        </span>
+                      )}
                       {recipe.isPublic && (
                         <span className="rounded-full bg-mustard-100 px-2 py-0.5 font-medium text-mustard-700 dark:bg-mustard-900/40 dark:text-mustard-400">
                           Pública

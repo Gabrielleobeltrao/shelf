@@ -26,6 +26,10 @@ const recipeSchema = new Schema(
     // Public recipes get a shareable page and (later) show up in
     // cross-user search; private ones are only visible to their owner.
     isPublic: { type: Boolean, default: false },
+    // When set, this recipe is a copy someone saved from another user's
+    // public recipe (the id of the original). Used to dedupe the "save"
+    // action and mark the card as saved-from-someone-else.
+    savedFrom: { type: String },
     userId: { type: String, required: true },
   },
   { timestamps: true },

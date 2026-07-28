@@ -5,6 +5,8 @@ import { Item } from "../models/Item.js";
 import { Recipe } from "../models/Recipe.js";
 import { Settings } from "../models/Settings.js";
 import { ShoppingListItem } from "../models/ShoppingListItem.js";
+import { RecipeRating } from "../models/RecipeRating.js";
+import { RecipeComment } from "../models/RecipeComment.js";
 import { getAllowedOrigins } from "./origins.js";
 
 const uri = process.env.MONGODB_URI;
@@ -54,6 +56,8 @@ export const auth = betterAuth({
         await Recipe.deleteMany({ userId: user.id });
         await Settings.deleteMany({ userId: user.id });
         await ShoppingListItem.deleteMany({ userId: user.id });
+        await RecipeRating.deleteMany({ userId: user.id });
+        await RecipeComment.deleteMany({ userId: user.id });
       },
     },
   },

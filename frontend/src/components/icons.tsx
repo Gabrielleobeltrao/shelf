@@ -124,6 +124,32 @@ export function CheckIcon({ className }: IconProps) {
   );
 }
 
+export function StarIcon({ className, filled }: IconProps & { filled?: boolean }) {
+  return (
+    <svg viewBox="0 0 20 20" fill={filled ? "currentColor" : "none"} className={className}>
+      <path
+        d="M10 2.5l2.06 4.36 4.69.62-3.44 3.2.9 4.67L10 13.9l-4.21 2.45.9-4.67-3.44-3.2 4.69-.62z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function BookmarkIcon({ className, filled }: IconProps & { filled?: boolean }) {
+  return (
+    <svg viewBox="0 0 20 20" fill={filled ? "currentColor" : "none"} className={className}>
+      <path
+        d="M5 3.5h10a1 1 0 0 1 1 1v12l-6-3.2L4 16.5v-12a1 1 0 0 1 1-1z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function BackIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 20 20" fill="none" className={className}>
