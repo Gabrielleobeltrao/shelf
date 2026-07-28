@@ -1,5 +1,5 @@
 import { useEffect, useState, type ComponentType } from "react";
-import { BarcodeIcon, CartIcon, CheckIcon, ExploreIcon, MenuIcon, StarIcon } from "../components/icons";
+import { BarcodeIcon, CameraIcon, CartIcon, CheckIcon, CookedIcon, ExploreIcon, MenuIcon, StarIcon } from "../components/icons";
 import { Header } from "../components/layout/Header";
 import { Sidebar } from "../components/layout/Sidebar";
 import { api } from "../lib/api";
@@ -117,6 +117,71 @@ function ChevronIcon({ className }: IconProps) {
   );
 }
 
+function ReceiptIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path
+        d="M5.5 3h9a.5.5 0 0 1 .5.5v13l-2-1.3-2 1.3-2-1.3-2 1.3V3.5a.5.5 0 0 1 .5-.5Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+      <path d="M7.5 6.5h5M7.5 9.5h5M7.5 12.5h3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ChartIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path d="M4 16h13" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <rect x="5.5" y="10" width="2.4" height="5" rx="0.6" stroke="currentColor" strokeWidth="1.4" />
+      <rect x="9.3" y="6.5" width="2.4" height="8.5" rx="0.6" stroke="currentColor" strokeWidth="1.4" />
+      <rect x="13.1" y="12" width="2.4" height="3" rx="0.6" stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  );
+}
+
+function FlameIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path
+        d="M10 2.5c1.8 2.6 4 4.2 4 7.4a4 4 0 1 1-8 0c0-1.4.6-2.5 1.4-3.3.1 1 .7 1.7 1.4 2C9 6.6 9.3 4.7 10 2.5Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function FolderIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path
+        d="M3 6.5A1.5 1.5 0 0 1 4.5 5h3l1.5 1.8h6A1.5 1.5 0 0 1 16.5 8.3v6.2A1.5 1.5 0 0 1 15 16H4.5A1.5 1.5 0 0 1 3 14.5V6.5Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function SparkleIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path
+        d="M9 3l1.2 3.3L13.5 7.5 10.2 8.7 9 12 7.8 8.7 4.5 7.5l3.3-1.2L9 3Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+      <path d="M14.5 12l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6.6-1.7Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 // Rotating header tints so the grid reads like a varied menu of dishes.
 const TINTS = [
   { bg: "bg-mustard-100 dark:bg-mustard-900/30", fg: "text-mustard-700 dark:text-mustard-400" },
@@ -136,6 +201,14 @@ const PLANNED_ICON: Record<string, ComponentType<IconProps>> = {
   events: CalendarIcon,
   profiles: UserIcon,
   community: ExploreIcon,
+  "receipt-scan": ReceiptIcon,
+  "consumption-history": ChartIcon,
+  "cooking-mode": CookedIcon,
+  "cook-now": FlameIcon,
+  creators: StarIcon,
+  collections: FolderIcon,
+  assistant: SparkleIcon,
+  "photo-recognition": CameraIcon,
 };
 
 type DoneFeature = { name: string; desc: string };
