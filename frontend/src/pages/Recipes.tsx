@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../lib/api";
 import { hasEnoughStock } from "../lib/units";
 import type { RecipeFormData } from "../components/recipes/RecipeDetailModal";
 import { RecipeDetailModal } from "../components/recipes/RecipeDetailModal";
-import { RecipeViewModal } from "../components/recipes/RecipeViewModal";
-import { PlusIcon, SearchIcon } from "../components/icons";
+import { PencilIcon, PlusIcon, SearchIcon } from "../components/icons";
 import { EmptyState } from "../components/ui/EmptyState";
 import { Fab } from "../components/ui/Fab";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
@@ -70,11 +69,11 @@ function editInitialFor(recipe: Recipe): Partial<RecipeFormData> {
 }
 
 export function Recipes() {
+  const navigate = useNavigate();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [items, setItems] = useState<StockItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<ModalState | null>(null);
-  const [viewingRecipeId, setViewingRecipeId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
@@ -225,9 +224,20 @@ export function Recipes() {
             return (
               <li
                 key={recipe._id}
-                onClick={() => setViewingRecipeId(recipe._id)}
-                className="cursor-pointer overflow-hidden rounded-lg border border-line"
+                onClick={() => navigate(`/receita/${recipe._id}`)}
+                className="relative cursor-pointer overflow-hidden rounded-lg border border-line"
               >
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setModal({ mode: "edit", recipeId: recipe._id, initial: editInitialFor(recipe) });
+                  }}
+                  aria-label={`Editar ${recipe.name}`}
+                  className="absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-on-photo text-ink shadow-sm"
+                >
+                  <PencilIcon className="h-4 w-4" />
+                </button>
+
                 <PhotoOrFallback
                   src={recipe.imageUrl}
                   imgClassName="h-40 w-full object-cover"
@@ -296,36 +306,6 @@ export function Recipes() {
           })}
         </ul>
       )}
-
-      {viewingRecipeId &&
-        (() => {
-          const viewingRecipe = recipes.find((r) => r._id === viewingRecipeId);
-          if (!viewingRecipe) return null;
-
-          const missing = missingIngredients(viewingRecipe);
-          const missingIds = new Set(missing.map((row) => row.itemId));
-
-          return (
-            <RecipeViewModal
-              recipe={viewingRecipe}
-              steps={getSteps(viewingRecipe)}
-              missingIds={missingIds}
-              onClose={() => setViewingRecipeId(null)}
-              onEdit={() => {
-                setViewingRecipeId(null);
-                setModal({
-                  mode: "edit",
-                  recipeId: viewingRecipe._id,
-                  initial: editInitialFor(viewingRecipe),
-                });
-              }}
-              onDelete={() => {
-                setViewingRecipeId(null);
-                handleDeleteRecipe(viewingRecipe._id);
-              }}
-            />
-          );
-        })()}
 
       {modal && (
         <RecipeDetailModal
