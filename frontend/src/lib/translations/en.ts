@@ -309,13 +309,15 @@ export const en: Dict = {
     Outros: "Other",
   },
   roadmap: {
-    title: "The Shelf recipe",
-    subtitle: "No dates — just what's already on the plate and what's still cooking.",
-    ingredientsTitle: "Ingredients",
-    ingredientsHint: "The features that are already part of Shelf.",
-    methodTitle: "Method",
-    methodHint: "What's coming next and how we plan to build it.",
-    ingredients: [
+    title: "The Shelf menu",
+    subtitle: "Every feature is a recipe. The ones already made show up crossed off.",
+    doneTitle: "On the menu",
+    doneHint: "Recipes that are already cooked and served.",
+    plannedTitle: "In the oven",
+    plannedHint: "The next recipes we're preparing.",
+    statusDone: "Done",
+    statusPlanned: "Soon",
+    done: [
       { name: "Pantry with barcode scanning", desc: "Add items by scanning the barcode or searching Open Food Facts." },
       { name: "Expiration tracking", desc: "Keep an eye on what's about to expire, item by item." },
       { name: "Nutrition facts", desc: "Choose which data (sugar, sodium, etc.) shows on each item." },
@@ -328,7 +330,7 @@ export const en: Dict = {
       { name: "Expiration dashboard", desc: "A summary of what needs attention first." },
       { name: "Portuguese & English", desc: "The whole app in two languages, switched instantly." },
     ],
-    method: [
+    planned: [
       { name: "Meal planner", desc: "A weekly calendar that pulls saved recipes and builds the shopping list on its own." },
       { name: "Suggestions by what expires", desc: "Match soon-to-expire items with recipes that use them, prioritizing what saves the most." },
       { name: "Shared shopping list", desc: "Invite someone and sync the list in real time." },

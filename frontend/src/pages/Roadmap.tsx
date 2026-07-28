@@ -4,13 +4,50 @@ import { BowlIllustration } from "../components/illustrations";
 import { Header } from "../components/layout/Header";
 import { useI18n } from "../lib/i18n";
 
+// Rotating header tints so the grid reads like a varied menu of dishes.
+const TINTS = [
+  "bg-mustard-100 dark:bg-mustard-900/30",
+  "bg-primary-100 dark:bg-primary-900/30",
+  "bg-rust-100 dark:bg-rust-900/30",
+];
+
+type FeatureCardProps = {
+  name: string;
+  desc: string;
+  done: boolean;
+  status: string;
+  tint: string;
+};
+
+function FeatureCard({ name, desc, done, status, tint }: FeatureCardProps) {
+  return (
+    <article className="overflow-hidden rounded-lg border border-line">
+      <div className={`relative flex h-24 items-center justify-center ${tint} ${done ? "opacity-60" : ""}`}>
+        <BowlIllustration className="h-14 w-auto" />
+        <span
+          className={`absolute right-2 top-2 flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
+            done ? "bg-primary-600 text-white" : "bg-on-photo text-ink"
+          }`}
+        >
+          {done && <CheckIcon className="h-3 w-3" />}
+          {status}
+        </span>
+      </div>
+      <div className="space-y-1 p-3">
+        <h3 className={`font-medium ${done ? "text-muted line-through decoration-2" : ""}`}>{name}</h3>
+        <p className="text-sm text-muted">{desc}</p>
+      </div>
+    </article>
+  );
+}
+
 export function Roadmap() {
   const navigate = useNavigate();
   const { t } = useI18n();
   const r = t.roadmap;
 
   return (
-    <div className="mx-auto flex min-h-svh max-w-2xl flex-col">
+    <div className="mx-auto flex min-h-svh max-w-3xl flex-col">
       <Header
         left={
           <button
@@ -23,52 +60,46 @@ export function Roadmap() {
         }
       />
 
-      <main className="flex-1 space-y-6 px-4 py-4">
-        {/* Capa da "receita" */}
+      <main className="flex-1 space-y-8 px-4 py-5">
         <div>
-          <div className="flex h-40 w-full items-center justify-center rounded-2xl bg-mustard-100 dark:bg-mustard-900/30">
-            <BowlIllustration className="h-24 w-auto" />
-          </div>
-          <h1 className="mt-4 font-display text-2xl font-semibold">{r.title}</h1>
+          <h1 className="font-display text-2xl font-semibold">{r.title}</h1>
           <p className="mt-1 text-sm text-muted">{r.subtitle}</p>
         </div>
 
-        {/* Ingredientes = features prontas */}
+        {/* Já feitas — riscadas */}
         <section>
-          <p className="text-xs font-medium uppercase tracking-wide text-muted">{r.ingredientsTitle}</p>
-          <p className="mb-3 text-sm text-muted">{r.ingredientsHint}</p>
-          <ul className="space-y-2.5">
-            {r.ingredients.map((feature) => (
-              <li key={feature.name} className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary-600 text-white">
-                  <CheckIcon className="h-3 w-3" />
-                </span>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium">{feature.name}</p>
-                  <p className="text-sm text-muted">{feature.desc}</p>
-                </div>
-              </li>
+          <p className="text-xs font-medium uppercase tracking-wide text-muted">{r.doneTitle}</p>
+          <p className="mb-3 text-sm text-muted">{r.doneHint}</p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {r.done.map((feature, index) => (
+              <FeatureCard
+                key={feature.name}
+                name={feature.name}
+                desc={feature.desc}
+                done
+                status={r.statusDone}
+                tint={TINTS[index % TINTS.length]}
+              />
             ))}
-          </ul>
+          </div>
         </section>
 
-        {/* Modo de preparo = próximas features */}
-        <section className="border-t border-line pt-5">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted">{r.methodTitle}</p>
-          <p className="mb-3 text-sm text-muted">{r.methodHint}</p>
-          <ol className="space-y-3">
-            {r.method.map((step, index) => (
-              <li key={step.name} className="flex items-start gap-3 rounded-xl bg-surface-2 p-3">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-mustard-100 text-xs font-semibold tabular-nums text-mustard-700 dark:bg-mustard-900/40 dark:text-mustard-400">
-                  {index + 1}
-                </span>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium">{step.name}</p>
-                  <p className="text-sm text-muted">{step.desc}</p>
-                </div>
-              </li>
+        {/* Próximas — no forno */}
+        <section>
+          <p className="text-xs font-medium uppercase tracking-wide text-muted">{r.plannedTitle}</p>
+          <p className="mb-3 text-sm text-muted">{r.plannedHint}</p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {r.planned.map((feature, index) => (
+              <FeatureCard
+                key={feature.name}
+                name={feature.name}
+                desc={feature.desc}
+                done={false}
+                status={r.statusPlanned}
+                tint={TINTS[index % TINTS.length]}
+              />
             ))}
-          </ol>
+          </div>
         </section>
       </main>
     </div>

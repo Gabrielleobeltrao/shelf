@@ -307,13 +307,15 @@ export const pt = {
     Outros: "Outros",
   } as Record<string, string>,
   roadmap: {
-    title: "A receita do Shelf",
-    subtitle: "Sem datas — só o que já está no prato e o que ainda vai ao fogo.",
-    ingredientsTitle: "Ingredientes",
-    ingredientsHint: "As features que já fazem parte do Shelf.",
-    methodTitle: "Modo de preparo",
-    methodHint: "As próximas features e como pretendemos desenvolvê-las.",
-    ingredients: [
+    title: "O cardápio do Shelf",
+    subtitle: "Cada feature é uma receita. As que já ficaram prontas aparecem riscadas.",
+    doneTitle: "Já no cardápio",
+    doneHint: "Receitas que já estão prontas e servidas.",
+    plannedTitle: "No forno",
+    plannedHint: "As próximas receitas que estamos preparando.",
+    statusDone: "Pronto",
+    statusPlanned: "Em breve",
+    done: [
       { name: "Estoque com código de barras", desc: "Cadastre itens escaneando o código ou buscando na Open Food Facts." },
       { name: "Controle de validade", desc: "Acompanhe o que está perto de vencer, item por item." },
       { name: "Informações nutricionais", desc: "Escolha quais dados (açúcar, sódio, etc.) aparecem nos itens." },
@@ -326,7 +328,7 @@ export const pt = {
       { name: "Painel de vencimentos", desc: "Um resumo do que precisa de atenção primeiro." },
       { name: "Português e inglês", desc: "Todo o app em dois idiomas, com troca instantânea." },
     ],
-    method: [
+    planned: [
       { name: "Planejador de refeições", desc: "Um calendário semanal que puxa receitas salvas e monta a lista de compras sozinho." },
       { name: "Sugestões pelo que vence", desc: "Cruzar itens perto do vencimento com receitas que os usam, priorizando o que aproveita mais." },
       { name: "Lista de compras compartilhada", desc: "Convidar outra pessoa e sincronizar a lista em tempo real." },
