@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { API_URL } from "../lib/api";
-import { BookmarkIcon, CheckIcon, PencilIcon, ShelfLogo, StarIcon } from "../components/icons";
+import { BackIcon, BookmarkIcon, CheckIcon, PencilIcon, ShelfLogo, StarIcon } from "../components/icons";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 import { EmptyState } from "../components/ui/EmptyState";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
@@ -120,10 +120,19 @@ export function PublicRecipe() {
   return (
     <div className="mx-auto flex min-h-svh max-w-2xl flex-col">
       <header className="flex items-center justify-between border-b border-line px-4 py-3">
-        <Link to="/" className="flex items-center gap-2">
-          <ShelfLogo className="h-6 w-6" />
-          <span className="font-display text-lg font-semibold">Shelf</span>
-        </Link>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/receitas"))}
+            aria-label="Voltar"
+            className="text-muted"
+          >
+            <BackIcon className="h-5 w-5" />
+          </button>
+          <Link to="/" className="flex items-center gap-2">
+            <ShelfLogo className="h-6 w-6" />
+            <span className="font-display text-lg font-semibold">Shelf</span>
+          </Link>
+        </div>
 
         {data?.isOwner && (
           <button
@@ -196,6 +205,34 @@ export function PublicRecipe() {
               </div>
             )}
 
+            {data.recipe.ingredients.length > 0 && (
+              <div>
+                <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
+                  Ingredientes
+                </p>
+                <ul className="space-y-0.5 text-sm">
+                  {data.recipe.ingredients.map((row, index) => (
+                    <li key={index} className="text-muted">
+                      {row.quantity} {row.unit} de {row.name || "Item removido"}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {data.recipe.steps.length > 0 && (
+              <div>
+                <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
+                  Modo de preparo
+                </p>
+                <ol className="list-inside list-decimal space-y-1 text-sm">
+                  {data.recipe.steps.map((step, index) => (
+                    <li key={index}>{step}</li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
             {/* Avaliação */}
             <div className="rounded-xl bg-surface-2 p-4">
               <div className="flex items-center gap-2">
@@ -254,34 +291,6 @@ export function PublicRecipe() {
                 </p>
               )}
             </div>
-
-            {data.recipe.ingredients.length > 0 && (
-              <div>
-                <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
-                  Ingredientes
-                </p>
-                <ul className="space-y-0.5 text-sm">
-                  {data.recipe.ingredients.map((row, index) => (
-                    <li key={index} className="text-muted">
-                      {row.quantity} {row.unit} de {row.name || "Item removido"}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {data.recipe.steps.length > 0 && (
-              <div>
-                <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
-                  Modo de preparo
-                </p>
-                <ol className="list-inside list-decimal space-y-1 text-sm">
-                  {data.recipe.steps.map((step, index) => (
-                    <li key={index}>{step}</li>
-                  ))}
-                </ol>
-              </div>
-            )}
 
             {/* Comentários */}
             <div className="border-t border-line pt-4">

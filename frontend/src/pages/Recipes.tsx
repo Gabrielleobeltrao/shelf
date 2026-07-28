@@ -129,6 +129,15 @@ export function Recipes() {
   const hasSaved = useMemo(() => recipes.some((r) => r.savedFrom), [recipes]);
   const hasActiveFilter = originFilter !== "all" || categoryFilter !== "";
 
+  const PAGE_SIZE = 12;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  // Reset back to the first page whenever the result set changes.
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [search, categoryFilter, originFilter]);
+
+  const visibleRecipes = filteredRecipes.slice(0, visibleCount);
+
   function missingIngredients(recipe: Recipe) {
     return recipe.ingredients.filter((row) => {
       const stockItem = itemsById.get(row.itemId);
@@ -299,7 +308,7 @@ export function Recipes() {
         <p className="text-sm text-muted">Nenhuma receita encontrada.</p>
       ) : (
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredRecipes.map((recipe) => {
+          {visibleRecipes.map((recipe) => {
             const missing = missingIngredients(recipe);
             const missingIds = new Set(missing.map((row) => row.itemId));
             const steps = getSteps(recipe);
@@ -416,6 +425,15 @@ export function Recipes() {
             );
           })}
         </ul>
+      )}
+
+      {visibleRecipes.length < filteredRecipes.length && (
+        <button
+          onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+          className="mx-auto block rounded-lg bg-surface-2 px-4 py-2 text-sm font-medium"
+        >
+          Carregar mais
+        </button>
       )}
 
       {modal && (
