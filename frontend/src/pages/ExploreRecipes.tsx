@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { API_URL } from "../lib/api";
 import { RECIPE_TAGS } from "../lib/recipeTags";
-import { BackIcon, SearchIcon, StarIcon } from "../components/icons";
+import { BackIcon, BookmarkIcon, ChatIcon, CookedIcon, SearchIcon, StarIcon } from "../components/icons";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 import { EmptyState } from "../components/ui/EmptyState";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
@@ -20,6 +20,8 @@ type ExploreRecipe = {
   authorName: string | null;
   rating: { average: number; count: number };
   commentCount: number;
+  cookedCount: number;
+  savedCount: number;
 };
 
 export function ExploreRecipes() {
@@ -171,6 +173,24 @@ export function ExploreRecipes() {
                               {recipe.rating.average.toFixed(1)}
                             </span>
                             <span className="text-muted">({recipe.rating.count})</span>
+                          </span>
+                        )}
+                        {recipe.commentCount > 0 && (
+                          <span className="flex items-center gap-1">
+                            <ChatIcon className="h-3.5 w-3.5" />
+                            <span className="tabular-nums">{recipe.commentCount}</span>
+                          </span>
+                        )}
+                        {recipe.cookedCount > 0 && (
+                          <span className="flex items-center gap-1">
+                            <CookedIcon className="h-3.5 w-3.5" />
+                            <span className="tabular-nums">{recipe.cookedCount}</span>
+                          </span>
+                        )}
+                        {recipe.savedCount > 0 && (
+                          <span className="flex items-center gap-1">
+                            <BookmarkIcon className="h-3.5 w-3.5" filled />
+                            <span className="tabular-nums">{recipe.savedCount}</span>
                           </span>
                         )}
                         {recipe.prepTime != null && <span>{recipe.prepTime} {t.units.min}</span>}

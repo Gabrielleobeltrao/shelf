@@ -5,6 +5,7 @@ import { ObjectId } from "mongodb";
 import { Recipe } from "../models/Recipe.js";
 import { RecipeRating } from "../models/RecipeRating.js";
 import { RecipeComment } from "../models/RecipeComment.js";
+import { RecipeCook } from "../models/RecipeCook.js";
 import { auth } from "../config/auth.js";
 
 const router = Router();
@@ -46,11 +47,20 @@ router.get("/", async (req, res) => {
   const recipeIds = recipes.map((r) => r.id);
   const authorIds = [...new Set(recipes.map((r) => r.userId))];
 
-  const [ratings, commentCounts, authors] = await Promise.all([
+  const [ratings, commentCounts, cookedCounts, savedCounts, authors] = await Promise.all([
     RecipeRating.find({ recipeId: { $in: recipeIds } }),
     RecipeComment.aggregate<{ _id: string; count: number }>([
       { $match: { recipeId: { $in: recipeIds } } },
       { $group: { _id: "$recipeId", count: { $sum: 1 } } },
+    ]),
+    RecipeCook.aggregate<{ _id: string; count: number }>([
+      { $match: { recipeId: { $in: recipeIds } } },
+      { $group: { _id: "$recipeId", count: { $sum: 1 } } },
+    ]),
+    // How many people saved each recipe = copies pointing back to it.
+    Recipe.aggregate<{ _id: string; count: number }>([
+      { $match: { savedFrom: { $in: recipeIds } } },
+      { $group: { _id: "$savedFrom", count: { $sum: 1 } } },
     ]),
     mongoose.connection
       .db!.collection("user")
@@ -66,6 +76,8 @@ router.get("/", async (req, res) => {
     ratingByRecipe.set(r.recipeId, acc);
   }
   const commentCountByRecipe = new Map(commentCounts.map((c) => [c._id, c.count]));
+  const cookedCountByRecipe = new Map(cookedCounts.map((c) => [c._id, c.count]));
+  const savedCountByRecipe = new Map(savedCounts.map((c) => [c._id, c.count]));
   const authorNameById = new Map(authors.map((a) => [a._id.toString(), a.name as string]));
 
   res.json({
@@ -84,6 +96,8 @@ router.get("/", async (req, res) => {
           count: agg?.count ?? 0,
         },
         commentCount: commentCountByRecipe.get(recipe.id) ?? 0,
+        cookedCount: cookedCountByRecipe.get(recipe.id) ?? 0,
+        savedCount: savedCountByRecipe.get(recipe.id) ?? 0,
       };
     }),
     hasMore: page * PAGE_SIZE < total,
@@ -128,12 +142,15 @@ router.get("/:id", async (req, res) => {
           .map((s) => s.trim())
           .filter(Boolean);
 
-  const [rating, comments, alreadySaved] = await Promise.all([
+  const [rating, comments, alreadySaved, cookedCount, savedCount, cookedByViewer] = await Promise.all([
     ratingSummary(recipe.id, viewer?.id ?? null),
     RecipeComment.find({ recipeId: recipe.id }).sort({ createdAt: -1 }),
     viewer && !isOwner
       ? Recipe.exists({ userId: viewer.id, savedFrom: recipe.id })
       : Promise.resolve(null),
+    RecipeCook.countDocuments({ recipeId: recipe.id }),
+    Recipe.countDocuments({ savedFrom: recipe.id }),
+    viewer ? RecipeCook.exists({ recipeId: recipe.id, userId: viewer.id }) : Promise.resolve(null),
   ]);
 
   res.json({
@@ -164,6 +181,9 @@ router.get("/:id", async (req, res) => {
       mine: viewer?.id === c.userId,
     })),
     saved: !!alreadySaved,
+    cookedCount,
+    savedCount,
+    cooked: !!cookedByViewer,
   });
 });
 
@@ -288,6 +308,42 @@ router.post("/:id/save", async (req, res) => {
   });
 
   res.status(201).json({ saved: true, recipeId: copy._id });
+});
+
+// "I made this" — any logged-in user (the owner included) can toggle it.
+router.post("/:id/cooked", async (req, res) => {
+  const viewer = await getViewer(req);
+  if (!viewer) {
+    res.status(401).json({ error: "Não autenticado" });
+    return;
+  }
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    res.status(404).json({ error: "Receita não encontrada" });
+    return;
+  }
+  const recipe = await Recipe.findById(req.params.id);
+  if (!recipe || !recipe.isPublic) {
+    res.status(404).json({ error: "Receita não encontrada" });
+    return;
+  }
+
+  const existing = await RecipeCook.findOne({ recipeId: recipe.id, userId: viewer.id });
+  let cooked: boolean;
+  if (existing) {
+    await RecipeCook.deleteOne({ _id: existing._id });
+    cooked = false;
+  } else {
+    // upsert guards a double-tap race against the unique index.
+    await RecipeCook.updateOne(
+      { recipeId: recipe.id, userId: viewer.id },
+      { $setOnInsert: { recipeId: recipe.id, userId: viewer.id } },
+      { upsert: true },
+    );
+    cooked = true;
+  }
+
+  const count = await RecipeCook.countDocuments({ recipeId: recipe.id });
+  res.json({ cooked, count });
 });
 
 export default router;

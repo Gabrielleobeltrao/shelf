@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { API_URL } from "../lib/api";
 import { useI18n } from "../lib/i18n";
 import { tagLabel } from "../lib/labels";
-import { BackIcon, BookmarkIcon, CheckIcon, PencilIcon, StarIcon } from "../components/icons";
+import { BackIcon, BookmarkIcon, ChatIcon, CheckIcon, CookedIcon, PencilIcon, StarIcon } from "../components/icons";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 import { EmptyState } from "../components/ui/EmptyState";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
@@ -35,6 +35,9 @@ type PublicRecipeData = {
   rating: { average: number; count: number; mine: number | null };
   comments: Comment[];
   saved: boolean;
+  cookedCount: number;
+  savedCount: number;
+  cooked: boolean;
 };
 
 const STARS = [1, 2, 3, 4, 5, 6];
@@ -65,6 +68,7 @@ export function PublicRecipe() {
   const [commentText, setCommentText] = useState("");
   const [postingComment, setPostingComment] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [cooking, setCooking] = useState(false);
   const [ratingHover, setRatingHover] = useState(0);
 
   useEffect(() => {
@@ -116,6 +120,17 @@ export function PublicRecipe() {
       setData({ ...data, saved: true });
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleToggleCooked() {
+    if (!data || !id) return;
+    setCooking(true);
+    try {
+      const res = await apiCall(`/api/public/recipes/${id}/cooked`, { method: "POST" });
+      setData({ ...data, cooked: res.cooked, cookedCount: res.count });
+    } finally {
+      setCooking(false);
     }
   }
 
@@ -202,6 +217,45 @@ export function PublicRecipe() {
                 {data.recipe.category && <span>{tagLabel(t, data.recipe.category)}</span>}
                 {data.recipe.prepTime != null && <span>{data.recipe.prepTime} {t.units.min}</span>}
                 {data.recipe.servings != null && <span>{t.units.servings(data.recipe.servings)}</span>}
+              </div>
+            )}
+
+            {data.isLoggedIn && (
+              <button
+                onClick={handleToggleCooked}
+                disabled={cooking}
+                aria-pressed={data.cooked}
+                className={`flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium disabled:opacity-60 ${
+                  data.cooked
+                    ? "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-400"
+                    : "bg-primary-600 text-white"
+                }`}
+              >
+                {data.cooked ? <CheckIcon className="h-4 w-4" /> : <CookedIcon className="h-4 w-4" />}
+                {data.cooked ? t.publicRecipe.cookedDone : t.publicRecipe.cookedMark}
+              </button>
+            )}
+
+            {(data.cookedCount > 0 || data.savedCount > 0 || data.comments.length > 0) && (
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">
+                {data.cookedCount > 0 && (
+                  <span className="flex items-center gap-1.5">
+                    <CookedIcon className="h-4 w-4" />
+                    {t.publicRecipe.cookedCount(data.cookedCount)}
+                  </span>
+                )}
+                {data.savedCount > 0 && (
+                  <span className="flex items-center gap-1.5">
+                    <BookmarkIcon className="h-4 w-4" filled />
+                    {t.publicRecipe.savedCount(data.savedCount)}
+                  </span>
+                )}
+                {data.comments.length > 0 && (
+                  <span className="flex items-center gap-1.5">
+                    <ChatIcon className="h-4 w-4" />
+                    {data.comments.length}
+                  </span>
+                )}
               </div>
             )}
 
