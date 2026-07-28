@@ -36,6 +36,12 @@ type PublicRecipeData = {
 
 const STARS = [1, 2, 3, 4, 5, 6];
 
+function formatCommentDate(iso: string) {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
+}
+
 async function apiCall(path: string, options?: RequestInit) {
   const res = await fetch(`${API_URL}${path}`, {
     credentials: "include",
@@ -310,7 +316,10 @@ export function PublicRecipe() {
                   {data.comments.map((comment) => (
                     <li key={comment._id} className="rounded-lg bg-surface-2 p-3">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-sm font-medium">{comment.authorName}</p>
+                        <div className="flex items-baseline gap-2">
+                          <p className="text-sm font-medium">{comment.authorName}</p>
+                          <span className="text-xs text-muted">{formatCommentDate(comment.createdAt)}</span>
+                        </div>
                         {comment.mine && (
                           <button
                             onClick={() => handleDeleteComment(comment._id)}
