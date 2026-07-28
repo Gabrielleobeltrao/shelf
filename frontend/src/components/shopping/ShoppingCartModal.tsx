@@ -92,6 +92,7 @@ export function ShoppingCartModal({ open, onClose }: Props) {
         setEntries((prev) => prev.filter((e) => e._id !== entry._id));
       }
       setCheckedIds(new Set());
+      onClose();
     } finally {
       setFinishing(false);
     }
