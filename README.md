@@ -1,7 +1,8 @@
 # Shelf
 
-Organização de cozinha: estoque, receitas, lista de compras e uma comunidade de
-receitas — mobile first, mas responsivo em telas maiores.
+Organização de cozinha: estoque, receitas, lista de compras, uma comunidade de
+receitas e um roadmap público — mobile first, mas responsivo em telas maiores.
+Todo o app é bilíngue (português e inglês).
 
 ## Estrutura
 
@@ -37,6 +38,16 @@ conflitar com outros projetos rodando na mesma máquina.
   (necessário quando frontend e backend ficam em domínios diferentes).
 
 No frontend, `VITE_API_URL` aponta pra URL pública do backend (padrão `http://localhost:4001`).
+
+## Idiomas (i18n)
+
+- **Português (padrão) e inglês**, com troca instantânea. Camada própria em React Context
+  (sem dependência externa); o idioma escolhido é salvo no navegador e, na primeira
+  visita, segue o idioma do próprio navegador.
+- Seletor de idioma (toggle de pílulas) nas **Configurações** e dentro da **Sidebar**.
+- Vocabulários armazenados no banco (tags de receita e categorias de estoque) ficam
+  em português e são traduzidos **só na exibição** — os filtros continuam funcionando
+  pelo valor salvo.
 
 ## Funcionalidades
 
@@ -83,14 +94,30 @@ No frontend, `VITE_API_URL` aponta pra URL pública do backend (padrão `http://
 
 - Cada receita pode ser **pública ou privada** (switch no formulário). Privada só o dono vê.
 - Toda receita tem uma **página compartilhável** (`/receita/:id`) que funciona por link,
-  sem login. Só o dono vê o botão de editar.
+  sem login. Só o dono vê o botão de editar; os demais têm um botão "Voltar ao Explorar".
 - **Explorar** (`/explorar`): página pública onde qualquer um busca e navega pelas receitas
-  públicas de todos, filtrando por tag, com foto, autor, média de estrelas e nº de comentários.
-- Usuários logados (que não são o autor) podem, na página da receita:
-  - **Avaliar de 1 a 6 estrelas** (uma avaliação por pessoa; a média aparece pra todos).
+  públicas de todos, filtrando por tag. Os cards mostram foto, autor, média de estrelas e,
+  com ícone, o **nº de comentários**, quantas pessoas **fizeram** e quantas **salvaram**.
+- Interações na página da receita:
+  - **Avaliar de 1 a 6 estrelas** (usuário logado que não é o autor; uma avaliação por
+    pessoa, a média aparece pra todos).
   - **Comentar** (com data) e apagar os próprios comentários.
-  - **Salvar** na própria lista — vira uma referência de leitura pra encontrar a receita
-    depois; abrir a receita salva leva à página original (com as avaliações e comentários dela).
+  - **Salvar** na própria lista — vira uma referência de leitura; abrir a receita salva
+    leva à página original (com as avaliações e comentários dela). A página mostra quantas
+    pessoas salvaram.
+  - **"Fiz esta receita"** — qualquer pessoa logada (o autor incluído) marca que preparou,
+    e a página mostra o total da comunidade ("N pessoas fizeram").
+
+### Roadmap
+
+- Página pública (`/roadmap`) no formato de "cardápio", **sem datas**, bilíngue.
+- Duas seções que **encolhem/expandem**: **"No forno"** (features planejadas) e
+  **"Já no cardápio"** (features prontas, exibidas riscadas).
+- Cada feature é um card com ícone próprio. Os planejados **expandem** pra mostrar
+  objetivo, tarefas e "como funciona".
+- **Voto da comunidade (joinha)**: 1 voto por dispositivo (chave anônima guardada no
+  navegador), salvo no backend. Os cards se **reordenam por votos** e os 3 primeiros
+  ganham um badge de posição (#1–#3).
 
 ### Lista de compras
 
@@ -113,6 +140,7 @@ No frontend, `VITE_API_URL` aponta pra URL pública do backend (padrão `http://
 
 - **Conta**: editar o nome, ver o e-mail (somente leitura) e excluir a conta (remove
   estoque, receitas, lista de compras, avaliações, comentários e preferências junto).
+- **Idioma**: alternar entre português e inglês.
 - **Preferências** (switches independentes, cada um liga um campo extra no estoque):
   - **Data de validade** — adiciona validade no item, badge de aviso na lista e
     alimenta o Dashboard.
@@ -123,11 +151,31 @@ No frontend, `VITE_API_URL` aponta pra URL pública do backend (padrão `http://
 
 ### Navegação & visual
 
-- Header com logo centralizado, menu (☰) à esquerda e carrinho à direita.
-- Sidebar com Dashboard, Estoque, Receitas, Explorar, Configurações e Sair.
+- **Landing page** (`/`) para visitantes deslogados; quem já está logado é levado direto
+  pro Estoque.
+- **Header compartilhado** e idêntico em todas as páginas: menu (☰) à esquerda, logo
+  centralizado e uma ação à direita (carrinho dentro do app, login na landing).
+- **Sidebar única, dependente só do login** (a mesma em qualquer página):
+  - **Logado**: conta + Dashboard, Estoque, Receitas, Explorar, Roadmap, Configurações,
+    seletor de idioma e Sair.
+  - **Deslogado**: Início (landing), Explorar, Roadmap, botão Entrar e seletor de idioma.
 - Tema visual sálvia/mostarda com tipografia Bricolage Grotesque + Karla (fontes
   self-hosted), ilustrações nos estados vazios, ícones consistentes e suporte a tema
   claro/escuro do sistema.
+
+## API (backend)
+
+Rotas montadas em `backend/src/index.ts`:
+
+- `POST /api/auth/*` — Better Auth (cadastro, login, sessão).
+- `GET/POST/PATCH/DELETE /api/items` — estoque.
+- `GET/POST/PATCH/DELETE /api/recipes` — receitas do usuário.
+- `GET/POST/DELETE /api/shopping-list` — lista de compras.
+- `GET /api/settings`, `PATCH /api/settings` — preferências.
+- `GET /api/product-search` — proxy de busca na Open Food Facts.
+- `/api/public/recipes` — receitas públicas (listar/buscar, página por id) e interações
+  autenticadas: avaliar, comentar, salvar e **"fiz esta receita"** (`POST /:id/cooked`).
+- `/api/roadmap/votes` — contagem de votos por feature e toggle do voto por dispositivo.
 
 ## Scripts úteis
 
@@ -142,6 +190,8 @@ No frontend, `VITE_API_URL` aponta pra URL pública do backend (padrão `http://
 
 ## Status
 
-Estoque, receitas, lista de compras, dashboard de validade, preferências configuráveis e
-uma camada de comunidade (receitas públicas, busca em Explorar, avaliações, comentários e
-salvar). Próximos módulos entram por aqui conforme forem pedidos.
+Estoque, receitas, lista de compras, dashboard de validade e preferências configuráveis;
+uma camada de comunidade (receitas públicas, Explorar, avaliações, comentários, salvar e
+"fiz esta receita" com contadores); app bilíngue (PT/EN); landing page e navegação
+unificada; e um roadmap público com votação da comunidade. Próximos módulos entram por
+aqui conforme forem pedidos.
