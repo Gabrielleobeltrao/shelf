@@ -119,29 +119,30 @@ export function PublicRecipe() {
 
   return (
     <div className="mx-auto flex min-h-svh max-w-2xl flex-col">
-      <header className="flex items-center justify-between border-b border-line px-4 py-3">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/receitas"))}
-            aria-label="Voltar"
-            className="text-muted"
-          >
-            <BackIcon className="h-5 w-5" />
-          </button>
-          <Link to="/" className="flex items-center gap-2">
-            <ShelfLogo className="h-6 w-6" />
-            <span className="font-display text-lg font-semibold">Shelf</span>
-          </Link>
-        </div>
+      <header className="grid grid-cols-3 items-center border-b border-line px-4 py-3">
+        <button
+          onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/receitas"))}
+          aria-label="Voltar"
+          className="justify-self-start text-muted"
+        >
+          <BackIcon className="h-5 w-5" />
+        </button>
 
-        {data?.isOwner && (
+        <Link to="/" className="flex items-center justify-self-center gap-2">
+          <ShelfLogo className="h-6 w-6" />
+          <span className="font-display text-lg font-semibold">Shelf</span>
+        </Link>
+
+        {data?.isOwner ? (
           <button
             onClick={() => navigate(`/receitas?editar=${data.recipe._id}`)}
-            className="flex items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-1.5 text-sm font-medium text-white"
+            className="flex items-center gap-1.5 justify-self-end rounded-lg bg-primary-600 px-3 py-1.5 text-sm font-medium text-white"
           >
             <PencilIcon className="h-3.5 w-3.5" />
             Editar
           </button>
+        ) : (
+          <span />
         )}
       </header>
 
@@ -234,6 +235,7 @@ export function PublicRecipe() {
             )}
 
             {/* Avaliação */}
+            <div className="border-t border-line pt-4">
             <div className="rounded-xl bg-surface-2 p-4">
               <div className="flex items-center gap-2">
                 <span className="text-lg font-semibold tabular-nums">
@@ -291,9 +293,10 @@ export function PublicRecipe() {
                 </p>
               )}
             </div>
+            </div>
 
             {/* Comentários */}
-            <div className="border-t border-line pt-4">
+            <div>
               <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">
                 Comentários ({data.comments.length})
               </p>

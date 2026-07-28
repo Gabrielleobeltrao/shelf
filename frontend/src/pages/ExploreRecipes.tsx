@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { API_URL } from "../lib/api";
 import { RECIPE_TAGS } from "../lib/recipeTags";
-import { SearchIcon, ShelfLogo, StarIcon } from "../components/icons";
+import { BackIcon, SearchIcon, ShelfLogo, StarIcon } from "../components/icons";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 import { EmptyState } from "../components/ui/EmptyState";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
@@ -20,6 +20,7 @@ type ExploreRecipe = {
 };
 
 export function ExploreRecipes() {
+  const navigate = useNavigate();
   const [recipes, setRecipes] = useState<ExploreRecipe[]>([]);
   const [search, setSearch] = useState("");
   const [tag, setTag] = useState("");
@@ -69,11 +70,19 @@ export function ExploreRecipes() {
 
   return (
     <div className="mx-auto flex min-h-svh max-w-5xl flex-col">
-      <header className="flex items-center justify-between border-b border-line px-4 py-3">
-        <Link to="/" className="flex items-center gap-2">
+      <header className="grid grid-cols-3 items-center border-b border-line px-4 py-3">
+        <button
+          onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/receitas"))}
+          aria-label="Voltar"
+          className="justify-self-start text-muted"
+        >
+          <BackIcon className="h-5 w-5" />
+        </button>
+        <Link to="/" className="flex items-center justify-self-center gap-2">
           <ShelfLogo className="h-6 w-6" />
           <span className="font-display text-lg font-semibold">Shelf</span>
         </Link>
+        <span />
       </header>
 
       <main className="flex-1 space-y-4 px-4 py-4">
