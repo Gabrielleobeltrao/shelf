@@ -204,8 +204,9 @@ export function LogoutIcon({ className }: IconProps) {
 export function LoginIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <circle cx="10" cy="6.5" r="3" stroke="currentColor" strokeWidth="1.5" />
       <path
-        d="M12 4h4v12h-4M7 6l4 4-4 4M11 10H3"
+        d="M4.5 16.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5"
         stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
