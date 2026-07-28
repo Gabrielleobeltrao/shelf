@@ -14,6 +14,7 @@ import {
 import { BowlIllustration, PantryShelfIllustration } from "../components/illustrations";
 import { useI18n } from "../lib/i18n";
 import { LanguageSelect } from "../components/ui/LanguageSelect";
+import { Header } from "../components/layout/Header";
 
 function StarRow() {
   return (
@@ -31,27 +32,18 @@ export function Landing() {
 
   return (
     <div className="flex min-h-svh flex-col bg-bg">
-      <header className="mx-auto grid w-full max-w-5xl grid-cols-3 items-center px-4 py-4">
-        <button
-          type="button"
-          onClick={() => setMenuOpen(true)}
-          aria-label={t.nav.openMenu}
-          className="justify-self-start rounded-lg p-2 text-ink hover:bg-surface-2"
-        >
-          <MenuIcon className="h-6 w-6" />
-        </button>
-        <div className="flex items-center justify-self-center gap-2">
-          <ShelfLogo className="h-7 w-7" />
-          <span className="font-display text-xl font-semibold">Shelf</span>
-        </div>
-        <Link
-          to="/login"
-          aria-label={t.landing.enter}
-          className="justify-self-end rounded-lg p-2 text-ink hover:bg-surface-2"
-        >
-          <LoginIcon className="h-6 w-6" />
-        </Link>
-      </header>
+      <Header
+        left={
+          <button type="button" onClick={() => setMenuOpen(true)} aria-label={t.nav.openMenu} className="text-muted">
+            <MenuIcon className="h-6 w-6" />
+          </button>
+        }
+        right={
+          <Link to="/login" aria-label={t.landing.enter} className="text-muted">
+            <LoginIcon className="h-6 w-6" />
+          </Link>
+        }
+      />
 
       {menuOpen && (
         <div className="fixed inset-0 z-50 flex" role="dialog" aria-modal="true">
