@@ -27,14 +27,10 @@ export function AppLayout() {
       />
 
       <main className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 lg:px-8">
-        <Outlet />
+        <Outlet context={{ openCart: () => setCartOpen(true) }} />
       </main>
 
-      <Sidebar
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        onOpenCart={() => setCartOpen(true)}
-      />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <ShoppingCartModal open={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );

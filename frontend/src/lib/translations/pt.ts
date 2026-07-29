@@ -20,6 +20,7 @@ export const pt = {
     dashboard: "Dashboard",
     inventory: "Estoque",
     recipes: "Receitas",
+    myRecipes: "Minhas receitas",
     explore: "Explorar",
     roadmap: "Roadmap",
     settings: "Configurações",

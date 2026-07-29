@@ -22,6 +22,7 @@ export const en: Dict = {
     dashboard: "Dashboard",
     inventory: "Pantry",
     recipes: "Recipes",
+    myRecipes: "My recipes",
     explore: "Explore",
     roadmap: "Roadmap",
     settings: "Settings",
