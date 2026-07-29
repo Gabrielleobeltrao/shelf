@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { signIn, signUp } from "../lib/auth-client";
 import { useI18n } from "../lib/i18n";
 import { PantryShelfIllustration } from "../components/illustrations";
@@ -8,7 +8,10 @@ import { Checkbox } from "../components/ui/Checkbox";
 export function Login() {
   const navigate = useNavigate();
   const { t } = useI18n();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [searchParams] = useSearchParams();
+  const [mode, setMode] = useState<"signin" | "signup">(
+    searchParams.get("signup") != null ? "signup" : "signin",
+  );
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
