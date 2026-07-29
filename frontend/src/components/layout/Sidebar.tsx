@@ -1,6 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import { signOut, useSession } from "../../lib/auth-client";
 import { useI18n } from "../../lib/i18n";
+import { useHeaderLogo } from "../../lib/headerLogo";
 import { CloseIcon, LoginIcon, LogoutIcon, ShelfLogo } from "../icons";
 import { LanguageSelect } from "../ui/LanguageSelect";
 
@@ -119,6 +120,7 @@ function SidebarBody({
 }) {
   const { data: session } = useSession();
   const { t, lang } = useI18n();
+  const { visible: headerLogoVisible } = useHeaderLogo();
 
   const links = session ? appLinks : publicLinks;
   const initial =
@@ -146,6 +148,14 @@ function SidebarBody({
             </button>
           )}
         </div>
+      )}
+
+      {/* Desktop rail: reveal the logo only once the header's has scrolled off. */}
+      {rail && !headerLogoVisible && (
+        <Link to="/" className={`mb-3 flex items-center gap-2 ${rowJustify}`}>
+          <ShelfLogo className="h-6 w-6 shrink-0" />
+          <span className={`font-display text-lg font-semibold ${label}`}>Shelf</span>
+        </Link>
       )}
 
       {session && (

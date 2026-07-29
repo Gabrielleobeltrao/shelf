@@ -4,12 +4,15 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.tsx'
 import { LanguageProvider } from './lib/i18n'
+import { HeaderLogoProvider } from './lib/headerLogo'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <LanguageProvider>
-        <App />
+        <HeaderLogoProvider>
+          <App />
+        </HeaderLogoProvider>
       </LanguageProvider>
     </BrowserRouter>
   </StrictMode>,
