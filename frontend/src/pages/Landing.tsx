@@ -57,18 +57,18 @@ export function Landing() {
               <p className="mt-4 max-w-md text-base text-muted sm:text-lg">
                 {t.landing.heroSubtitle}
               </p>
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-6 flex gap-3">
                 <Link
                   to="/login"
-                  className="rounded-lg bg-primary-600 px-5 py-2.5 font-medium text-white"
+                  className="flex flex-1 items-center justify-center whitespace-nowrap rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white sm:flex-none sm:px-5 sm:text-base"
                 >
                   {t.landing.createFree}
                 </Link>
                 <Link
                   to="/explorar"
-                  className="flex items-center gap-2 rounded-lg bg-surface-2 px-5 py-2.5 font-medium text-primary-600"
+                  className="flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-surface-2 px-4 py-2.5 text-sm font-medium text-primary-600 sm:flex-none sm:px-5 sm:text-base"
                 >
-                  <ExploreIcon className="h-4 w-4" />
+                  <ExploreIcon className="h-4 w-4 shrink-0" />
                   {t.landing.exploreRecipes}
                 </Link>
               </div>
