@@ -139,7 +139,7 @@ export function PublicRecipe() {
   const canInteract = data && data.isLoggedIn && !data.isOwner;
 
   return (
-    <div className="mx-auto flex min-h-svh max-w-2xl flex-col">
+    <div className="flex min-h-svh flex-col">
       <Header
         left={
           <button onClick={() => setSidebarOpen(true)} aria-label={t.nav.openMenu} className="text-muted">
@@ -160,7 +160,7 @@ export function PublicRecipe() {
       />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="flex-1 space-y-4 px-4 py-4">
+      <main className="flex-1 space-y-4 px-4 py-4 sm:px-6 lg:px-8">
         {loading ? (
           <p className="text-sm text-muted">{t.common.loading}</p>
         ) : !data ? (
@@ -185,6 +185,8 @@ export function PublicRecipe() {
               </p>
             )}
 
+            <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
+            <div className="space-y-4 lg:col-span-2">
             <PhotoOrFallback
               src={data.recipe.imageUrl}
               imgClassName="h-56 w-full rounded-xl object-cover"
@@ -294,9 +296,11 @@ export function PublicRecipe() {
                 {data.cooked ? t.publicRecipe.cookedDone : t.publicRecipe.cookedMark}
               </button>
             )}
+            </div>
 
+            <div className="space-y-4">
             {/* Avaliação */}
-            <div className="border-t border-line pt-4">
+            <div className="border-t border-line pt-4 lg:border-t-0 lg:pt-0">
             <div className="rounded-xl bg-surface-2 p-4">
               <div className="flex items-center gap-2">
                 <span className="text-lg font-semibold tabular-nums">
@@ -407,6 +411,8 @@ export function PublicRecipe() {
                   ))}
                 </ul>
               )}
+            </div>
+            </div>
             </div>
           </>
         )}

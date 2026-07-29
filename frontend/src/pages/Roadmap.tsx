@@ -331,7 +331,7 @@ export function Roadmap() {
   );
 
   return (
-    <div className="mx-auto flex min-h-svh max-w-3xl flex-col">
+    <div className="flex min-h-svh flex-col">
       <Header
         left={
           <button onClick={() => setSidebarOpen(true)} aria-label={t.nav.openMenu} className="text-muted">
@@ -341,7 +341,7 @@ export function Roadmap() {
       />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="flex-1 space-y-8 px-4 py-5">
+      <main className="flex-1 space-y-8 px-4 py-5 sm:px-6 lg:px-8">
         <div>
           <h1 className="font-display text-2xl font-semibold">{r.title}</h1>
           <p className="mt-1 text-sm text-muted">{r.subtitle}</p>
@@ -364,7 +364,7 @@ export function Roadmap() {
           </button>
           <p className="mb-3 mt-0.5 text-sm text-muted">{r.plannedHint}</p>
           {!collapsedSections.has("planned") && (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {rankedPlanned.map((item, index) => {
               const Icon = PLANNED_ICON[item.id] ?? CalendarIcon;
               const tint = TINTS[index % TINTS.length];
@@ -465,7 +465,7 @@ export function Roadmap() {
           </button>
           <p className="mb-3 mt-0.5 text-sm text-muted">{r.doneHint}</p>
           {!collapsedSections.has("done") && (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {(r.done as DoneFeature[]).map((feature, index) => (
               <DoneCard
                 key={feature.name}

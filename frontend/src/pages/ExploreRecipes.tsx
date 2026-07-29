@@ -76,7 +76,7 @@ export function ExploreRecipes() {
   }
 
   return (
-    <div className="mx-auto flex min-h-svh max-w-5xl flex-col">
+    <div className="flex min-h-svh flex-col">
       <Header
         left={
           <button onClick={() => setSidebarOpen(true)} aria-label={t.nav.openMenu} className="text-muted">
@@ -86,7 +86,7 @@ export function ExploreRecipes() {
       />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="flex-1 space-y-4 px-4 py-4">
+      <main className="flex-1 space-y-4 px-4 py-4 sm:px-6 lg:px-8">
         <div>
           <h1 className="font-display text-2xl font-semibold">{t.explore.title}</h1>
           <p className="mt-0.5 text-sm text-muted">{t.explore.subtitle}</p>
@@ -137,7 +137,7 @@ export function ExploreRecipes() {
           />
         ) : (
           <>
-            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
               {recipes.map((recipe) => (
                 <li key={recipe._id}>
                   <Link
