@@ -44,7 +44,8 @@ No frontend, `VITE_API_URL` aponta pra URL pública do backend (padrão `http://
 - **Português (padrão) e inglês**, com troca instantânea. Camada própria em React Context
   (sem dependência externa); o idioma escolhido é salvo no navegador e, na primeira
   visita, segue o idioma do próprio navegador.
-- Seletor de idioma (toggle de pílulas) nas **Configurações** e dentro da **Sidebar**.
+- Seletor de idioma (toggle de pílulas) nas **Configurações**, no **footer** e na sidebar
+  quando deslogado.
 - Vocabulários armazenados no banco (tags de receita e categorias de estoque) ficam
   em português e são traduzidos **só na exibição** — os filtros continuam funcionando
   pelo valor salvo.
@@ -61,9 +62,9 @@ No frontend, `VITE_API_URL` aponta pra URL pública do backend (padrão `http://
 
 - CRUD de itens: nome, marca, categoria, tamanho da embalagem, quantidade, unidade,
   código de barras, foto.
-- **Escanear código de barras** pela câmera (celular ou webcam) — se o produto já
-  existe no estoque, só soma na quantidade; se é novo, busca nome/marca/categoria/foto
-  na Open Food Facts e pré-preenche o cadastro.
+- **Escanear código de barras** pela câmera (no mobile; no desktop esse botão dá lugar
+  ao carrinho) — se o produto já existe no estoque, só soma na quantidade; se é novo,
+  busca nome/marca/categoria/foto na Open Food Facts e pré-preenche o cadastro.
 - **Buscar produto** ao adicionar item: procura primeiro nos itens que você já cadastrou
   (instantâneo) e depois na Open Food Facts. As categorias bagunçadas da OFF são
   normalizadas pra um vocabulário fixo em português, e resultados sem foto/categoria
@@ -153,12 +154,21 @@ No frontend, `VITE_API_URL` aponta pra URL pública do backend (padrão `http://
 
 - **Landing page** (`/`) para visitantes deslogados; quem já está logado é levado direto
   pro Estoque.
-- **Header compartilhado** e idêntico em todas as páginas: menu (☰) à esquerda, logo
-  centralizado e uma ação à direita (carrinho dentro do app, login na landing).
-- **Sidebar única, dependente só do login** (a mesma em qualquer página):
-  - **Logado**: conta + Dashboard, Estoque, Receitas, Explorar, Roadmap, Configurações,
-    seletor de idioma e Sair.
-  - **Deslogado**: Início (landing), Explorar, Roadmap, botão Entrar e seletor de idioma.
+- **Desktop**: a navegação fica numa **sidebar fixa em trilho** (só ícones) que **expande
+  ao passar o mouse**, revelando os rótulos. Não há header no desktop; o logo fica fixo no
+  topo do trilho. O conteúdo usa a tela cheia com o mesmo padding responsivo em todas as
+  páginas.
+  - **Logado**: Dashboard, Estoque e uma seção **Receitas** que abre/fecha (com "Minhas
+    receitas" e "Explorar" como subitens); na parte de baixo, Roadmap, Configurações, o
+    avatar + e-mail da conta e Sair.
+  - **Deslogado**: Início, Explorar, Roadmap, botão Entrar e o seletor de idioma.
+- **Mobile**: um header no topo (menu ☰, logo e uma ação — carrinho no app, login na
+  landing) que abre a mesma sidebar como painel lateral.
+- **Carrinho** (lista de compras): no mobile fica no header; no desktop fica no topo da
+  página de **Estoque**, no lugar do botão de escanear código de barras (que só faz
+  sentido com câmera).
+- **Footer** com marca + links pras páginas (Início, Explorar, Roadmap, Entrar/Criar
+  conta) e o seletor de idioma — na landing, no Explorar e no Roadmap.
 - Tema visual sálvia/mostarda com tipografia Bricolage Grotesque + Karla (fontes
   self-hosted), ilustrações nos estados vazios, ícones consistentes e suporte a tema
   claro/escuro do sistema.
