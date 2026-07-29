@@ -76,7 +76,7 @@ export function ExploreRecipes() {
   }
 
   return (
-    <div className="flex min-h-svh flex-col lg:pl-16">
+    <div className="flex min-h-svh flex-col lg:pl-20">
       <Header
         left={
           <button onClick={() => setSidebarOpen(true)} aria-label={t.nav.openMenu} className="text-muted lg:hidden">

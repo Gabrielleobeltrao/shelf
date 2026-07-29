@@ -12,7 +12,7 @@ export function AppLayout() {
   const { t } = useI18n();
 
   return (
-    <div className="flex min-h-svh w-full flex-col lg:pl-16">
+    <div className="flex min-h-svh w-full flex-col lg:pl-20">
       <Header
         left={
           <button onClick={() => setSidebarOpen(true)} aria-label={t.nav.openMenu} className="text-muted lg:hidden">

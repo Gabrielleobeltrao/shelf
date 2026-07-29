@@ -1,7 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import { signOut, useSession } from "../../lib/auth-client";
 import { useI18n } from "../../lib/i18n";
-import { CloseIcon, LogoutIcon, ShelfLogo } from "../icons";
+import { CloseIcon, LoginIcon, LogoutIcon, ShelfLogo } from "../icons";
 import { LanguageSelect } from "../ui/LanguageSelect";
 
 function DashboardNavIcon({ className }: { className?: string }) {
@@ -118,41 +118,46 @@ function SidebarBody({
   onClose?: () => void;
 }) {
   const { data: session } = useSession();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
 
   const links = session ? appLinks : publicLinks;
   const initial =
     session?.user.name?.[0]?.toUpperCase() ?? session?.user.email[0]?.toUpperCase() ?? "?";
 
-  // In the collapsed rail, the bits without a clean icon (language, sign-in)
-  // fade out until the rail is hovered open.
-  const fadeOnRail =
-    variant === "rail" ? "opacity-0 transition-opacity duration-200 group-hover:opacity-100" : "";
+  // On the collapsed rail, text labels are hidden and only reappear when the
+  // rail is hovered open, so nothing peeks out at the collapsed width.
+  const label =
+    variant === "rail"
+      ? "whitespace-nowrap opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+      : "whitespace-nowrap";
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <ShelfLogo className="h-6 w-6 shrink-0" />
-          <span className="whitespace-nowrap font-display text-lg font-semibold">Shelf</span>
-        </div>
-        {onClose && (
-          <button onClick={onClose} aria-label={t.nav.closeMenu} className="text-muted lg:hidden">
-            <CloseIcon className="h-4 w-4" />
-          </button>
-        )}
-      </div>
-
-      {session && (
-        <div className="mt-4 flex items-center gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-100 font-display font-semibold text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
-            {initial}
-          </span>
-          <p className="truncate text-sm text-muted">{session.user.email}</p>
+      {/* Logo only in the mobile drawer — the desktop rail drops it. */}
+      {variant === "overlay" && (
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <ShelfLogo className="h-6 w-6" />
+            <span className="font-display text-lg font-semibold">Shelf</span>
+          </div>
+          {onClose && (
+            <button onClick={onClose} aria-label={t.nav.closeMenu} className="text-muted">
+              <CloseIcon className="h-4 w-4" />
+            </button>
+          )}
         </div>
       )}
 
-      <nav className="mt-6 flex flex-col gap-1">
+      {session && (
+        <div className="mt-1 flex items-center gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-100 font-display font-semibold text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
+            {initial}
+          </span>
+          <p className={`truncate text-sm text-muted ${label}`}>{session.user.email}</p>
+        </div>
+      )}
+
+      <nav className="mt-4 flex flex-col gap-1">
         {links.map(({ to, key, end, Icon }) => (
           <NavLink
             key={to}
@@ -160,7 +165,7 @@ function SidebarBody({
             end={end}
             onClick={onNavigate}
             className={({ isActive }) =>
-              `flex items-center gap-3 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium ${
+              `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium ${
                 isActive
                   ? "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-400"
                   : "text-ink"
@@ -170,7 +175,7 @@ function SidebarBody({
             {({ isActive }) => (
               <>
                 <Icon className={`h-4.5 w-4.5 shrink-0 ${isActive ? "" : "text-muted"}`} />
-                {t.nav[key]}
+                <span className={label}>{t.nav[key]}</span>
               </>
             )}
           </NavLink>
@@ -182,26 +187,37 @@ function SidebarBody({
           <Link
             to="/login"
             onClick={onNavigate}
-            className={`flex items-center justify-center whitespace-nowrap rounded-lg bg-primary-600 px-3 py-2.5 text-sm font-medium text-white ${fadeOnRail}`}
+            className="flex items-center gap-3 rounded-lg bg-primary-600 px-3 py-2.5 text-sm font-medium text-white"
           >
-            {t.landing.enter}
+            <LoginIcon className="h-4.5 w-4.5 shrink-0" />
+            <span className={label}>{t.landing.enter}</span>
           </Link>
         )}
 
-        <div className={fadeOnRail}>
-          <p className="mb-1.5 whitespace-nowrap text-xs font-medium uppercase tracking-wide text-muted">
-            {t.settings.language}
-          </p>
-          <LanguageSelect className="w-full" />
+        <div>
+          {/* Collapsed rail: just the language code; expands to the full toggle. */}
+          {variant === "rail" && (
+            <div className="flex justify-center group-hover:hidden">
+              <span className="rounded-md border border-line px-2 py-1 text-xs font-semibold uppercase text-muted">
+                {lang}
+              </span>
+            </div>
+          )}
+          <div className={variant === "rail" ? "hidden group-hover:block" : ""}>
+            <p className="mb-1.5 whitespace-nowrap text-xs font-medium uppercase tracking-wide text-muted">
+              {t.settings.language}
+            </p>
+            <LanguageSelect className="w-full" />
+          </div>
         </div>
 
         {session && (
           <button
             onClick={() => signOut()}
-            className="flex w-full items-center gap-3 whitespace-nowrap rounded-lg px-3 py-2 text-left text-sm font-medium text-rust-600"
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-rust-600"
           >
             <LogoutIcon className="h-4.5 w-4.5 shrink-0" />
-            {t.nav.logout}
+            <span className={label}>{t.nav.logout}</span>
           </button>
         )}
       </div>
@@ -214,7 +230,7 @@ function SidebarBody({
 export function Sidebar({ open, onClose }: Props) {
   return (
     <>
-      <aside className="group fixed inset-y-0 left-0 z-30 hidden w-16 flex-col overflow-hidden border-r border-line bg-surface p-4 transition-[width] duration-200 ease-out hover:w-52 hover:shadow-xl lg:flex">
+      <aside className="group fixed inset-y-0 left-0 z-30 hidden w-20 flex-col overflow-hidden border-r border-line bg-surface p-4 transition-[width] duration-200 ease-out hover:w-56 hover:shadow-xl lg:flex">
         <SidebarBody variant="rail" />
       </aside>
 
