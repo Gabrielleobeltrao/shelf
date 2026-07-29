@@ -106,97 +106,113 @@ type Props = {
   onClose: () => void;
 };
 
-// One menu for the whole app: its contents depend only on auth state, never
-// on which page opened it, so it's identical everywhere when signed in and
-// identical everywhere when signed out.
-export function Sidebar({ open, onClose }: Props) {
+// The sidebar's inner content. Rendered both docked (desktop) and inside the
+// mobile overlay. Its contents depend only on auth state, never on the page.
+function SidebarBody({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: () => void }) {
   const { data: session } = useSession();
   const { t } = useI18n();
-
-  if (!open) return null;
 
   const links = session ? appLinks : publicLinks;
   const initial =
     session?.user.name?.[0]?.toUpperCase() ?? session?.user.email[0]?.toUpperCase() ?? "?";
 
   return (
-    <div className="fixed inset-0 z-40 flex">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-
-      <aside className="relative flex h-full w-64 max-w-[80vw] flex-col bg-surface p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ShelfLogo className="h-6 w-6" />
-            <span className="font-display text-lg font-semibold">Shelf</span>
-          </div>
-          <button onClick={onClose} aria-label={t.nav.closeMenu} className="text-muted">
+    <>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <ShelfLogo className="h-6 w-6" />
+          <span className="font-display text-lg font-semibold">Shelf</span>
+        </div>
+        {onClose && (
+          <button onClick={onClose} aria-label={t.nav.closeMenu} className="text-muted lg:hidden">
             <CloseIcon className="h-4 w-4" />
           </button>
+        )}
+      </div>
+
+      {session && (
+        <div className="mt-4 flex items-center gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-100 font-display font-semibold text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
+            {initial}
+          </span>
+          <p className="truncate text-sm text-muted">{session.user.email}</p>
+        </div>
+      )}
+
+      <nav className="mt-6 flex flex-col gap-1">
+        {links.map(({ to, key, end, Icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={end}
+            onClick={onNavigate}
+            className={({ isActive }) =>
+              `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium ${
+                isActive
+                  ? "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-400"
+                  : "text-ink"
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <Icon className={`h-4.5 w-4.5 ${isActive ? "" : "text-muted"}`} />
+                {t.nav[key]}
+              </>
+            )}
+          </NavLink>
+        ))}
+      </nav>
+
+      <div className="mt-auto space-y-3 border-t border-line pt-4">
+        {!session && (
+          <Link
+            to="/login"
+            onClick={onNavigate}
+            className="flex items-center justify-center rounded-lg bg-primary-600 px-3 py-2.5 text-sm font-medium text-white"
+          >
+            {t.landing.enter}
+          </Link>
+        )}
+
+        <div>
+          <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
+            {t.settings.language}
+          </p>
+          <LanguageSelect className="w-full" />
         </div>
 
         {session && (
-          <div className="mt-4 flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-100 font-display font-semibold text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
-              {initial}
-            </span>
-            <p className="truncate text-sm text-muted">{session.user.email}</p>
-          </div>
+          <button
+            onClick={() => signOut()}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-rust-600"
+          >
+            <LogoutIcon className="h-4.5 w-4.5" />
+            {t.nav.logout}
+          </button>
         )}
+      </div>
+    </>
+  );
+}
 
-        <nav className="mt-6 flex flex-col gap-1">
-          {links.map(({ to, key, end, Icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={end}
-              onClick={onClose}
-              className={({ isActive }) =>
-                `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium ${
-                  isActive
-                    ? "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-400"
-                    : "text-ink"
-                }`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <Icon className={`h-4.5 w-4.5 ${isActive ? "" : "text-muted"}`} />
-                  {t.nav[key]}
-                </>
-              )}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="mt-auto space-y-3 border-t border-line pt-4">
-          {!session && (
-            <Link
-              to="/login"
-              onClick={onClose}
-              className="flex items-center justify-center rounded-lg bg-primary-600 px-3 py-2.5 text-sm font-medium text-white"
-            >
-              {t.landing.enter}
-            </Link>
-          )}
-
-          <div>
-            <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
-              {t.settings.language}
-            </p>
-            <LanguageSelect className="w-full" />
-          </div>
-
-          {session && (
-            <button
-              onClick={() => signOut()}
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-rust-600"
-            >
-              <LogoutIcon className="h-4.5 w-4.5" />
-              {t.nav.logout}
-            </button>
-          )}
-        </div>
+// Docked on desktop (always visible), overlay drawer on mobile (opened by the
+// header hamburger, which is hidden from `lg` up).
+export function Sidebar({ open, onClose }: Props) {
+  return (
+    <>
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-52 flex-col border-r border-line bg-surface p-4 lg:flex">
+        <SidebarBody />
       </aside>
-    </div>
+
+      {open && (
+        <div className="fixed inset-0 z-40 flex lg:hidden">
+          <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+          <aside className="relative flex h-full w-52 max-w-[80vw] flex-col bg-surface p-4">
+            <SidebarBody onNavigate={onClose} onClose={onClose} />
+          </aside>
+        </div>
+      )}
+    </>
   );
 }

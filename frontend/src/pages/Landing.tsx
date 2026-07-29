@@ -30,10 +30,10 @@ export function Landing() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="flex min-h-svh flex-col bg-bg">
+    <div className="flex min-h-svh flex-col bg-bg lg:pl-52">
       <Header
         left={
-          <button type="button" onClick={() => setMenuOpen(true)} aria-label={t.nav.openMenu} className="text-muted">
+          <button type="button" onClick={() => setMenuOpen(true)} aria-label={t.nav.openMenu} className="text-muted lg:hidden">
             <MenuIcon className="h-6 w-6" />
           </button>
         }
@@ -59,7 +59,7 @@ export function Landing() {
               </p>
               <div className="mt-6 flex gap-3">
                 <Link
-                  to="/login"
+                  to="/login?signup=1"
                   className="flex flex-1 items-center justify-center whitespace-nowrap rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white sm:flex-none sm:px-5 sm:text-base"
                 >
                   {t.landing.createFree}
@@ -155,7 +155,7 @@ export function Landing() {
             </h2>
             <p className="mt-2 text-muted">{t.landing.ctaSubtitle}</p>
             <Link
-              to="/login"
+              to="/login?signup=1"
               className="mt-6 inline-block rounded-lg bg-primary-600 px-6 py-3 font-medium text-white"
             >
               {t.landing.createFree}

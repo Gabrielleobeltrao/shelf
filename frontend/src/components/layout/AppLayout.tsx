@@ -12,10 +12,10 @@ export function AppLayout() {
   const { t } = useI18n();
 
   return (
-    <div className="flex min-h-svh w-full flex-col">
+    <div className="flex min-h-svh w-full flex-col lg:pl-52">
       <Header
         left={
-          <button onClick={() => setSidebarOpen(true)} aria-label={t.nav.openMenu} className="text-muted">
+          <button onClick={() => setSidebarOpen(true)} aria-label={t.nav.openMenu} className="text-muted lg:hidden">
             <MenuIcon className="h-6 w-6" />
           </button>
         }

@@ -139,10 +139,10 @@ export function PublicRecipe() {
   const canInteract = data && data.isLoggedIn && !data.isOwner;
 
   return (
-    <div className="flex min-h-svh flex-col">
+    <div className="flex min-h-svh flex-col lg:pl-52">
       <Header
         left={
-          <button onClick={() => setSidebarOpen(true)} aria-label={t.nav.openMenu} className="text-muted">
+          <button onClick={() => setSidebarOpen(true)} aria-label={t.nav.openMenu} className="text-muted lg:hidden">
             <MenuIcon className="h-6 w-6" />
           </button>
         }
