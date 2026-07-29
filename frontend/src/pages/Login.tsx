@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { signIn, signUp } from "../lib/auth-client";
+import { authClient, signIn, signUp, useSession } from "../lib/auth-client";
 import { useI18n } from "../lib/i18n";
 import { PantryShelfIllustration } from "../components/illustrations";
 import { Checkbox } from "../components/ui/Checkbox";
@@ -8,6 +8,7 @@ import { Checkbox } from "../components/ui/Checkbox";
 export function Login() {
   const navigate = useNavigate();
   const { t } = useI18n();
+  const { data: session } = useSession();
   const [searchParams] = useSearchParams();
   const [mode, setMode] = useState<"signin" | "signup">(
     searchParams.get("signup") != null ? "signup" : "signin",
@@ -18,6 +19,14 @@ export function Login() {
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Leave the login screen as soon as a session exists — whether we just
+  // signed in/up or arrived here already logged in. Redirecting off the
+  // reactive session (instead of only right after the request) avoids the
+  // race where a protected route still sees us as logged out.
+  useEffect(() => {
+    if (session) navigate("/estoque", { replace: true });
+  }, [session, navigate]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -41,13 +50,15 @@ export function Login() {
         ? await signIn.email({ email: emailValue, password: passwordValue, rememberMe })
         : await signUp.email({ name: nameValue, email: emailValue, password: passwordValue });
 
-    setLoading(false);
-
     if (authError) {
+      setLoading(false);
       setError(authError.message ?? t.auth.cannotContinue);
       return;
     }
 
+    // Make sure the reactive session is populated before we move on, so the
+    // protected route sees us as logged in on the first try.
+    await authClient.getSession();
     navigate("/estoque", { replace: true });
   }
 
