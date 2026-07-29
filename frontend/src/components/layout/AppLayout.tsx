@@ -30,7 +30,11 @@ export function AppLayout() {
         <Outlet />
       </main>
 
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        onOpenCart={() => setCartOpen(true)}
+      />
       <ShoppingCartModal open={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );

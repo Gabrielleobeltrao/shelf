@@ -146,17 +146,6 @@ export function PublicRecipe() {
             <MenuIcon className="h-6 w-6" />
           </button>
         }
-        right={
-          data?.isOwner ? (
-            <button
-              onClick={() => navigate(`/receitas?editar=${data.recipe._id}`)}
-              className="flex items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-1.5 text-sm font-medium text-white"
-            >
-              <PencilIcon className="h-3.5 w-3.5" />
-              {t.publicRecipe.edit}
-            </button>
-          ) : undefined
-        }
       />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
@@ -171,13 +160,24 @@ export function PublicRecipe() {
           />
         ) : (
           <>
-            <Link
-              to="/explorar"
-              className="flex w-fit items-center gap-1.5 text-sm font-medium text-muted hover:text-ink"
-            >
-              <BackIcon className="h-4 w-4" />
-              {t.explore.backToExplore}
-            </Link>
+            <div className="flex items-center justify-between gap-3">
+              <Link
+                to="/explorar"
+                className="flex items-center gap-1.5 text-sm font-medium text-muted hover:text-ink"
+              >
+                <BackIcon className="h-4 w-4" />
+                {t.explore.backToExplore}
+              </Link>
+              {data.isOwner && (
+                <button
+                  onClick={() => navigate(`/receitas?editar=${data.recipe._id}`)}
+                  className="flex items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-1.5 text-sm font-medium text-white"
+                >
+                  <PencilIcon className="h-3.5 w-3.5" />
+                  {t.publicRecipe.edit}
+                </button>
+              )}
+            </div>
 
             {data.isOwner && !data.recipe.isPublic && (
               <p className="rounded-lg bg-mustard-100 px-3 py-2 text-sm text-mustard-700 dark:bg-mustard-900/40 dark:text-mustard-400">

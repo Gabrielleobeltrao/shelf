@@ -1,8 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import { signOut, useSession } from "../../lib/auth-client";
 import { useI18n } from "../../lib/i18n";
-import { useHeaderLogo } from "../../lib/headerLogo";
-import { CloseIcon, LoginIcon, LogoutIcon, ShelfLogo } from "../icons";
+import { CartIcon, CloseIcon, LoginIcon, LogoutIcon, ShelfLogo } from "../icons";
 import { LanguageSelect } from "../ui/LanguageSelect";
 
 function DashboardNavIcon({ className }: { className?: string }) {
@@ -105,6 +104,9 @@ const publicLinks = [
 type Props = {
   open: boolean;
   onClose: () => void;
+  // Provided only by AppLayout, so the cart appears in the desktop rail
+  // (where there's no header) but nowhere else.
+  onOpenCart?: () => void;
 };
 
 // The sidebar's inner content. Rendered both as the desktop rail and inside
@@ -113,14 +115,15 @@ function SidebarBody({
   variant,
   onNavigate,
   onClose,
+  onOpenCart,
 }: {
   variant: "rail" | "overlay";
   onNavigate?: () => void;
   onClose?: () => void;
+  onOpenCart?: () => void;
 }) {
   const { data: session } = useSession();
   const { t, lang } = useI18n();
-  const { visible: headerLogoVisible } = useHeaderLogo();
 
   const links = session ? appLinks : publicLinks;
   const initial =
@@ -150,17 +153,9 @@ function SidebarBody({
         </div>
       )}
 
-      {/* Desktop rail: the logo's slot is always reserved (so it never shifts
-          the items) and fades in only once the header's logo scrolls off. */}
+      {/* Logo pinned at the top of the desktop rail (mark only when collapsed). */}
       {rail && (
-        <Link
-          to="/"
-          aria-hidden={headerLogoVisible}
-          tabIndex={headerLogoVisible ? -1 : 0}
-          className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-opacity duration-200 ${rowJustify} ${
-            headerLogoVisible ? "pointer-events-none opacity-0" : "opacity-100"
-          }`}
-        >
+        <Link to="/" className={`flex items-center gap-3 rounded-lg px-3 py-2 ${rowJustify}`}>
           <ShelfLogo className="h-6 w-6 shrink-0" />
           <span className={`font-display text-lg font-semibold ${label}`}>Shelf</span>
         </Link>
@@ -200,6 +195,17 @@ function SidebarBody({
             )}
           </NavLink>
         ))}
+
+        {onOpenCart && session && (
+          <button
+            type="button"
+            onClick={onOpenCart}
+            className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-ink ${rowJustify}`}
+          >
+            <CartIcon className="h-4.5 w-4.5 shrink-0 text-muted" />
+            <span className={label}>{t.shoppingList.title}</span>
+          </button>
+        )}
       </nav>
 
       <div className="mt-auto space-y-3 border-t border-line pt-4">
@@ -247,11 +253,11 @@ function SidebarBody({
 
 // Desktop: a collapsed icon rail that expands to full width on hover, laid
 // over the content. Mobile: an overlay drawer opened by the header hamburger.
-export function Sidebar({ open, onClose }: Props) {
+export function Sidebar({ open, onClose, onOpenCart }: Props) {
   return (
     <>
       <aside className="group fixed inset-y-0 left-0 z-30 hidden w-20 flex-col overflow-hidden border-r border-line bg-surface p-4 transition-[width] duration-200 ease-out hover:w-56 hover:shadow-xl lg:flex">
-        <SidebarBody variant="rail" />
+        <SidebarBody variant="rail" onOpenCart={onOpenCart} />
       </aside>
 
       {open && (
