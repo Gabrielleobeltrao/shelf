@@ -314,6 +314,12 @@ export const en: Dict = {
     "Doces e Sobremesas": "Sweets & Desserts",
     Outros: "Other",
   },
+  footer: {
+    tagline: "Your kitchen, organized — from pantry to recipe.",
+    navigation: "Navigation",
+    account: "Account",
+    rights: "All rights reserved.",
+  },
   roadmap: {
     title: "The Shelf menu",
     subtitle: "Every feature is a recipe. The ones already made show up crossed off.",

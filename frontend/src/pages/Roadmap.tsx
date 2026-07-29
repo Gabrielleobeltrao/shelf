@@ -2,6 +2,7 @@ import { useEffect, useState, type ComponentType } from "react";
 import { BarcodeIcon, CameraIcon, CartIcon, CheckIcon, CookedIcon, ExploreIcon, MenuIcon, StarIcon } from "../components/icons";
 import { Header } from "../components/layout/Header";
 import { Sidebar } from "../components/layout/Sidebar";
+import { Footer } from "../components/layout/Footer";
 import { api } from "../lib/api";
 import { useI18n } from "../lib/i18n";
 
@@ -480,6 +481,8 @@ export function Roadmap() {
           )}
         </section>
       </main>
+
+      <Footer />
     </div>
   );
 }

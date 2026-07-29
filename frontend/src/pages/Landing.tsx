@@ -7,13 +7,13 @@ import {
   ExploreIcon,
   LoginIcon,
   MenuIcon,
-  ShelfLogo,
   StarIcon,
 } from "../components/icons";
 import { BowlIllustration, PantryShelfIllustration } from "../components/illustrations";
 import { useI18n } from "../lib/i18n";
 import { Header } from "../components/layout/Header";
 import { Sidebar } from "../components/layout/Sidebar";
+import { Footer } from "../components/layout/Footer";
 
 function StarRow() {
   return (
@@ -164,15 +164,7 @@ export function Landing() {
         </section>
       </main>
 
-      <footer className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-6 text-sm text-muted">
-        <div className="flex items-center gap-2">
-          <ShelfLogo className="h-5 w-5" />
-          <span className="font-display font-semibold">Shelf</span>
-        </div>
-        <Link to="/explorar" className="font-medium text-primary-600">
-          {t.landing.exploreRecipes}
-        </Link>
-      </footer>
+      <Footer />
     </div>
   );
 }

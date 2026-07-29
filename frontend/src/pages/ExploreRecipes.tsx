@@ -8,6 +8,7 @@ import { EmptyState } from "../components/ui/EmptyState";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 import { Header } from "../components/layout/Header";
 import { Sidebar } from "../components/layout/Sidebar";
+import { Footer } from "../components/layout/Footer";
 import { useI18n } from "../lib/i18n";
 import { tagLabel } from "../lib/labels";
 
@@ -211,6 +212,8 @@ export function ExploreRecipes() {
           </>
         )}
       </main>
+
+      <Footer />
     </div>
   );
 }

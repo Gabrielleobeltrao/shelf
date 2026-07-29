@@ -312,6 +312,12 @@ export const pt = {
     "Doces e Sobremesas": "Doces e Sobremesas",
     Outros: "Outros",
   } as Record<string, string>,
+  footer: {
+    tagline: "Sua cozinha organizada, do estoque à receita.",
+    navigation: "Navegação",
+    account: "Conta",
+    rights: "Todos os direitos reservados.",
+  },
   roadmap: {
     title: "O cardápio do Shelf",
     subtitle: "Cada feature é uma receita. As que já ficaram prontas aparecem riscadas.",
