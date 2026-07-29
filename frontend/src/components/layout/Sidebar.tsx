@@ -106,9 +106,17 @@ type Props = {
   onClose: () => void;
 };
 
-// The sidebar's inner content. Rendered both docked (desktop) and inside the
-// mobile overlay. Its contents depend only on auth state, never on the page.
-function SidebarBody({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: () => void }) {
+// The sidebar's inner content. Rendered both as the desktop rail and inside
+// the mobile overlay. Its contents depend only on auth state, never the page.
+function SidebarBody({
+  variant,
+  onNavigate,
+  onClose,
+}: {
+  variant: "rail" | "overlay";
+  onNavigate?: () => void;
+  onClose?: () => void;
+}) {
   const { data: session } = useSession();
   const { t } = useI18n();
 
@@ -116,12 +124,17 @@ function SidebarBody({ onNavigate, onClose }: { onNavigate?: () => void; onClose
   const initial =
     session?.user.name?.[0]?.toUpperCase() ?? session?.user.email[0]?.toUpperCase() ?? "?";
 
+  // In the collapsed rail, the bits without a clean icon (language, sign-in)
+  // fade out until the rail is hovered open.
+  const fadeOnRail =
+    variant === "rail" ? "opacity-0 transition-opacity duration-200 group-hover:opacity-100" : "";
+
   return (
     <>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <ShelfLogo className="h-6 w-6" />
-          <span className="font-display text-lg font-semibold">Shelf</span>
+          <ShelfLogo className="h-6 w-6 shrink-0" />
+          <span className="whitespace-nowrap font-display text-lg font-semibold">Shelf</span>
         </div>
         {onClose && (
           <button onClick={onClose} aria-label={t.nav.closeMenu} className="text-muted lg:hidden">
@@ -132,7 +145,7 @@ function SidebarBody({ onNavigate, onClose }: { onNavigate?: () => void; onClose
 
       {session && (
         <div className="mt-4 flex items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-100 font-display font-semibold text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-100 font-display font-semibold text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
             {initial}
           </span>
           <p className="truncate text-sm text-muted">{session.user.email}</p>
@@ -147,7 +160,7 @@ function SidebarBody({ onNavigate, onClose }: { onNavigate?: () => void; onClose
             end={end}
             onClick={onNavigate}
             className={({ isActive }) =>
-              `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium ${
+              `flex items-center gap-3 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium ${
                 isActive
                   ? "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-400"
                   : "text-ink"
@@ -156,7 +169,7 @@ function SidebarBody({ onNavigate, onClose }: { onNavigate?: () => void; onClose
           >
             {({ isActive }) => (
               <>
-                <Icon className={`h-4.5 w-4.5 ${isActive ? "" : "text-muted"}`} />
+                <Icon className={`h-4.5 w-4.5 shrink-0 ${isActive ? "" : "text-muted"}`} />
                 {t.nav[key]}
               </>
             )}
@@ -169,14 +182,14 @@ function SidebarBody({ onNavigate, onClose }: { onNavigate?: () => void; onClose
           <Link
             to="/login"
             onClick={onNavigate}
-            className="flex items-center justify-center rounded-lg bg-primary-600 px-3 py-2.5 text-sm font-medium text-white"
+            className={`flex items-center justify-center whitespace-nowrap rounded-lg bg-primary-600 px-3 py-2.5 text-sm font-medium text-white ${fadeOnRail}`}
           >
             {t.landing.enter}
           </Link>
         )}
 
-        <div>
-          <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
+        <div className={fadeOnRail}>
+          <p className="mb-1.5 whitespace-nowrap text-xs font-medium uppercase tracking-wide text-muted">
             {t.settings.language}
           </p>
           <LanguageSelect className="w-full" />
@@ -185,9 +198,9 @@ function SidebarBody({ onNavigate, onClose }: { onNavigate?: () => void; onClose
         {session && (
           <button
             onClick={() => signOut()}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-rust-600"
+            className="flex w-full items-center gap-3 whitespace-nowrap rounded-lg px-3 py-2 text-left text-sm font-medium text-rust-600"
           >
-            <LogoutIcon className="h-4.5 w-4.5" />
+            <LogoutIcon className="h-4.5 w-4.5 shrink-0" />
             {t.nav.logout}
           </button>
         )}
@@ -196,20 +209,20 @@ function SidebarBody({ onNavigate, onClose }: { onNavigate?: () => void; onClose
   );
 }
 
-// Docked on desktop (always visible), overlay drawer on mobile (opened by the
-// header hamburger, which is hidden from `lg` up).
+// Desktop: a collapsed icon rail that expands to full width on hover, laid
+// over the content. Mobile: an overlay drawer opened by the header hamburger.
 export function Sidebar({ open, onClose }: Props) {
   return (
     <>
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-52 flex-col border-r border-line bg-surface p-4 lg:flex">
-        <SidebarBody />
+      <aside className="group fixed inset-y-0 left-0 z-30 hidden w-16 flex-col overflow-hidden border-r border-line bg-surface p-4 transition-[width] duration-200 ease-out hover:w-52 hover:shadow-xl lg:flex">
+        <SidebarBody variant="rail" />
       </aside>
 
       {open && (
         <div className="fixed inset-0 z-40 flex lg:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={onClose} />
           <aside className="relative flex h-full w-52 max-w-[80vw] flex-col bg-surface p-4">
-            <SidebarBody onNavigate={onClose} onClose={onClose} />
+            <SidebarBody variant="overlay" onNavigate={onClose} onClose={onClose} />
           </aside>
         </div>
       )}

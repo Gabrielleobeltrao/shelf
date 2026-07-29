@@ -30,7 +30,7 @@ export function Landing() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="flex min-h-svh flex-col bg-bg lg:pl-52">
+    <div className="flex min-h-svh flex-col bg-bg lg:pl-16">
       <Header
         left={
           <button type="button" onClick={() => setMenuOpen(true)} aria-label={t.nav.openMenu} className="text-muted lg:hidden">
