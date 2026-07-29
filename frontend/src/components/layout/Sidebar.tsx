@@ -150,9 +150,17 @@ function SidebarBody({
         </div>
       )}
 
-      {/* Desktop rail: reveal the logo only once the header's has scrolled off. */}
-      {rail && !headerLogoVisible && (
-        <Link to="/" className={`mb-3 flex items-center gap-2 ${rowJustify}`}>
+      {/* Desktop rail: the logo's slot is always reserved (so it never shifts
+          the items) and fades in only once the header's logo scrolls off. */}
+      {rail && (
+        <Link
+          to="/"
+          aria-hidden={headerLogoVisible}
+          tabIndex={headerLogoVisible ? -1 : 0}
+          className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-opacity duration-200 ${rowJustify} ${
+            headerLogoVisible ? "pointer-events-none opacity-0" : "opacity-100"
+          }`}
+        >
           <ShelfLogo className="h-6 w-6 shrink-0" />
           <span className={`font-display text-lg font-semibold ${label}`}>Shelf</span>
         </Link>
