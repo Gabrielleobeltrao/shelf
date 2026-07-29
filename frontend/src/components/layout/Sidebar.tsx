@@ -196,15 +196,6 @@ function SidebarBody({
         </Link>
       )}
 
-      {session && (
-        <div className={`mt-1 flex items-center gap-3 ${rowJustify}`}>
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-100 font-display font-semibold text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
-            {initial}
-          </span>
-          <p className={`truncate text-sm text-muted ${revealOnHover}`}>{session.user.email}</p>
-        </div>
-      )}
-
       <nav className="mt-4 flex flex-col gap-1">
         {session ? (
           <>
@@ -247,42 +238,52 @@ function SidebarBody({
       )}
 
       <div className={`space-y-3 border-t border-line pt-4 ${session ? "mt-3" : "mt-auto"}`}>
-        {!session && (
-          <Link
-            to="/login"
-            onClick={onNavigate}
-            className={`flex items-center gap-3 rounded-lg bg-primary-600 px-3 py-2.5 text-sm font-medium text-white ${rowJustify}`}
-          >
-            <LoginIcon className="h-4.5 w-4.5 shrink-0" />
-            <span className={label}>{t.landing.enter}</span>
-          </Link>
-        )}
-
-        <div>
-          {/* Collapsed rail: just the language code; expands to the full toggle. */}
-          {rail && (
-            <div className="flex justify-center group-hover:hidden">
-              <span className="rounded-md border border-line px-2 py-1 text-xs font-semibold uppercase text-muted">
-                {lang}
+        {session ? (
+          <>
+            {/* Account moved here from the top; replaces the language switcher. */}
+            <div className={`flex items-center gap-3 ${rowJustify}`}>
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-100 font-display font-semibold text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
+                {initial}
               </span>
+              <p className={`truncate text-sm text-muted ${revealOnHover}`}>{session.user.email}</p>
             </div>
-          )}
-          <div className={revealOnHover}>
-            <p className="mb-1.5 whitespace-nowrap text-xs font-medium uppercase tracking-wide text-muted">
-              {t.settings.language}
-            </p>
-            <LanguageSelect className="w-full" />
-          </div>
-        </div>
 
-        {session && (
-          <button
-            onClick={() => signOut()}
-            className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-rust-600 ${rowJustify}`}
-          >
-            <LogoutIcon className="h-4.5 w-4.5 shrink-0" />
-            <span className={label}>{t.nav.logout}</span>
-          </button>
+            <button
+              onClick={() => signOut()}
+              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-rust-600 ${rowJustify}`}
+            >
+              <LogoutIcon className="h-4.5 w-4.5 shrink-0" />
+              <span className={label}>{t.nav.logout}</span>
+            </button>
+          </>
+        ) : (
+          <>
+            <Link
+              to="/login"
+              onClick={onNavigate}
+              className={`flex items-center gap-3 rounded-lg bg-primary-600 px-3 py-2.5 text-sm font-medium text-white ${rowJustify}`}
+            >
+              <LoginIcon className="h-4.5 w-4.5 shrink-0" />
+              <span className={label}>{t.landing.enter}</span>
+            </Link>
+
+            <div>
+              {/* Collapsed rail: just the language code; expands to the full toggle. */}
+              {rail && (
+                <div className="flex justify-center group-hover:hidden">
+                  <span className="rounded-md border border-line px-2 py-1 text-xs font-semibold uppercase text-muted">
+                    {lang}
+                  </span>
+                </div>
+              )}
+              <div className={revealOnHover}>
+                <p className="mb-1.5 whitespace-nowrap text-xs font-medium uppercase tracking-wide text-muted">
+                  {t.settings.language}
+                </p>
+                <LanguageSelect className="w-full" />
+              </div>
+            </div>
+          </>
         )}
       </div>
     </>
