@@ -124,12 +124,12 @@ function SidebarBody({
   const initial =
     session?.user.name?.[0]?.toUpperCase() ?? session?.user.email[0]?.toUpperCase() ?? "?";
 
-  // On the collapsed rail, text labels are hidden and only reappear when the
-  // rail is hovered open, so nothing peeks out at the collapsed width.
-  const label =
-    variant === "rail"
-      ? "whitespace-nowrap opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-      : "whitespace-nowrap";
+  // On the collapsed rail, labels are removed from layout (not just faded) so
+  // each row is just its icon — centered — and only left-aligns with its label
+  // once the rail is hovered open.
+  const rail = variant === "rail";
+  const label = rail ? "hidden whitespace-nowrap group-hover:inline" : "whitespace-nowrap";
+  const rowJustify = rail ? "justify-center group-hover:justify-start" : "";
 
   return (
     <>
@@ -149,11 +149,13 @@ function SidebarBody({
       )}
 
       {session && (
-        <div className="mt-1 flex items-center gap-3">
+        <div className={`mt-1 flex items-center gap-3 ${rowJustify}`}>
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-100 font-display font-semibold text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
             {initial}
           </span>
-          <p className={`truncate text-sm text-muted ${label}`}>{session.user.email}</p>
+          <p className={`truncate text-sm text-muted ${rail ? "hidden group-hover:block" : ""}`}>
+            {session.user.email}
+          </p>
         </div>
       )}
 
@@ -165,7 +167,7 @@ function SidebarBody({
             end={end}
             onClick={onNavigate}
             className={({ isActive }) =>
-              `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium ${
+              `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium ${rowJustify} ${
                 isActive
                   ? "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-400"
                   : "text-ink"
@@ -187,7 +189,7 @@ function SidebarBody({
           <Link
             to="/login"
             onClick={onNavigate}
-            className="flex items-center gap-3 rounded-lg bg-primary-600 px-3 py-2.5 text-sm font-medium text-white"
+            className={`flex items-center gap-3 rounded-lg bg-primary-600 px-3 py-2.5 text-sm font-medium text-white ${rowJustify}`}
           >
             <LoginIcon className="h-4.5 w-4.5 shrink-0" />
             <span className={label}>{t.landing.enter}</span>
@@ -214,7 +216,7 @@ function SidebarBody({
         {session && (
           <button
             onClick={() => signOut()}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-rust-600"
+            className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-rust-600 ${rowJustify}`}
           >
             <LogoutIcon className="h-4.5 w-4.5 shrink-0" />
             <span className={label}>{t.nav.logout}</span>
