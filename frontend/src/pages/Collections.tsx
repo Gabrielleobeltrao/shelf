@@ -39,18 +39,18 @@ export function Collections() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
+      <div>
+        <div className="flex items-center justify-between gap-3">
           <h1 className="text-lg font-semibold">{t.collections.title}</h1>
-          <p className="mt-0.5 text-sm text-muted">{t.collections.subtitle}</p>
+          <button
+            onClick={() => setCreating((c) => !c)}
+            className="flex shrink-0 items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-2 text-sm font-medium text-white"
+          >
+            <PlusIcon className="h-4 w-4" />
+            {t.collections.newCollection}
+          </button>
         </div>
-        <button
-          onClick={() => setCreating((c) => !c)}
-          className="flex shrink-0 items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-2 text-sm font-medium text-white"
-        >
-          <PlusIcon className="h-4 w-4" />
-          {t.collections.newCollection}
-        </button>
+        <p className="mt-1 text-sm text-muted">{t.collections.subtitle}</p>
       </div>
 
       {creating && (
