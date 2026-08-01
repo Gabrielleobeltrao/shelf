@@ -230,6 +230,8 @@ export const pt = {
     count: (n: number) => `${n} ${n === 1 ? "receita" : "receitas"}`,
     private: "Privada",
     public: "Pública",
+    publicLabel: "Coleção pública",
+    publicHint: "Qualquer pessoa com o link pode ver.",
     makePublic: "Tornar pública",
     makePrivate: "Tornar privada",
     share: "Compartilhar",

@@ -232,6 +232,8 @@ export const en: Dict = {
     count: (n: number) => `${n} ${n === 1 ? "recipe" : "recipes"}`,
     private: "Private",
     public: "Public",
+    publicLabel: "Public collection",
+    publicHint: "Anyone with the link can see it.",
     makePublic: "Make public",
     makePrivate: "Make private",
     share: "Share",

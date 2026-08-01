@@ -5,6 +5,7 @@ import { useI18n } from "../lib/i18n";
 import { EmptyState } from "../components/ui/EmptyState";
 import { EmptyShelfIllustration } from "../components/illustrations";
 import { Fab } from "../components/ui/Fab";
+import { Switch } from "../components/ui/Switch";
 import { CloseIcon, FolderIcon, PlusIcon } from "../components/icons";
 
 // A collection's cover is a mosaic of up to four of its recipe photos, laid
@@ -111,6 +112,7 @@ function NewCollectionModal({
 }) {
   const { t } = useI18n();
   const [name, setName] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
   const [saving, setSaving] = useState(false);
 
   async function submit(e: React.FormEvent) {
@@ -118,7 +120,7 @@ function NewCollectionModal({
     if (!name.trim()) return;
     setSaving(true);
     try {
-      const created = await collectionsApi.create(name.trim());
+      const created = await collectionsApi.create(name.trim(), isPublic);
       onCreated(created);
       onClose();
     } finally {
@@ -147,6 +149,14 @@ function NewCollectionModal({
           maxLength={80}
           className="w-full rounded-lg bg-surface-2 px-3 py-2 text-base"
         />
+        <div className="rounded-lg bg-surface-2 px-3 py-2.5">
+          <Switch
+            checked={isPublic}
+            onChange={setIsPublic}
+            label={t.collections.publicLabel}
+            description={t.collections.publicHint}
+          />
+        </div>
         <button
           type="submit"
           disabled={saving || !name.trim()}

@@ -28,7 +28,8 @@ export type CollectionDetail = {
 
 export const collectionsApi = {
   list: () => api.get<CollectionListItem[]>("/api/collections"),
-  create: (name: string) => api.post<CollectionListItem>("/api/collections", { name }),
+  create: (name: string, isPublic = false) =>
+    api.post<CollectionListItem>("/api/collections", { name, isPublic }),
   get: (id: string) => api.get<CollectionDetail>(`/api/collections/${id}`),
   update: (id: string, body: { name?: string; isPublic?: boolean }) =>
     api.patch<{ _id: string; name: string; isPublic: boolean }>(`/api/collections/${id}`, body),

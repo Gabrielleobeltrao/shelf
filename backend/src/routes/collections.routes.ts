@@ -60,7 +60,11 @@ router.post("/", async (req, res) => {
     res.status(400).json({ error: "Nome obrigatório" });
     return;
   }
-  const collection = await RecipeCollection.create({ name: name.slice(0, 80), userId: req.userId });
+  const collection = await RecipeCollection.create({
+    name: name.slice(0, 80),
+    isPublic: req.body?.isPublic === true,
+    userId: req.userId,
+  });
   res.status(201).json({
     _id: collection._id,
     name: collection.name,
