@@ -4,7 +4,8 @@ import { collectionsApi, type CollectionListItem } from "../lib/collections";
 import { useI18n } from "../lib/i18n";
 import { EmptyState } from "../components/ui/EmptyState";
 import { EmptyShelfIllustration } from "../components/illustrations";
-import { FolderIcon, PlusIcon } from "../components/icons";
+import { Fab } from "../components/ui/Fab";
+import { CloseIcon, FolderIcon, PlusIcon } from "../components/icons";
 
 // A collection's cover is a mosaic of up to four of its recipe photos, laid
 // out by how many there are (1 = full, 2 = split, 3–4 = 2×2 grid).
@@ -39,9 +40,6 @@ export function Collections() {
   const [collections, setCollections] = useState<CollectionListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
-  const [name, setName] = useState("");
-  const [saving, setSaving] = useState(false);
-
   useEffect(() => {
     collectionsApi
       .list()
@@ -50,55 +48,12 @@ export function Collections() {
       .finally(() => setLoading(false));
   }, []);
 
-  async function handleCreate(e: React.FormEvent) {
-    e.preventDefault();
-    if (!name.trim()) return;
-    setSaving(true);
-    try {
-      const created = await collectionsApi.create(name.trim());
-      setCollections((prev) => [created, ...prev]);
-      setName("");
-      setCreating(false);
-    } finally {
-      setSaving(false);
-    }
-  }
-
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-16">
       <div>
-        <div className="flex items-center justify-between gap-3">
-          <h1 className="text-lg font-semibold">{t.collections.title}</h1>
-          <button
-            onClick={() => setCreating((c) => !c)}
-            className="flex shrink-0 items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-2 text-sm font-medium text-white"
-          >
-            <PlusIcon className="h-4 w-4" />
-            {t.collections.newCollection}
-          </button>
-        </div>
+        <h1 className="text-lg font-semibold">{t.collections.title}</h1>
         <p className="mt-1 text-sm text-muted">{t.collections.subtitle}</p>
       </div>
-
-      {creating && (
-        <form onSubmit={handleCreate} className="flex gap-2">
-          <input
-            autoFocus
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder={t.collections.namePlaceholder}
-            maxLength={80}
-            className="min-w-0 flex-1 rounded-lg bg-surface-2 px-3 py-2 text-base"
-          />
-          <button
-            type="submit"
-            disabled={saving || !name.trim()}
-            className="shrink-0 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-          >
-            {t.collections.create}
-          </button>
-        </form>
-      )}
 
       {loading ? (
         <p className="text-sm text-muted">{t.common.loading}</p>
@@ -130,6 +85,76 @@ export function Collections() {
           ))}
         </ul>
       )}
+
+      <Fab
+        onClick={() => setCreating(true)}
+        label={t.collections.newCollection}
+        icon={<PlusIcon className="h-6 w-6" />}
+      />
+
+      {creating && (
+        <NewCollectionModal
+          onClose={() => setCreating(false)}
+          onCreated={(c) => setCollections((prev) => [c, ...prev])}
+        />
+      )}
+    </div>
+  );
+}
+
+function NewCollectionModal({
+  onClose,
+  onCreated,
+}: {
+  onClose: () => void;
+  onCreated: (collection: CollectionListItem) => void;
+}) {
+  const { t } = useI18n();
+  const [name, setName] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!name.trim()) return;
+    setSaving(true);
+    try {
+      const created = await collectionsApi.create(name.trim());
+      onCreated(created);
+      onClose();
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-40 flex items-end bg-black/50 sm:items-center" onClick={onClose}>
+      <form
+        onSubmit={submit}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full space-y-3 rounded-t-2xl bg-surface p-4 sm:mx-auto sm:max-w-sm sm:rounded-2xl"
+      >
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{t.collections.newCollection}</h2>
+          <button type="button" onClick={onClose} aria-label={t.common.close} className="text-muted">
+            <CloseIcon className="h-4 w-4" />
+          </button>
+        </div>
+        <input
+          autoFocus
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder={t.collections.namePlaceholder}
+          maxLength={80}
+          className="w-full rounded-lg bg-surface-2 px-3 py-2 text-base"
+        />
+        <button
+          type="submit"
+          disabled={saving || !name.trim()}
+          className="w-full rounded-lg bg-primary-600 py-2.5 text-sm font-medium text-white disabled:opacity-60"
+        >
+          {t.collections.create}
+        </button>
+      </form>
     </div>
   );
 }
