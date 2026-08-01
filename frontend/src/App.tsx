@@ -12,6 +12,9 @@ import { Dashboard } from "./pages/Dashboard";
 import { PublicRecipe } from "./pages/PublicRecipe";
 import { ExploreRecipes } from "./pages/ExploreRecipes";
 import { Roadmap } from "./pages/Roadmap";
+import { Collections } from "./pages/Collections";
+import { CollectionDetail } from "./pages/CollectionDetail";
+import { PublicCollection } from "./pages/PublicCollection";
 
 // Root shows the marketing landing to logged-out visitors and sends
 // logged-in users straight into the app (Estoque).
@@ -39,6 +42,7 @@ function App() {
       <Route path="/receita/:id" element={<PublicRecipe />} />
       <Route path="/explorar" element={<ExploreRecipes />} />
       <Route path="/roadmap" element={<Roadmap />} />
+      <Route path="/colecao/:id" element={<PublicCollection />} />
 
       <Route
         element={
@@ -49,6 +53,8 @@ function App() {
       >
         <Route path="/estoque" element={<Inventory />} />
         <Route path="/receitas" element={<Recipes />} />
+        <Route path="/colecoes" element={<Collections />} />
+        <Route path="/colecoes/:id" element={<CollectionDetail />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/configuracoes" element={<Settings />} />
       </Route>

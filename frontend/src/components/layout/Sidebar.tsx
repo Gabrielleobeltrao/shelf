@@ -220,6 +220,7 @@ function SidebarBody({
             {recipesOpen && (
               <div className={`flex-col gap-1 ${rail ? "hidden group-hover:flex" : "flex"}`}>
                 {subLink("/receitas", true, t.nav.myRecipes)}
+                {subLink("/colecoes", false, t.nav.collections)}
                 {subLink("/explorar", false, t.nav.explore)}
               </div>
             )}

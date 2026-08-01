@@ -12,6 +12,8 @@ import shoppingListRouter from "./routes/shopping-list.routes.js";
 import productSearchRouter from "./routes/product-search.routes.js";
 import publicRecipesRouter from "./routes/public-recipes.routes.js";
 import roadmapRouter from "./routes/roadmap.routes.js";
+import collectionsRouter from "./routes/collections.routes.js";
+import publicCollectionsRouter from "./routes/public-collections.routes.js";
 
 const app = express();
 const PORT = process.env.PORT ?? 4001;
@@ -41,6 +43,8 @@ app.use("/api/shopping-list", shoppingListRouter);
 app.use("/api/product-search", productSearchRouter);
 app.use("/api/public/recipes", publicRecipesRouter);
 app.use("/api/roadmap", roadmapRouter);
+app.use("/api/collections", collectionsRouter);
+app.use("/api/public/collections", publicCollectionsRouter);
 
 await connectDB();
 

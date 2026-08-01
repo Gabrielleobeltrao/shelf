@@ -5,9 +5,10 @@ import { hasEnoughStock } from "../lib/units";
 import type { RecipeFormData } from "../components/recipes/RecipeDetailModal";
 import { RecipeDetailModal } from "../components/recipes/RecipeDetailModal";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
-import { BookmarkIcon, ExploreIcon, FilterIcon, PencilIcon, PlusIcon, SearchIcon } from "../components/icons";
+import { BookmarkIcon, ExploreIcon, FilterIcon, FolderIcon, PencilIcon, PlusIcon, SearchIcon } from "../components/icons";
 import { EmptyState } from "../components/ui/EmptyState";
 import { FabMenu } from "../components/ui/FabMenu";
+import { AddToCollectionMenu } from "../components/recipes/AddToCollectionMenu";
 import { useI18n } from "../lib/i18n";
 import { tagLabel } from "../lib/labels";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
@@ -85,6 +86,7 @@ export function Recipes() {
   const [originFilter, setOriginFilter] = useState<"all" | "mine" | "saved">("all");
   const [filterOpen, setFilterOpen] = useState(false);
   const [unsaving, setUnsaving] = useState<Recipe | null>(null);
+  const [collectingId, setCollectingId] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
@@ -324,29 +326,41 @@ export function Recipes() {
                 onClick={() => navigate(`/receita/${isSaved ? recipe.savedFrom : recipe._id}`)}
                 className="relative cursor-pointer overflow-hidden rounded-lg border border-line"
               >
-                {isSaved ? (
+                <div className="absolute right-2 top-2 z-10 flex gap-1.5">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      setUnsaving(recipe);
+                      setCollectingId(recipe._id);
                     }}
-                    aria-label={t.recipes.unsaveAria(recipe.name)}
-                    className="absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-on-photo text-primary-600 shadow-sm"
+                    aria-label={t.collections.addToCollection}
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-on-photo text-ink shadow-sm"
                   >
-                    <BookmarkIcon className="h-4 w-4" filled />
+                    <FolderIcon className="h-4 w-4" />
                   </button>
-                ) : (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setModal({ mode: "edit", recipeId: recipe._id, initial: editInitialFor(recipe, t.recipes.removedItem) });
-                    }}
-                    aria-label={t.recipes.editAria(recipe.name)}
-                    className="absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-on-photo text-ink shadow-sm"
-                  >
-                    <PencilIcon className="h-4 w-4" />
-                  </button>
-                )}
+                  {isSaved ? (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setUnsaving(recipe);
+                      }}
+                      aria-label={t.recipes.unsaveAria(recipe.name)}
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-on-photo text-primary-600 shadow-sm"
+                    >
+                      <BookmarkIcon className="h-4 w-4" filled />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setModal({ mode: "edit", recipeId: recipe._id, initial: editInitialFor(recipe, t.recipes.removedItem) });
+                      }}
+                      aria-label={t.recipes.editAria(recipe.name)}
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-on-photo text-ink shadow-sm"
+                    >
+                      <PencilIcon className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
 
                 <PhotoOrFallback
                   src={recipe.imageUrl}
@@ -462,6 +476,10 @@ export function Recipes() {
           }}
           onCancel={() => setUnsaving(null)}
         />
+      )}
+
+      {collectingId && (
+        <AddToCollectionMenu recipeId={collectingId} onClose={() => setCollectingId(null)} />
       )}
 
       <FabMenu

@@ -250,6 +250,30 @@ export function CookedIcon({ className }: IconProps) {
   );
 }
 
+export function FolderIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path
+        d="M3 6.5A1.5 1.5 0 0 1 4.5 5h3l1.5 1.8h6A1.5 1.5 0 0 1 16.5 8.3v6.2A1.5 1.5 0 0 1 15 16H4.5A1.5 1.5 0 0 1 3 14.5V6.5Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function ShareIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <circle cx="6" cy="10" r="2" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="14" cy="5.5" r="2" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="14" cy="14.5" r="2" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M7.8 9l4.4-2.5M7.8 11l4.4 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function LoginIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 20 20" fill="none" className={className}>
