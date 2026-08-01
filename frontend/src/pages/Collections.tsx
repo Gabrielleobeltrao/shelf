@@ -8,32 +8,17 @@ import { Fab } from "../components/ui/Fab";
 import { Switch } from "../components/ui/Switch";
 import { CloseIcon, FolderIcon, PlusIcon } from "../components/icons";
 
-// A collection's cover is a mosaic of up to four of its recipe photos, laid
-// out by how many there are (1 = full, 2 = split, 3–4 = 2×2 grid).
-function CollectionCover({ covers }: { covers: string[] }) {
-  if (covers.length === 0) {
+// One big cover photo (clear even on small mobile cards); the "stack" effect
+// behind the card is what signals it's a collection.
+function CollectionCover({ cover }: { cover?: string }) {
+  if (!cover) {
     return (
       <div className="flex h-full w-full items-center justify-center bg-mustard-100 text-mustard-500 dark:bg-mustard-900/30 dark:text-mustard-400">
         <FolderIcon className="h-10 w-10" />
       </div>
     );
   }
-  const shots = covers.slice(0, 4);
-  return (
-    <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-px bg-line">
-      {shots.map((url, i) => (
-        <img
-          key={i}
-          src={url}
-          alt=""
-          className={`h-full w-full object-cover ${
-            shots.length === 1 ? "col-span-2 row-span-2" : shots.length === 2 ? "row-span-2" : ""
-          }`}
-        />
-      ))}
-      {shots.length === 3 && <div className="bg-mustard-100 dark:bg-mustard-900/30" />}
-    </div>
-  );
+  return <img src={cover} alt="" className="h-full w-full object-cover" />;
 }
 
 export function Collections() {
@@ -67,10 +52,16 @@ export function Collections() {
       ) : (
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {collections.map((c) => (
-            <li key={c._id}>
-              <Link to={`/colecoes/${c._id}`} className="block overflow-hidden rounded-lg border border-line">
+            <li key={c._id} className="relative pt-2">
+              {/* Stacked-sheet effect peeking above the card. */}
+              <div aria-hidden className="absolute inset-x-[9%] top-0 h-2 rounded-t-lg border border-line bg-surface-2" />
+              <div aria-hidden className="absolute inset-x-[4.5%] top-1 h-2 rounded-t-lg border border-line bg-surface" />
+              <Link
+                to={`/colecoes/${c._id}`}
+                className="relative block overflow-hidden rounded-lg border border-line bg-surface"
+              >
                 <div className="relative h-28 overflow-hidden">
-                  <CollectionCover covers={c.covers ?? []} />
+                  <CollectionCover cover={c.covers?.[0]} />
                   {c.isPublic && (
                     <span className="absolute right-2 top-2 rounded-full bg-on-photo px-2 py-0.5 text-xs font-medium text-ink">
                       {t.collections.public}
