@@ -4,8 +4,35 @@ import { collectionsApi, type CollectionListItem } from "../lib/collections";
 import { useI18n } from "../lib/i18n";
 import { EmptyState } from "../components/ui/EmptyState";
 import { EmptyShelfIllustration } from "../components/illustrations";
-import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 import { FolderIcon, PlusIcon } from "../components/icons";
+
+// A collection's cover is a mosaic of up to four of its recipe photos, laid
+// out by how many there are (1 = full, 2 = split, 3–4 = 2×2 grid).
+function CollectionCover({ covers }: { covers: string[] }) {
+  if (covers.length === 0) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-mustard-100 text-mustard-500 dark:bg-mustard-900/30 dark:text-mustard-400">
+        <FolderIcon className="h-10 w-10" />
+      </div>
+    );
+  }
+  const shots = covers.slice(0, 4);
+  return (
+    <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-px bg-line">
+      {shots.map((url, i) => (
+        <img
+          key={i}
+          src={url}
+          alt=""
+          className={`h-full w-full object-cover ${
+            shots.length === 1 ? "col-span-2 row-span-2" : shots.length === 2 ? "row-span-2" : ""
+          }`}
+        />
+      ))}
+      {shots.length === 3 && <div className="bg-mustard-100 dark:bg-mustard-900/30" />}
+    </div>
+  );
+}
 
 export function Collections() {
   const { t } = useI18n();
@@ -86,16 +113,8 @@ export function Collections() {
           {collections.map((c) => (
             <li key={c._id}>
               <Link to={`/colecoes/${c._id}`} className="block overflow-hidden rounded-lg border border-line">
-                <div className="relative h-28 bg-mustard-100 dark:bg-mustard-900/30">
-                  <PhotoOrFallback
-                    src={c.covers?.[0]}
-                    imgClassName="h-full w-full object-cover"
-                    fallback={
-                      <div className="flex h-full w-full items-center justify-center text-mustard-500 dark:text-mustard-400">
-                        <FolderIcon className="h-10 w-10" />
-                      </div>
-                    }
-                  />
+                <div className="relative h-28 overflow-hidden">
+                  <CollectionCover covers={c.covers ?? []} />
                   {c.isPublic && (
                     <span className="absolute right-2 top-2 rounded-full bg-on-photo px-2 py-0.5 text-xs font-medium text-ink">
                       {t.collections.public}
