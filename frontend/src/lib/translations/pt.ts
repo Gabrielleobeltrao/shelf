@@ -396,22 +396,6 @@ export const pt = {
         how: "Cada pessoa terá um perfil simples (foto, nome, nome de exibição, avatar ou cor) que aparece no estoque, eventos e listas. O e-mail fica privado — a identificação é por foto e nome. Cargos definem as permissões de cada um.",
       },
       {
-        id: "community",
-        name: "Comunidade e receitas públicas",
-        desc: "Compartilhar receitas, avaliar e descobrir pratos.",
-        objective: "Uma comunidade pra compartilhar receitas, aprender com outras pessoas e descobrir pratos novos.",
-        tasks: [
-          "Receitas privadas, da casa ou públicas",
-          "Explorar com busca, filtros e categorias",
-          "Avaliações com tempo e porções reais",
-          "Comentários e dicas",
-          "Curtir e salvar receitas",
-          "Perfil público do criador",
-          "Seguir criadores (futuro)",
-        ],
-        how: "Ao criar uma receita você escolhe se ela é privada, só da casa ou pública. As avaliações registram o tempo e as porções reais de quem cozinhou, formando médias da comunidade, e cada criador ganha um perfil público com suas receitas e notas.",
-      },
-      {
         id: "cook-now",
         name: "Cozinhar agora",
         desc: "Compara a receita com o seu estoque.",

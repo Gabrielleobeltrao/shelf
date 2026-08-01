@@ -201,7 +201,6 @@ const PLANNED_ICON: Record<string, ComponentType<IconProps>> = {
   "shared-stock": UsersIcon,
   events: CalendarIcon,
   profiles: UserIcon,
-  community: ExploreIcon,
   "receipt-scan": ReceiptIcon,
   "consumption-history": ChartIcon,
   "cooking-mode": CookedIcon,

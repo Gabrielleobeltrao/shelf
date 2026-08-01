@@ -398,22 +398,6 @@ export const en: Dict = {
         how: "Everyone gets a simple profile (photo, name, display name, avatar or color) that shows up in the pantry, events, and lists. Email stays private — people are identified by photo and name. Roles set what each person can do.",
       },
       {
-        id: "community",
-        name: "Community & public recipes",
-        desc: "Share recipes, rate them, and discover dishes.",
-        objective: "A community to share recipes, learn from others, and discover new dishes.",
-        tasks: [
-          "Private, household, or public recipes",
-          "Explore with search, filters, and categories",
-          "Ratings with real time and servings",
-          "Comments and tips",
-          "Like and save recipes",
-          "Public creator profile",
-          "Follow creators (future)",
-        ],
-        how: "When you create a recipe you choose whether it's private, household-only, or public. Ratings record the real prep time and servings from people who cooked it, forming community averages, and each creator gets a public profile with their recipes and scores.",
-      },
-      {
         id: "cook-now",
         name: "Cook now",
         desc: "Matches the recipe against your pantry.",
