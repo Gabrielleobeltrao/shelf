@@ -88,7 +88,7 @@ export function Collections() {
               <Link to={`/colecoes/${c._id}`} className="block overflow-hidden rounded-lg border border-line">
                 <div className="relative h-28 bg-mustard-100 dark:bg-mustard-900/30">
                   <PhotoOrFallback
-                    src={c.covers[0]}
+                    src={c.covers?.[0]}
                     imgClassName="h-full w-full object-cover"
                     fallback={
                       <div className="flex h-full w-full items-center justify-center text-mustard-500 dark:text-mustard-400">
@@ -104,7 +104,7 @@ export function Collections() {
                 </div>
                 <div className="space-y-0.5 p-3">
                   <p className="truncate font-medium">{c.name}</p>
-                  <p className="text-xs text-muted">{t.collections.count(c.recipeIds.length)}</p>
+                  <p className="text-xs text-muted">{t.collections.count(c.recipeIds?.length ?? 0)}</p>
                 </div>
               </Link>
             </li>

@@ -61,7 +61,13 @@ router.post("/", async (req, res) => {
     return;
   }
   const collection = await RecipeCollection.create({ name: name.slice(0, 80), userId: req.userId });
-  res.status(201).json({ _id: collection._id, name: collection.name, isPublic: collection.isPublic, recipeIds: [] });
+  res.status(201).json({
+    _id: collection._id,
+    name: collection.name,
+    isPublic: collection.isPublic,
+    recipeIds: [],
+    covers: [],
+  });
 });
 
 // Owner view of a collection, with its recipes in order.
