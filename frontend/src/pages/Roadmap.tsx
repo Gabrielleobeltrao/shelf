@@ -169,6 +169,15 @@ function FolderIcon({ className }: IconProps) {
   );
 }
 
+function SwapIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path d="M4 7h11M12 4l3 3-3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M16 13H5M8 16l-3-3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function SparkleIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 20 20" fill="none" className={className}>
@@ -206,6 +215,8 @@ const PLANNED_ICON: Record<string, ComponentType<IconProps>> = {
   "cooking-mode": CookedIcon,
   "cook-now": FlameIcon,
   creators: StarIcon,
+  cuisines: GlobeIcon,
+  substitutions: SwapIcon,
   assistant: SparkleIcon,
   "photo-recognition": CameraIcon,
 };
