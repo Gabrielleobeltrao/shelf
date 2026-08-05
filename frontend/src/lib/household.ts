@@ -1,4 +1,5 @@
 import { api } from "./api";
+import type { Dict } from "./i18n";
 
 export type HouseholdMember = {
   userId: string;
@@ -24,6 +25,29 @@ export type ActivityEntry = {
   detail: string | null;
   at: string;
 };
+
+// Turns an activity entry into a localized sentence (shared by the settings
+// history and the dashboard feed).
+export function describeActivity(t: Dict, e: ActivityEntry): string {
+  const who = e.userName;
+  const what = e.detail ?? "";
+  switch (e.action) {
+    case "item_added":
+      return t.household.actItemAdded(who, what);
+    case "item_removed":
+      return t.household.actItemRemoved(who, what);
+    case "list_added":
+      return t.household.actListAdded(who, what);
+    case "member_joined":
+      return t.household.actMemberJoined(who);
+    case "member_left":
+      return t.household.actMemberLeft(who);
+    case "member_removed":
+      return t.household.actMemberRemoved(who, what);
+    default:
+      return who;
+  }
+}
 
 export const householdApi = {
   get: () => api.get<Household>("/api/household"),

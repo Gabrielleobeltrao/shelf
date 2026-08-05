@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { householdApi, type ActivityEntry, type Household } from "../../lib/household";
+import { describeActivity, householdApi, type ActivityEntry, type Household } from "../../lib/household";
 import { useI18n } from "../../lib/i18n";
 import { CheckIcon, CloseIcon, PencilIcon } from "../icons";
 
@@ -24,27 +24,6 @@ export function SharedPantryCard() {
       })
       .finally(() => setLoading(false));
   }, []);
-
-  function describe(e: ActivityEntry): string {
-    const who = e.userName;
-    const what = e.detail ?? "";
-    switch (e.action) {
-      case "item_added":
-        return t.household.actItemAdded(who, what);
-      case "item_removed":
-        return t.household.actItemRemoved(who, what);
-      case "list_added":
-        return t.household.actListAdded(who, what);
-      case "member_joined":
-        return t.household.actMemberJoined(who);
-      case "member_left":
-        return t.household.actMemberLeft(who);
-      case "member_removed":
-        return t.household.actMemberRemoved(who, what);
-      default:
-        return who;
-    }
-  }
 
   const timeFmt = (iso: string) =>
     new Date(iso).toLocaleString(lang === "pt" ? "pt-BR" : "en-US", {
@@ -250,7 +229,7 @@ export function SharedPantryCard() {
               <ul className="max-h-48 space-y-1.5 overflow-y-auto">
                 {activity.map((e) => (
                   <li key={e.id} className="flex items-baseline justify-between gap-2 text-xs">
-                    <span className="min-w-0 truncate">{describe(e)}</span>
+                    <span className="min-w-0 truncate">{describeActivity(t, e)}</span>
                     <span className="shrink-0 text-muted">{timeFmt(e.at)}</span>
                   </li>
                 ))}
