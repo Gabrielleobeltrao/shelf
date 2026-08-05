@@ -209,6 +209,8 @@ export const pt = {
     loginPrompt: "para avaliar, comentar e salvar.",
     loginLink: "Entre",
     ingredients: "Ingredientes",
+    moreServings: "Mais porções",
+    fewerServings: "Menos porções",
     steps: "Modo de preparo",
     comments: (n: number) => `Comentários (${n})`,
     commentPlaceholder: "Deixe um comentário",
@@ -391,6 +393,7 @@ export const pt = {
       { name: "Português e inglês", desc: "Todo o app em dois idiomas, com troca instantânea." },
       { name: "Coleções de receitas", desc: "Agrupe as receitas em pastas por tema, públicas ou privadas." },
       { name: "Vários locais de estoque", desc: "Separe despensa, geladeira e freezer e filtre por local." },
+      { name: "Ajustar porções", desc: "Escale a receita na página e recalcule os ingredientes." },
     ],
     planned: [
       {
@@ -633,20 +636,6 @@ export const pt = {
           "Guardar a fonte original",
         ],
         how: "Você cola o link de uma receita (ou uma foto) e o Shelf extrai nome, ingredientes e modo de preparo pra você revisar e salvar — sem digitar tudo de novo.",
-      },
-      {
-        id: "scale-servings",
-        name: "Ajustar porções",
-        desc: "Escale a receita e recalcule os ingredientes.",
-        objective: "Fazer a receita render o número de porções que você precisa.",
-        tasks: [
-          "Escolher as porções desejadas",
-          "Recalcular as quantidades",
-          "Arredondar pra medidas práticas",
-          "Ajustar o tempo, quando fizer sentido",
-          "Salvar a versão ajustada",
-        ],
-        how: "Você diz quantas porções quer e o Shelf recalcula todos os ingredientes proporcionalmente — dobrar, reduzir pela metade ou qualquer quantidade, com medidas práticas.",
       },
       {
         id: "offline",

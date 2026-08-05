@@ -211,6 +211,8 @@ export const en: Dict = {
     loginPrompt: "to rate, comment and save.",
     loginLink: "Sign in",
     ingredients: "Ingredients",
+    moreServings: "More servings",
+    fewerServings: "Fewer servings",
     steps: "Instructions",
     comments: (n: number) => `Comments (${n})`,
     commentPlaceholder: "Leave a comment",
@@ -393,6 +395,7 @@ export const en: Dict = {
       { name: "Portuguese & English", desc: "The whole app in two languages, switched instantly." },
       { name: "Recipe collections", desc: "Group recipes into folders by theme, public or private." },
       { name: "Multiple pantry locations", desc: "Split pantry, fridge, and freezer and filter by location." },
+      { name: "Scale servings", desc: "Scale a recipe on its page and recompute the ingredients." },
     ],
     planned: [
       {
@@ -635,20 +638,6 @@ export const en: Dict = {
           "Keep the original source",
         ],
         how: "You paste a recipe link (or a photo) and Shelf extracts the name, ingredients, and steps for you to review and save — no retyping.",
-      },
-      {
-        id: "scale-servings",
-        name: "Scale servings",
-        desc: "Scale a recipe and recompute the ingredients.",
-        objective: "Make a recipe yield the number of servings you need.",
-        tasks: [
-          "Pick the target servings",
-          "Recompute the quantities",
-          "Round to practical measures",
-          "Adjust the time when it makes sense",
-          "Save the scaled version",
-        ],
-        how: "You say how many servings you want and Shelf recomputes every ingredient proportionally — double it, halve it, or any amount, with practical measures.",
       },
       {
         id: "offline",

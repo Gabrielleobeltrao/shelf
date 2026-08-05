@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { API_URL } from "../lib/api";
 import { useI18n } from "../lib/i18n";
 import { tagLabel } from "../lib/labels";
-import { BackIcon, BookmarkIcon, ChatIcon, CheckIcon, CookedIcon, MenuIcon, PencilIcon, StarIcon } from "../components/icons";
+import { BackIcon, BookmarkIcon, ChatIcon, CheckIcon, CookedIcon, MenuIcon, MinusIcon, PencilIcon, PlusIcon, StarIcon } from "../components/icons";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 import { EmptyState } from "../components/ui/EmptyState";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
@@ -49,6 +49,11 @@ function formatCommentDate(iso: string, locale: string) {
   return date.toLocaleDateString(locale, { day: "2-digit", month: "short", year: "numeric" });
 }
 
+// Scaled ingredient amount, trimmed to at most two decimals.
+function formatQuantity(n: number): string {
+  return String(Math.round(n * 100) / 100);
+}
+
 async function apiCall(path: string, options?: RequestInit) {
   const res = await fetch(`${API_URL}${path}`, {
     credentials: "include",
@@ -72,16 +77,24 @@ export function PublicRecipe() {
   const [saving, setSaving] = useState(false);
   const [cooking, setCooking] = useState(false);
   const [ratingHover, setRatingHover] = useState(0);
+  const [servings, setServings] = useState<number | null>(null);
 
   useEffect(() => {
     if (!id) return;
     setLoading(true);
     fetch(`${API_URL}/api/public/recipes/${id}`, { credentials: "include" })
       .then((res) => (res.ok ? res.json() : null))
-      .then(setData)
+      .then((d: PublicRecipeData | null) => {
+        setData(d);
+        setServings(d?.recipe.servings ?? null);
+      })
       .catch(() => setData(null))
       .finally(() => setLoading(false));
   }, [id]);
+
+  const baseServings = data?.recipe.servings ?? 0;
+  const targetServings = servings ?? baseServings;
+  const scale = baseServings > 0 && targetServings > 0 ? targetServings / baseServings : 1;
 
   async function handleRate(stars: number) {
     if (!data || !id) return;
@@ -254,13 +267,39 @@ export function PublicRecipe() {
 
             {data.recipe.ingredients.length > 0 && (
               <div>
-                <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
-                  {t.publicRecipe.ingredients}
-                </p>
+                <div className="mb-1.5 flex items-center justify-between gap-3">
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted">
+                    {t.publicRecipe.ingredients}
+                  </p>
+                  {baseServings > 0 && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setServings((s) => Math.max(1, (s ?? baseServings) - 1))}
+                        aria-label={t.publicRecipe.fewerServings}
+                        className="flex h-7 w-7 items-center justify-center rounded-lg bg-surface-2 disabled:opacity-40"
+                        disabled={targetServings <= 1}
+                      >
+                        <MinusIcon className="h-3.5 w-3.5" />
+                      </button>
+                      <span className="min-w-18 text-center text-xs text-muted tabular-nums">
+                        {t.units.servings(targetServings)}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setServings((s) => (s ?? baseServings) + 1)}
+                        aria-label={t.publicRecipe.moreServings}
+                        className="flex h-7 w-7 items-center justify-center rounded-lg bg-surface-2"
+                      >
+                        <PlusIcon className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
                 <ul className="space-y-0.5 text-sm">
                   {data.recipe.ingredients.map((row, index) => (
                     <li key={index} className="text-muted">
-                      {row.quantity} {row.unit} de {row.name || t.publicRecipe.removedItem}
+                      {formatQuantity(row.quantity * scale)} {row.unit} de {row.name || t.publicRecipe.removedItem}
                     </li>
                   ))}
                 </ul>
