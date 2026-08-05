@@ -305,6 +305,14 @@ export const en: Dict = {
   offline: {
     banner: "You're offline — showing saved data.",
   },
+  install: {
+    title: "Install the app",
+    desc: "Install Shelf to open it fast, full screen, and use it offline.",
+    button: "Install Shelf",
+    iosTitle: "Install on iPhone/iPad",
+    iosStep1: "Tap the Share button (the square with an up arrow ↑) in Safari's bar.",
+    iosStep2: "Choose \"Add to Home Screen\".",
+  },
   notifications: {
     title: "Notifications",
     bellAria: (n: number) => (n > 0 ? `Notifications (${n})` : "Notifications"),

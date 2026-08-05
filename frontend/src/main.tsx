@@ -6,6 +6,7 @@ import App from './App.tsx'
 import { LanguageProvider } from './lib/i18n'
 import { HouseholdSyncProvider } from './lib/householdSync'
 import { OfflineBanner } from './components/ui/OfflineBanner'
+import './lib/pwaInstall' // capture the install prompt as early as possible
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -303,6 +303,14 @@ export const pt = {
   offline: {
     banner: "Você está offline — mostrando os dados salvos.",
   },
+  install: {
+    title: "Instalar o app",
+    desc: "Instale o Shelf pra abrir rápido, em tela cheia, e usar offline.",
+    button: "Instalar o Shelf",
+    iosTitle: "Instalar no iPhone/iPad",
+    iosStep1: "Toque no botão Compartilhar (o quadrado com a seta ↑) na barra do Safari.",
+    iosStep2: "Escolha \"Adicionar à Tela de Início\".",
+  },
   notifications: {
     title: "Notificações",
     bellAria: (n: number) => (n > 0 ? `Notificações (${n})` : "Notificações"),

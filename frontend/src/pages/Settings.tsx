@@ -5,6 +5,7 @@ import { api } from "../lib/api";
 import { Switch } from "../components/ui/Switch";
 import { NutritionFieldsModal } from "../components/settings/NutritionFieldsModal";
 import { SharedPantryCard } from "../components/settings/SharedPantryCard";
+import { InstallCard } from "../components/settings/InstallCard";
 import { LanguageSelect } from "../components/ui/LanguageSelect";
 import { MinusIcon, PlusIcon, TrashIcon } from "../components/icons";
 import { useI18n } from "../lib/i18n";
@@ -92,6 +93,8 @@ export function Settings() {
       <h1 className="text-lg font-semibold">{t.settings.title}</h1>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
+      <InstallCard />
+
       <div className="space-y-4 rounded-2xl bg-surface-2 p-4">
         <h2 className="text-sm font-medium text-muted">{t.settings.preferences}</h2>
         <div>
