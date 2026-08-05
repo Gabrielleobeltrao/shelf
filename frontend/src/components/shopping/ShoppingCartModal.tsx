@@ -22,6 +22,8 @@ type StockItem = {
   name: string;
   quantity: number;
   unit: string;
+  brand?: string;
+  imageUrl?: string;
 };
 
 type Props = {
@@ -132,15 +134,11 @@ export function ShoppingCartModal({ open, onClose }: Props) {
     }
   }
 
-  // Add a product straight to the list. It has no sourceItemId, so buying it
-  // later creates (or tops up, by name) a pantry item — same as any new buy.
-  async function handleAdd(e: React.FormEvent) {
-    e.preventDefault();
-    const name = newName.trim();
-    if (!name || adding) return;
+  async function addEntry(payload: Partial<ShoppingListEntry> & { name: string }) {
+    if (adding) return;
     setAdding(true);
     try {
-      const created = await api.post<ShoppingListEntry>("/api/shopping-list", { name });
+      const created = await api.post<ShoppingListEntry>("/api/shopping-list", payload);
       setEntries((prev) => [created, ...prev]);
       setBuyQuantities((prev) => ({ ...prev, [created._id]: 1 }));
       setNewName("");
@@ -148,6 +146,37 @@ export function ShoppingCartModal({ open, onClose }: Props) {
       setAdding(false);
     }
   }
+
+  // Free typing: a plain product with no sourceItemId, so buying it later
+  // creates (or tops up, by name) a pantry item — same as any new buy.
+  async function handleAdd(e: React.FormEvent) {
+    e.preventDefault();
+    const name = newName.trim();
+    if (name) await addEntry({ name });
+  }
+
+  // Picking a pantry match carries its unit/brand/photo and links back to the
+  // item, so buying it tops that exact item up.
+  function handlePickSuggestion(item: StockItem) {
+    addEntry({
+      name: item.name,
+      unit: item.unit,
+      brand: item.brand,
+      imageUrl: item.imageUrl,
+      sourceItemId: item._id,
+    });
+  }
+
+  // Suggest pantry items matching what's typed, skipping ones already listed.
+  const query = normalizeName(newName);
+  const listedSourceIds = new Set(
+    entries.map((e) => e.sourceItemId).filter(Boolean) as string[],
+  );
+  const suggestions = query
+    ? stockItems
+        .filter((item) => !listedSourceIds.has(item._id) && normalizeName(item.name).includes(query))
+        .slice(0, 6)
+    : [];
 
   const checkedCount = entries.filter((entry) => checkedIds.has(entry._id)).length;
 
@@ -163,24 +192,48 @@ export function ShoppingCartModal({ open, onClose }: Props) {
           </button>
         </div>
 
-        <form onSubmit={handleAdd} className="mt-3 flex gap-2">
-          <input
-            type="text"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            placeholder={t.shoppingList.addPlaceholder}
-            maxLength={80}
-            className="min-w-0 flex-1 rounded-lg bg-surface-2 px-3 py-2 text-sm"
-          />
-          <button
-            type="submit"
-            disabled={adding || !newName.trim()}
-            aria-label={t.shoppingList.addAria}
-            className="flex shrink-0 items-center justify-center rounded-lg bg-primary-600 px-3 text-white disabled:opacity-50"
-          >
-            <PlusIcon className="h-4 w-4" />
-          </button>
-        </form>
+        <div className="relative mt-3">
+          <form onSubmit={handleAdd} className="flex gap-2">
+            <input
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder={t.shoppingList.addPlaceholder}
+              maxLength={80}
+              className="min-w-0 flex-1 rounded-lg bg-surface-2 px-3 py-2 text-sm"
+            />
+            <button
+              type="submit"
+              disabled={adding || !newName.trim()}
+              aria-label={t.shoppingList.addAria}
+              className="flex shrink-0 items-center justify-center rounded-lg bg-primary-600 px-3 text-white disabled:opacity-50"
+            >
+              <PlusIcon className="h-4 w-4" />
+            </button>
+          </form>
+
+          {suggestions.length > 0 && (
+            <ul className="absolute inset-x-0 top-full z-10 mt-1 max-h-56 overflow-y-auto rounded-lg border border-line bg-surface py-1 shadow-lg">
+              {suggestions.map((item) => (
+                <li key={item._id}>
+                  <button
+                    type="button"
+                    onClick={() => handlePickSuggestion(item)}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-surface-2"
+                  >
+                    <PhotoOrFallback
+                      src={item.imageUrl}
+                      imgClassName="h-7 w-7 shrink-0 rounded object-cover"
+                      fallback={<div className="h-7 w-7 shrink-0 rounded bg-surface-2" />}
+                    />
+                    <span className="min-w-0 flex-1 truncate text-sm">{item.name}</span>
+                    <span className="shrink-0 text-xs text-muted">{unitLabel(t, item.unit)}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         <div className="mt-4 flex-1 overflow-y-auto">
           {loading ? (
