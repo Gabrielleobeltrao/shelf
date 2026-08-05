@@ -76,6 +76,7 @@ export const en: Dict = {
   },
   inventory: {
     title: "Pantry",
+    allItems: "All items",
     scan: "Scan barcode",
     searchPlaceholder: "Search by name or brand",
     emptyTitle: "Your pantry is empty",

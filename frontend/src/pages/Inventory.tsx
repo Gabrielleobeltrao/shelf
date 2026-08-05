@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useSearchParams } from "react-router-dom";
 import { api } from "../lib/api";
 import { lookupProduct } from "../lib/openFoodFacts";
 import type { ProductSearchResult } from "../lib/openFoodFacts";
@@ -70,6 +70,7 @@ function toFormData(item: Item): Partial<ItemFormData> {
 export function Inventory() {
   const { t } = useI18n();
   const { openCart } = useOutletContext<{ openCart: () => void }>();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [scanning, setScanning] = useState(false);
@@ -108,6 +109,11 @@ export function Inventory() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  // The sidebar's per-location subpages drive the filter via ?local=…
+  useEffect(() => {
+    setLocationFilter(searchParams.get("local") ?? "");
+  }, [searchParams]);
 
   const categories = useMemo(() => {
     const set = new Set(items.map((item) => item.category?.trim()).filter(Boolean));
@@ -331,7 +337,7 @@ export function Inventory() {
               <button
                 key={location}
                 type="button"
-                onClick={() => setLocationFilter(active ? "" : location!)}
+                onClick={() => setSearchParams(active ? {} : { local: location! })}
                 className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${
                   active ? "bg-primary-600 text-white" : "bg-surface-2 text-muted"
                 }`}

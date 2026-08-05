@@ -74,6 +74,7 @@ export const pt = {
   },
   inventory: {
     title: "Estoque",
+    allItems: "Todos os itens",
     scan: "Escanear código de barras",
     searchPlaceholder: "Buscar por nome ou marca",
     emptyTitle: "Seu estoque está vazio",

@@ -7,6 +7,7 @@ import { Switch } from "../ui/Switch";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 import { useI18n } from "../../lib/i18n";
+import { locationLabel } from "../../lib/labels";
 
 export type ItemFormData = {
   name: string;
@@ -175,18 +176,18 @@ export function ItemDetailModal({
 
         <div>
           <FieldLabel>{t.itemForm.location}</FieldLabel>
-          <input
-            type="text"
-            list="location-suggestions"
+          <select
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             className={inputClass}
-          />
-          <datalist id="location-suggestions">
+          >
+            <option value="">—</option>
             {LOCATION_OPTIONS.map((l) => (
-              <option key={l} value={l} />
+              <option key={l} value={l}>
+                {locationLabel(t, l)}
+              </option>
             ))}
-          </datalist>
+          </select>
         </div>
 
         <div>
