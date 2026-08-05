@@ -109,6 +109,29 @@ type Props = {
   onClose: () => void;
 };
 
+// Remembers whether a collapsible section is open across reloads, so the
+// sidebar stays how the user left it rather than resetting to a fixed default.
+function usePersistentToggle(key: string, fallback: boolean): [boolean, () => void] {
+  const [open, setOpen] = useState<boolean>(() => {
+    if (typeof localStorage === "undefined") return fallback;
+    const saved = localStorage.getItem(key);
+    return saved === null ? fallback : saved === "1";
+  });
+
+  const toggle = () =>
+    setOpen((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem(key, next ? "1" : "0");
+      } catch {
+        // ignore storage failures (private mode, quota) — state still toggles
+      }
+      return next;
+    });
+
+  return [open, toggle];
+}
+
 // The sidebar's inner content. Rendered both as the desktop rail and inside
 // the mobile overlay. Its contents depend only on auth state, never the page.
 function SidebarBody({
@@ -122,8 +145,8 @@ function SidebarBody({
 }) {
   const { data: session } = useSession();
   const { t, lang } = useI18n();
-  const [recipesOpen, setRecipesOpen] = useState(false);
-  const [stockOpen, setStockOpen] = useState(false);
+  const [recipesOpen, toggleRecipes] = usePersistentToggle("shelf.nav.recipesOpen", false);
+  const [stockOpen, toggleStock] = usePersistentToggle("shelf.nav.stockOpen", false);
 
   const routerLocation = useLocation();
   const onStock = routerLocation.pathname === "/estoque";
@@ -229,7 +252,7 @@ function SidebarBody({
             {/* Pantry: a collapsible section with a subpage per location. */}
             <button
               type="button"
-              onClick={() => setStockOpen((o) => !o)}
+              onClick={toggleStock}
               aria-expanded={stockOpen}
               className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-ink ${rowJustify}`}
             >
@@ -253,7 +276,7 @@ function SidebarBody({
             {/* Recipes: a collapsible section with Explore as a subpage. */}
             <button
               type="button"
-              onClick={() => setRecipesOpen((o) => !o)}
+              onClick={toggleRecipes}
               aria-expanded={recipesOpen}
               className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-ink ${rowJustify}`}
             >
