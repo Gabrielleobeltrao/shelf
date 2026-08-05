@@ -49,44 +49,21 @@ function formatCommentDate(iso: string, locale: string) {
   return date.toLocaleDateString(locale, { day: "2-digit", month: "short", year: "numeric" });
 }
 
-// Common cooking fractions, so scaled amounts read like a recipe (1½, ⅔)
-// instead of raw decimals (1.5, 0.667).
-const FRACTIONS: [number, string][] = [
-  [0, ""],
-  [1 / 8, "⅛"],
-  [1 / 4, "¼"],
-  [1 / 3, "⅓"],
-  [1 / 2, "½"],
-  [2 / 3, "⅔"],
-  [3 / 4, "¾"],
-  [1, ""],
-];
+// Countable units can't be fractional (no ⅛ of an egg), so they round to a
+// whole number. Everything else (weights/volumes) rounds to a clean amount.
+const COUNT_UNITS = new Set(["un", "und", "unid", "unidade", "unidades"]);
 
-function formatQuantity(n: number): string {
+function formatQuantity(n: number, unit: string): string {
   if (!isFinite(n) || n <= 0) return "0";
-  // Big amounts read cleaner as whole numbers than as fractions.
-  if (n >= 10) return String(Math.round(n));
 
-  let whole = Math.floor(n);
-  const frac = n - whole;
-  let label = "";
-  let best = Infinity;
-  for (const [value, glyph] of FRACTIONS) {
-    const dist = Math.abs(frac - value);
-    if (dist < best) {
-      best = dist;
-      label = glyph;
-      if (value === 1) {
-        whole += 1;
-        label = "";
-      } else if (value === 0) {
-        label = "";
-      }
-    }
+  const u = unit.trim().toLowerCase();
+  if (u === "" || COUNT_UNITS.has(u)) {
+    return String(Math.max(1, Math.round(n)));
   }
-  if (whole === 0 && label === "") return String(Math.round(n * 100) / 100);
-  if (label === "") return String(whole);
-  return whole === 0 ? label : `${whole}${label}`;
+
+  // Big amounts as whole numbers; smaller ones snapped to quarters.
+  const rounded = n >= 10 ? Math.round(n) : Math.round(n * 4) / 4;
+  return String(rounded);
 }
 
 async function apiCall(path: string, options?: RequestInit) {
@@ -334,7 +311,7 @@ export function PublicRecipe() {
                 <ul className="space-y-0.5 text-sm">
                   {data.recipe.ingredients.map((row, index) => (
                     <li key={index} className="text-muted">
-                      {formatQuantity(row.quantity * scale)} {row.unit} de {row.name || t.publicRecipe.removedItem}
+                      {formatQuantity(row.quantity * scale, row.unit)} {row.unit} de {row.name || t.publicRecipe.removedItem}
                     </li>
                   ))}
                 </ul>
