@@ -6,6 +6,9 @@ const itemSchema = new Schema(
     quantity: { type: Number, required: true, default: 1 },
     unit: { type: String, required: true, default: "un" },
     category: { type: String },
+    // Where the item lives — pantry, fridge, freezer, etc. (stored in pt-BR,
+    // translated for display like categories).
+    location: { type: String },
     brand: { type: String },
     packageSize: { type: String },
     imageUrl: { type: String },

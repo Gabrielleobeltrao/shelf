@@ -87,9 +87,17 @@ export const en: Dict = {
     increaseAria: (name: string) => `Increase quantity of ${name}`,
     decreaseAria: (name: string) => `Decrease quantity of ${name}`,
   },
+  locations: {
+    Despensa: "Pantry",
+    Geladeira: "Fridge",
+    Freezer: "Freezer",
+    Armário: "Cupboard",
+    Outros: "Other",
+  } as Record<string, string>,
   itemForm: {
     newItem: "New item",
     editItem: "Edit item",
+    location: "Location",
     photoUrl: "Product photo URL",
     name: "Name*",
     brand: "Brand",
@@ -106,6 +114,7 @@ export const en: Dict = {
   },
   itemView: {
     category: "Category",
+    location: "Location",
     packageSize: "Package",
     barcode: "Barcode",
     expiration: "Expiration",
@@ -384,6 +393,7 @@ export const en: Dict = {
       { name: "Expiration dashboard", desc: "A summary of what needs attention first." },
       { name: "Portuguese & English", desc: "The whole app in two languages, switched instantly." },
       { name: "Recipe collections", desc: "Group recipes into folders by theme, public or private." },
+      { name: "Multiple pantry locations", desc: "Split pantry, fridge, and freezer and filter by location." },
     ],
     planned: [
       {
@@ -598,20 +608,6 @@ export const en: Dict = {
           "Monthly summary",
         ],
         how: "As you use items before they expire, Shelf estimates how much food you kept from being wasted and how much you saved, with goals and a monthly summary to keep the habit.",
-      },
-      {
-        id: "locations",
-        name: "Multiple pantry locations",
-        desc: "Split pantry, fridge, and freezer.",
-        objective: "Organize the pantry by where each item actually lives.",
-        tasks: [
-          "Locations: pantry, fridge, freezer, cupboard",
-          "Set each item's location",
-          "Filter the pantry by location",
-          "Custom locations",
-          "Typical shelf life per location",
-        ],
-        how: "Each item gets a location (pantry, fridge, freezer…), so you can see and filter your stock by where things really are — and find everything faster.",
       },
       {
         id: "smart-list",

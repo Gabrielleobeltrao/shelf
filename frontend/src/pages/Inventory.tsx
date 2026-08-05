@@ -6,7 +6,7 @@ import type { ProductSearchResult } from "../lib/openFoodFacts";
 import { getExpirationWarning, isExpired } from "../lib/expiration";
 import { BarcodeIcon, CartIcon, MinusIcon, PlusIcon, SearchIcon } from "../components/icons";
 import { getCategoryIcon } from "../lib/categoryIcon";
-import { categoryLabel } from "../lib/labels";
+import { categoryLabel, locationLabel } from "../lib/labels";
 import { EmptyState } from "../components/ui/EmptyState";
 import { Fab } from "../components/ui/Fab";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
@@ -27,6 +27,7 @@ type Item = {
   quantity: number;
   unit: string;
   category?: string;
+  location?: string;
   brand?: string;
   packageSize?: string;
   imageUrl?: string;
@@ -51,6 +52,7 @@ function toFormData(item: Item): Partial<ItemFormData> {
     name: item.name,
     brand: item.brand ?? "",
     category: item.category ?? "",
+    location: item.location ?? "",
     packageSize: item.packageSize ?? "",
     quantity: String(item.quantity),
     unit: item.unit,
@@ -77,6 +79,7 @@ export function Inventory() {
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [locationFilter, setLocationFilter] = useState("");
   const [settings, setSettingsState] = useState({
     trackExpiration: false,
     trackNutrition: false,
@@ -111,12 +114,18 @@ export function Inventory() {
     return [...set].sort((a, b) => a!.localeCompare(b!));
   }, [items]);
 
+  const locations = useMemo(() => {
+    const set = new Set(items.map((item) => item.location?.trim()).filter(Boolean));
+    return [...set].sort((a, b) => a!.localeCompare(b!));
+  }, [items]);
+
   const filteredItems = useMemo(() => {
     const term = search.trim().toLowerCase();
 
     return items
       .filter((item) => {
         if (categoryFilter && (item.category?.trim() || "") !== categoryFilter) return false;
+        if (locationFilter && (item.location?.trim() || "") !== locationFilter) return false;
         if (!term) return true;
         return (
           item.name.toLowerCase().includes(term) ||
@@ -124,7 +133,7 @@ export function Inventory() {
         );
       })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [items, search, categoryFilter]);
+  }, [items, search, categoryFilter, locationFilter]);
 
   async function handleSave(data: ItemFormData) {
     if (!modal) return;
@@ -133,6 +142,7 @@ export function Inventory() {
       name: data.name.trim(),
       brand: data.brand.trim(),
       category: data.category.trim(),
+      location: data.location.trim(),
       packageSize: data.packageSize.trim(),
       quantity: Number(data.quantity) || 1,
       unit: data.unit.trim() || "un",
@@ -310,6 +320,26 @@ export function Inventory() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full rounded-lg bg-surface-2 py-2 pl-9 pr-3 text-base"
           />
+        </div>
+      )}
+
+      {locations.length > 0 && (
+        <div className="-mx-1 flex gap-2 overflow-x-auto overflow-y-visible px-1 py-1.5">
+          {locations.map((location) => {
+            const active = locationFilter === location;
+            return (
+              <button
+                key={location}
+                type="button"
+                onClick={() => setLocationFilter(active ? "" : location!)}
+                className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${
+                  active ? "bg-primary-600 text-white" : "bg-surface-2 text-muted"
+                }`}
+              >
+                {locationLabel(t, location)}
+              </button>
+            );
+          })}
         </div>
       )}
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NUTRITION_OPTIONS } from "../../lib/nutrition";
 import { useI18n } from "../../lib/i18n";
-import { categoryLabel } from "../../lib/labels";
+import { categoryLabel, locationLabel } from "../../lib/labels";
 import { BackIcon, CartIcon, MinusIcon, PencilIcon, PlusIcon, TrashIcon } from "../icons";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
@@ -12,6 +12,7 @@ type Item = {
   quantity: number;
   unit: string;
   category?: string;
+  location?: string;
   brand?: string;
   packageSize?: string;
   imageUrl?: string;
@@ -67,6 +68,7 @@ export function ItemViewModal({
 
   const infoLines = [
     item.category && { label: t.itemView.category, value: categoryLabel(t, item.category) },
+    item.location && { label: t.itemView.location, value: locationLabel(t, item.location) },
     item.packageSize && { label: t.itemView.packageSize, value: item.packageSize },
     item.barcode && { label: t.itemView.barcode, value: item.barcode },
     visibleFields.expirationDate &&

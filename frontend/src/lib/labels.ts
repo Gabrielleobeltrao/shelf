@@ -12,3 +12,8 @@ export function categoryLabel(t: Dict, category?: string | null): string {
   if (!category) return "";
   return t.categories[category] ?? category;
 }
+
+export function locationLabel(t: Dict, location?: string | null): string {
+  if (!location) return "";
+  return t.locations[location] ?? location;
+}

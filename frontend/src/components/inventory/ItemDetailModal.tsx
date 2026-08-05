@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NUTRITION_OPTIONS } from "../../lib/nutrition";
 import { CATEGORY_OPTIONS } from "../../lib/categories";
+import { LOCATION_OPTIONS } from "../../lib/locations";
 import { CloseIcon, TrashIcon } from "../icons";
 import { Switch } from "../ui/Switch";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
@@ -11,6 +12,7 @@ export type ItemFormData = {
   name: string;
   brand: string;
   category: string;
+  location: string;
   packageSize: string;
   quantity: string;
   unit: string;
@@ -57,6 +59,7 @@ export function ItemDetailModal({
   const [name, setName] = useState(initial.name ?? "");
   const [brand, setBrand] = useState(initial.brand ?? "");
   const [category, setCategory] = useState(initial.category ?? "");
+  const [location, setLocation] = useState(initial.location ?? "");
   const [packageSize, setPackageSize] = useState(initial.packageSize ?? "");
   const [quantity, setQuantity] = useState(initial.quantity ?? "1");
   const [unit, setUnit] = useState(initial.unit ?? "un");
@@ -79,6 +82,7 @@ export function ItemDetailModal({
       name,
       brand,
       category,
+      location,
       packageSize,
       quantity,
       unit,
@@ -165,6 +169,22 @@ export function ItemDetailModal({
           <datalist id="category-suggestions">
             {CATEGORY_OPTIONS.map((c) => (
               <option key={c} value={c} />
+            ))}
+          </datalist>
+        </div>
+
+        <div>
+          <FieldLabel>{t.itemForm.location}</FieldLabel>
+          <input
+            type="text"
+            list="location-suggestions"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className={inputClass}
+          />
+          <datalist id="location-suggestions">
+            {LOCATION_OPTIONS.map((l) => (
+              <option key={l} value={l} />
             ))}
           </datalist>
         </div>

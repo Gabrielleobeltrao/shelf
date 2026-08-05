@@ -85,9 +85,17 @@ export const pt = {
     increaseAria: (name: string) => `Aumentar quantidade de ${name}`,
     decreaseAria: (name: string) => `Diminuir quantidade de ${name}`,
   },
+  locations: {
+    Despensa: "Despensa",
+    Geladeira: "Geladeira",
+    Freezer: "Freezer",
+    Armário: "Armário",
+    Outros: "Outros",
+  } as Record<string, string>,
   itemForm: {
     newItem: "Novo item",
     editItem: "Editar item",
+    location: "Local",
     photoUrl: "URL da foto do produto",
     name: "Nome*",
     brand: "Marca",
@@ -104,6 +112,7 @@ export const pt = {
   },
   itemView: {
     category: "Categoria",
+    location: "Local",
     packageSize: "Embalagem",
     barcode: "Código de barras",
     expiration: "Validade",
@@ -382,6 +391,7 @@ export const pt = {
       { name: "Painel de vencimentos", desc: "Um resumo do que precisa de atenção primeiro." },
       { name: "Português e inglês", desc: "Todo o app em dois idiomas, com troca instantânea." },
       { name: "Coleções de receitas", desc: "Agrupe as receitas em pastas por tema, públicas ou privadas." },
+      { name: "Vários locais de estoque", desc: "Separe despensa, geladeira e freezer e filtre por local." },
     ],
     planned: [
       {
@@ -596,20 +606,6 @@ export const pt = {
           "Resumo mensal",
         ],
         how: "Conforme você consome os itens antes de vencer, o Shelf estima quanto de comida você deixou de desperdiçar e quanto economizou, com metas e um resumo mensal pra manter o hábito.",
-      },
-      {
-        id: "locations",
-        name: "Vários locais de estoque",
-        desc: "Separe despensa, geladeira e freezer.",
-        objective: "Organizar o estoque por onde cada item realmente fica.",
-        tasks: [
-          "Locais: despensa, geladeira, freezer, armário",
-          "Definir o local de cada item",
-          "Filtrar o estoque por local",
-          "Locais personalizados",
-          "Validade típica por local",
-        ],
-        how: "Cada item ganha um local (despensa, geladeira, freezer…), então você vê e filtra o estoque por onde as coisas realmente estão — e acha tudo mais rápido.",
       },
       {
         id: "smart-list",
