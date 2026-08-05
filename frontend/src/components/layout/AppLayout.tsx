@@ -1,15 +1,45 @@
-import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import { CartIcon, MenuIcon } from "../icons";
 import { ShoppingCartModal } from "../shopping/ShoppingCartModal";
+import { NotificationsBell } from "../notifications/NotificationsBell";
+import { NotificationsPanel, type AlertItem } from "../notifications/NotificationsPanel";
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 import { useI18n } from "../../lib/i18n";
+import { api } from "../../lib/api";
+import { daysUntil } from "../../lib/expiration";
 
 export function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [alertsOpen, setAlertsOpen] = useState(false);
+  const [items, setItems] = useState<AlertItem[]>([]);
+  const [trackExpiration, setTrackExpiration] = useState(false);
+  const [withinDays, setWithinDays] = useState(7);
   const { t } = useI18n();
+  const { pathname } = useLocation();
+
+  // Refetch on navigation so the badge reflects item edits, purchases and
+  // threshold changes made on other pages without a full reload.
+  useEffect(() => {
+    Promise.all([
+      api.get<AlertItem[]>("/api/items"),
+      api.get<{ trackExpiration: boolean; expiryAlertDays: number }>("/api/settings"),
+    ])
+      .then(([itemsData, settings]) => {
+        setItems(itemsData);
+        setTrackExpiration(settings.trackExpiration);
+        setWithinDays(settings.expiryAlertDays ?? 7);
+      })
+      .catch(() => {});
+  }, [pathname]);
+
+  const alerts = trackExpiration
+    ? items
+        .filter((i) => i.expirationDate && daysUntil(i.expirationDate) <= withinDays)
+        .sort((a, b) => daysUntil(a.expirationDate!) - daysUntil(b.expirationDate!))
+    : [];
 
   return (
     <div className="flex min-h-svh w-full flex-col lg:pl-20">
@@ -20,9 +50,12 @@ export function AppLayout() {
           </button>
         }
         right={
-          <button onClick={() => setCartOpen(true)} aria-label={t.nav.openCart} className="text-muted">
-            <CartIcon className="h-6 w-6" />
-          </button>
+          <div className="flex items-center gap-4">
+            <NotificationsBell count={alerts.length} onClick={() => setAlertsOpen(true)} />
+            <button onClick={() => setCartOpen(true)} aria-label={t.nav.openCart} className="text-muted">
+              <CartIcon className="h-6 w-6" />
+            </button>
+          </div>
         }
       />
 
@@ -30,8 +63,20 @@ export function AppLayout() {
         <Outlet context={{ openCart: () => setCartOpen(true) }} />
       </main>
 
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        alertCount={alerts.length}
+        onOpenAlerts={() => setAlertsOpen(true)}
+      />
       <ShoppingCartModal open={cartOpen} onClose={() => setCartOpen(false)} />
+      <NotificationsPanel
+        open={alertsOpen}
+        onClose={() => setAlertsOpen(false)}
+        items={alerts}
+        trackExpiration={trackExpiration}
+        withinDays={withinDays}
+      />
     </div>
   );
 }

@@ -13,12 +13,17 @@ import type { Dict } from "./i18n";
 
 // Returns a translated expiration label, or null when the item isn't
 // close enough to expiry to warn about. Takes the dictionary so the
-// wording follows the selected language.
-export function getExpirationWarning(t: Dict, expirationDate?: string): string | null {
+// wording follows the selected language, and a threshold (days before
+// expiry) so the user's alert window drives who gets flagged.
+export function getExpirationWarning(
+  t: Dict,
+  expirationDate?: string,
+  withinDays = 7,
+): string | null {
   if (!expirationDate) return null;
   const days = daysUntil(expirationDate);
   if (days < 0) return t.expiration.expired;
   if (days === 0) return t.expiration.today;
-  if (days <= 7) return t.expiration.inDays(days);
+  if (days <= withinDays) return t.expiration.inDays(days);
   return null;
 }

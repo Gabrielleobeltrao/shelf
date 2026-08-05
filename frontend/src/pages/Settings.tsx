@@ -5,7 +5,7 @@ import { api } from "../lib/api";
 import { Switch } from "../components/ui/Switch";
 import { NutritionFieldsModal } from "../components/settings/NutritionFieldsModal";
 import { LanguageSelect } from "../components/ui/LanguageSelect";
-import { TrashIcon } from "../components/icons";
+import { MinusIcon, PlusIcon, TrashIcon } from "../components/icons";
 import { useI18n } from "../lib/i18n";
 
 export function Settings() {
@@ -15,6 +15,7 @@ export function Settings() {
 
   const [settings, setSettings] = useState({
     trackExpiration: false,
+    expiryAlertDays: 7,
     trackNutrition: false,
     nutritionFields: [] as string[],
     trackGlutenFree: false,
@@ -29,6 +30,12 @@ export function Settings() {
   async function handleToggle(key: "trackExpiration" | "trackGlutenFree" | "trackVegan", value: boolean) {
     setSettings((prev) => ({ ...prev, [key]: value }));
     await api.patch("/api/settings", { [key]: value });
+  }
+
+  async function handleSetDays(days: number) {
+    const clamped = Math.max(1, Math.min(30, days));
+    setSettings((prev) => ({ ...prev, expiryAlertDays: clamped }));
+    await api.patch("/api/settings", { expiryAlertDays: clamped });
   }
 
   async function handleToggleNutrition(value: boolean) {
@@ -86,12 +93,45 @@ export function Settings() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
       <div className="space-y-4 rounded-2xl bg-surface-2 p-4">
         <h2 className="text-sm font-medium text-muted">{t.settings.preferences}</h2>
-        <Switch
-          checked={settings.trackExpiration}
-          onChange={(value) => handleToggle("trackExpiration", value)}
-          label={t.settings.expirationLabel}
-          description={t.settings.expirationDesc}
-        />
+        <div>
+          <Switch
+            checked={settings.trackExpiration}
+            onChange={(value) => handleToggle("trackExpiration", value)}
+            label={t.settings.expirationLabel}
+            description={t.settings.expirationDesc}
+          />
+          {settings.trackExpiration && (
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-medium">{t.settings.expiryDaysLabel}</p>
+                <p className="text-xs text-muted">{t.settings.expiryDaysDesc}</p>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleSetDays(settings.expiryAlertDays - 1)}
+                  disabled={settings.expiryAlertDays <= 1}
+                  aria-label={t.common.remove}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface disabled:opacity-40"
+                >
+                  <MinusIcon className="h-3.5 w-3.5" />
+                </button>
+                <span className="min-w-16 text-center text-sm tabular-nums">
+                  {t.settings.days(settings.expiryAlertDays)}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleSetDays(settings.expiryAlertDays + 1)}
+                  disabled={settings.expiryAlertDays >= 30}
+                  aria-label={t.common.add}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface disabled:opacity-40"
+                >
+                  <PlusIcon className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
         <div>
           <Switch
             checked={settings.trackNutrition}

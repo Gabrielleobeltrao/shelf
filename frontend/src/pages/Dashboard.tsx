@@ -17,23 +17,25 @@ export function Dashboard() {
   const { t } = useI18n();
   const [items, setItems] = useState<Item[]>([]);
   const [trackExpiration, setTrackExpiration] = useState(false);
+  const [withinDays, setWithinDays] = useState(7);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
       api.get<Item[]>("/api/items"),
-      api.get<{ trackExpiration: boolean }>("/api/settings"),
+      api.get<{ trackExpiration: boolean; expiryAlertDays: number }>("/api/settings"),
     ])
       .then(([itemsData, settings]) => {
         setItems(itemsData);
         setTrackExpiration(settings.trackExpiration);
+        setWithinDays(settings.expiryAlertDays ?? 7);
       })
       .finally(() => setLoading(false));
   }, []);
 
   const expiringSoon = items
     .filter((item) => item.expirationDate)
-    .filter((item) => daysUntil(item.expirationDate!) <= 7)
+    .filter((item) => daysUntil(item.expirationDate!) <= withinDays)
     .sort((a, b) => daysUntil(a.expirationDate!) - daysUntil(b.expirationDate!));
 
   return (
@@ -69,7 +71,7 @@ export function Dashboard() {
                   {item.brand && <p className="truncate text-xs text-muted">{item.brand}</p>}
                 </div>
                 <span className="shrink-0 rounded-full bg-rust-100 px-2 py-0.5 text-xs font-medium text-rust-700 dark:bg-rust-900/40 dark:text-rust-400">
-                  {getExpirationWarning(t, item.expirationDate)}
+                  {getExpirationWarning(t, item.expirationDate, withinDays)}
                 </span>
               </li>
             ))}

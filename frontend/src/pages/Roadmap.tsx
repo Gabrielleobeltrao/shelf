@@ -1,5 +1,5 @@
 import { useEffect, useState, type ComponentType } from "react";
-import { BarcodeIcon, CameraIcon, CartIcon, CheckIcon, CookedIcon, ExploreIcon, MenuIcon, StarIcon } from "../components/icons";
+import { BarcodeIcon, BellIcon, CameraIcon, CartIcon, CheckIcon, CookedIcon, ExploreIcon, MenuIcon, StarIcon } from "../components/icons";
 import { Header } from "../components/layout/Header";
 import { Sidebar } from "../components/layout/Sidebar";
 import { Footer } from "../components/layout/Footer";
@@ -178,15 +178,6 @@ function SwapIcon({ className }: IconProps) {
   );
 }
 
-function BellIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" className={className}>
-      <path d="M6 8.5a4 4 0 0 1 8 0c0 3.5 1.3 4.8 1.3 4.8H4.7S6 12 6 8.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-      <path d="M8.5 15.5a1.6 1.6 0 0 0 3 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
 function FridgeIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 20 20" fill="none" className={className}>
@@ -246,7 +237,7 @@ const TINTS = [
 // Done icons run parallel to t.roadmap.done (same order, both languages).
 const DONE_ICONS: ComponentType<IconProps>[] = [
   BarcodeIcon, CalendarIcon, HeartIcon, LeafIcon, CartIcon,
-  BookIcon, ShareIcon, StarIcon, ExploreIcon, GridIcon, GlobeIcon, FolderIcon, FridgeIcon, ScaleIcon, FlameIcon,
+  BookIcon, ShareIcon, StarIcon, ExploreIcon, GridIcon, GlobeIcon, FolderIcon, FridgeIcon, ScaleIcon, FlameIcon, BellIcon,
 ];
 
 // Planned icons are keyed by feature id so they stay put as votes reorder.
@@ -261,7 +252,6 @@ const PLANNED_ICON: Record<string, ComponentType<IconProps>> = {
   cuisines: GlobeIcon,
   substitutions: SwapIcon,
   "meal-planner": CalendarIcon,
-  "expiry-alerts": BellIcon,
   "waste-savings": LeafIcon,
   "smart-list": CartIcon,
   "recipe-import": LinkIcon,

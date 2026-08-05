@@ -4,6 +4,7 @@ const settingsSchema = new Schema(
   {
     userId: { type: String, required: true, unique: true },
     trackExpiration: { type: Boolean, default: false },
+    expiryAlertDays: { type: Number, default: 7 },
     trackNutrition: { type: Boolean, default: false },
     nutritionFields: { type: [String], default: [] },
     trackGlutenFree: { type: Boolean, default: false },

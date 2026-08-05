@@ -9,6 +9,7 @@ router.use(requireAuth);
 function serialize(settings: InstanceType<typeof Settings> | null) {
   return {
     trackExpiration: settings?.trackExpiration ?? false,
+    expiryAlertDays: settings?.expiryAlertDays ?? 7,
     trackNutrition: settings?.trackNutrition ?? false,
     nutritionFields: settings?.nutritionFields ?? [],
     trackGlutenFree: settings?.trackGlutenFree ?? false,
@@ -22,11 +23,26 @@ router.get("/", async (req, res) => {
 });
 
 router.patch("/", async (req, res) => {
-  const { trackExpiration, trackNutrition, nutritionFields, trackGlutenFree, trackVegan } =
-    req.body;
+  const {
+    trackExpiration,
+    expiryAlertDays,
+    trackNutrition,
+    nutritionFields,
+    trackGlutenFree,
+    trackVegan,
+  } = req.body;
   const settings = await Settings.findOneAndUpdate(
     { userId: req.userId },
-    { $set: { trackExpiration, trackNutrition, nutritionFields, trackGlutenFree, trackVegan } },
+    {
+      $set: {
+        trackExpiration,
+        expiryAlertDays,
+        trackNutrition,
+        nutritionFields,
+        trackGlutenFree,
+        trackVegan,
+      },
+    },
     { new: true, upsert: true, omitUndefined: true },
   );
   res.json(serialize(settings));

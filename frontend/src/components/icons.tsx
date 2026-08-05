@@ -46,6 +46,20 @@ export function CartIcon({ className }: IconProps) {
   );
 }
 
+export function BellIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path
+        d="M6 8.5a4 4 0 0 1 8 0c0 3.5 1.3 4.8 1.3 4.8H4.7S6 12 6 8.5Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path d="M8.5 15.5a1.6 1.6 0 0 0 3 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function PlusIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 16 16" fill="none" className={className}>
