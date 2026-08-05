@@ -313,6 +313,8 @@ export const en: Dict = {
     disabledSuffix: "to get alerts.",
     addToList: "Restock",
     inList: "In list",
+    clearAll: "Clear all",
+    dismissAria: (name: string) => `Dismiss ${name}`,
   },
   settings: {
     title: "Settings",

@@ -32,6 +32,15 @@ export function Header({ left, right }: Props) {
   const [withinDays, setWithinDays] = useState(7);
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  // Dismissed alerts (per device), keyed by item + its expiration date so a
+  // re-expiring item (date changed) surfaces again.
+  const [dismissed, setDismissed] = useState<Set<string>>(() => {
+    try {
+      return new Set<string>(JSON.parse(localStorage.getItem("shelf.dismissedAlerts") ?? "[]"));
+    } catch {
+      return new Set();
+    }
+  });
 
   // Refetch on navigation so the badge reflects item edits, purchases and
   // threshold changes without a full reload.
@@ -58,9 +67,27 @@ export function Header({ left, right }: Props) {
         .sort((a, b) => daysUntil(a.expirationDate!) - daysUntil(b.expirationDate!))
     : [];
 
+  const alertKey = (i: AlertItem) => `${i._id}:${i.expirationDate}`;
+  const visibleAlerts = alerts.filter((a) => !dismissed.has(alertKey(a)));
+
+  // Persist, pruning stale keys (items no longer alerting) so it stays bounded.
+  function persistDismissed(next: Set<string>) {
+    const alertKeys = new Set(alerts.map(alertKey));
+    const pruned = new Set([...next].filter((k) => alertKeys.has(k)));
+    try {
+      localStorage.setItem("shelf.dismissedAlerts", JSON.stringify([...pruned]));
+    } catch {
+      // ignore storage failures
+    }
+    setDismissed(pruned);
+  }
+  const dismissAlert = (i: AlertItem) => persistDismissed(new Set(dismissed).add(alertKey(i)));
+  const clearAlerts = () =>
+    persistDismissed(new Set([...dismissed, ...visibleAlerts.map(alertKey)]));
+
   const actions = loggedIn && (
     <>
-      <NotificationsBell count={alerts.length} onClick={() => setAlertsOpen(true)} />
+      <NotificationsBell count={visibleAlerts.length} onClick={() => setAlertsOpen(true)} />
       <button onClick={() => setCartOpen(true)} aria-label={t.nav.openCart} className="text-muted">
         <CartIcon className="h-6 w-6" />
       </button>
@@ -99,9 +126,11 @@ export function Header({ left, right }: Props) {
           <NotificationsPanel
             open={alertsOpen}
             onClose={() => setAlertsOpen(false)}
-            items={alerts}
+            items={visibleAlerts}
             trackExpiration={trackExpiration}
             withinDays={withinDays}
+            onDismiss={dismissAlert}
+            onClearAll={clearAlerts}
           />
           <ShoppingCartModal open={cartOpen} onClose={() => setCartOpen(false)} />
         </>

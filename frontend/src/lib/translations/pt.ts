@@ -311,6 +311,8 @@ export const pt = {
     disabledSuffix: "pra receber avisos.",
     addToList: "Repor",
     inList: "Na lista",
+    clearAll: "Limpar tudo",
+    dismissAria: (name: string) => `Dispensar ${name}`,
   },
   settings: {
     title: "Configurações",

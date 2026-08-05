@@ -23,9 +23,19 @@ type Props = {
   items: AlertItem[];
   trackExpiration: boolean;
   withinDays: number;
+  onDismiss: (item: AlertItem) => void;
+  onClearAll: () => void;
 };
 
-export function NotificationsPanel({ open, onClose, items, trackExpiration, withinDays }: Props) {
+export function NotificationsPanel({
+  open,
+  onClose,
+  items,
+  trackExpiration,
+  withinDays,
+  onDismiss,
+  onClearAll,
+}: Props) {
   const { t } = useI18n();
   // Items already on the shopping list (by sourceItemId) shouldn't offer
   // "restock" again — we mark them as already listed instead.
@@ -96,6 +106,13 @@ export function NotificationsPanel({ open, onClose, items, trackExpiration, with
             {t.notifications.addToList}
           </button>
         )}
+        <button
+          onClick={() => onDismiss(item)}
+          aria-label={t.notifications.dismissAria(item.name)}
+          className="shrink-0 text-muted"
+        >
+          <CloseIcon className="h-4 w-4" />
+        </button>
       </li>
     );
   }
@@ -107,9 +124,16 @@ export function NotificationsPanel({ open, onClose, items, trackExpiration, with
       <aside className="relative flex h-full w-80 max-w-[85vw] flex-col bg-surface p-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t.notifications.title}</h2>
-          <button onClick={onClose} aria-label={t.common.close} className="text-muted">
-            <CloseIcon className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-3">
+            {trackExpiration && items.length > 0 && (
+              <button onClick={onClearAll} className="text-xs font-medium text-primary-600">
+                {t.notifications.clearAll}
+              </button>
+            )}
+            <button onClick={onClose} aria-label={t.common.close} className="text-muted">
+              <CloseIcon className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         <div className="mt-4 flex-1 overflow-y-auto">
