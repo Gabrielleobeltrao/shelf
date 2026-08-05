@@ -92,8 +92,6 @@ export const en: Dict = {
     Despensa: "Pantry",
     Geladeira: "Fridge",
     Freezer: "Freezer",
-    Armário: "Cupboard",
-    Outros: "Other",
   } as Record<string, string>,
   itemForm: {
     newItem: "New item",

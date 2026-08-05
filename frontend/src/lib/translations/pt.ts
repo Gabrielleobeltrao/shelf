@@ -90,8 +90,6 @@ export const pt = {
     Despensa: "Despensa",
     Geladeira: "Geladeira",
     Freezer: "Freezer",
-    Armário: "Armário",
-    Outros: "Outros",
   } as Record<string, string>,
   itemForm: {
     newItem: "Novo item",
