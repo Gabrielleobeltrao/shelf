@@ -49,21 +49,52 @@ function formatCommentDate(iso: string, locale: string) {
   return date.toLocaleDateString(locale, { day: "2-digit", month: "short", year: "numeric" });
 }
 
-// Countable units can't be fractional (no ⅛ of an egg), so they round to a
-// whole number. Everything else (weights/volumes) rounds to a clean amount.
+// Scaled amounts round by the kind of unit:
+//  - countable (un/egg): whole numbers — no ⅛ of an egg;
+//  - metric weight/volume (g/ml/kg/L): clean decimals;
+//  - cooking measures (cup/spoon, and anything else): fractions like 1½.
 const COUNT_UNITS = new Set(["un", "und", "unid", "unidade", "unidades"]);
+const METRIC_UNITS = new Set([
+  "g", "grama", "gramas", "kg", "quilo", "quilos", "mg",
+  "ml", "l", "litro", "litros", "cl", "oz", "lb",
+]);
+const FRACTIONS: [number, string][] = [
+  [0, ""],
+  [1 / 4, "¼"],
+  [1 / 3, "⅓"],
+  [1 / 2, "½"],
+  [2 / 3, "⅔"],
+  [3 / 4, "¾"],
+  [1, ""],
+];
+
+function formatFraction(n: number): string {
+  let whole = Math.floor(n);
+  const frac = n - whole;
+  let label = "";
+  let best = Infinity;
+  for (const [value, glyph] of FRACTIONS) {
+    const dist = Math.abs(frac - value);
+    if (dist < best) {
+      best = dist;
+      if (value === 1) {
+        whole += 1;
+        label = "";
+      } else {
+        label = glyph;
+      }
+    }
+  }
+  if (label === "") return whole === 0 ? String(Math.round(n * 100) / 100) : String(whole);
+  return whole === 0 ? label : `${whole} ${label}`;
+}
 
 function formatQuantity(n: number, unit: string): string {
   if (!isFinite(n) || n <= 0) return "0";
-
   const u = unit.trim().toLowerCase();
-  if (u === "" || COUNT_UNITS.has(u)) {
-    return String(Math.max(1, Math.round(n)));
-  }
-
-  // Big amounts as whole numbers; smaller ones snapped to quarters.
-  const rounded = n >= 10 ? Math.round(n) : Math.round(n * 4) / 4;
-  return String(rounded);
+  if (u === "" || COUNT_UNITS.has(u)) return String(Math.max(1, Math.round(n)));
+  if (METRIC_UNITS.has(u)) return String(n >= 10 ? Math.round(n) : Math.round(n * 4) / 4);
+  return formatFraction(n);
 }
 
 async function apiCall(path: string, options?: RequestInit) {
