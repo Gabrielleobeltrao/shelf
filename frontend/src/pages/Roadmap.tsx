@@ -178,6 +178,50 @@ function SwapIcon({ className }: IconProps) {
   );
 }
 
+function BellIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path d="M6 8.5a4 4 0 0 1 8 0c0 3.5 1.3 4.8 1.3 4.8H4.7S6 12 6 8.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M8.5 15.5a1.6 1.6 0 0 0 3 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function FridgeIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <rect x="5" y="3" width="10" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M5 9h10M7.5 5.5v1.5M7.5 11v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function LinkIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path d="M8.5 11.5l3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M7.5 9.5L6 11a2.5 2.5 0 0 0 3.5 3.5L11 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M12.5 10.5L14 9a2.5 2.5 0 0 0-3.5-3.5L9 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function DownloadIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path d="M10 4v8M6.5 9L10 12.5 13.5 9M5 15.5h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function ScaleIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path d="M6 5v10M3 8l3-3 3 3M14 15V5M11 12l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function SparkleIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 20 20" fill="none" className={className}>
@@ -217,6 +261,14 @@ const PLANNED_ICON: Record<string, ComponentType<IconProps>> = {
   creators: StarIcon,
   cuisines: GlobeIcon,
   substitutions: SwapIcon,
+  "meal-planner": CalendarIcon,
+  "expiry-alerts": BellIcon,
+  "waste-savings": LeafIcon,
+  locations: FridgeIcon,
+  "smart-list": CartIcon,
+  "recipe-import": LinkIcon,
+  "scale-servings": ScaleIcon,
+  offline: DownloadIcon,
   assistant: SparkleIcon,
   "photo-recognition": CameraIcon,
 };
