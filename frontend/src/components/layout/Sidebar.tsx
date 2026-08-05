@@ -122,8 +122,8 @@ function SidebarBody({
 }) {
   const { data: session } = useSession();
   const { t, lang } = useI18n();
-  const [recipesOpen, setRecipesOpen] = useState(true);
-  const [stockOpen, setStockOpen] = useState(true);
+  const [recipesOpen, setRecipesOpen] = useState(false);
+  const [stockOpen, setStockOpen] = useState(false);
 
   const routerLocation = useLocation();
   const onStock = routerLocation.pathname === "/estoque";
