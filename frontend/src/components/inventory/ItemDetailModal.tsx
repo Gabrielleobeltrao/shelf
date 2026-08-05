@@ -7,7 +7,7 @@ import { Switch } from "../ui/Switch";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 import { useI18n } from "../../lib/i18n";
-import { locationLabel } from "../../lib/labels";
+import { categoryLabel, locationLabel } from "../../lib/labels";
 
 export type ItemFormData = {
   name: string;
@@ -160,18 +160,21 @@ export function ItemDetailModal({
 
         <div>
           <FieldLabel>{t.itemForm.category}</FieldLabel>
-          <input
-            type="text"
-            list="category-suggestions"
+          <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             className={inputClass}
-          />
-          <datalist id="category-suggestions">
-            {CATEGORY_OPTIONS.map((c) => (
-              <option key={c} value={c} />
+          >
+            <option value="">—</option>
+            {(category && !CATEGORY_OPTIONS.includes(category)
+              ? [category, ...CATEGORY_OPTIONS]
+              : CATEGORY_OPTIONS
+            ).map((c) => (
+              <option key={c} value={c}>
+                {categoryLabel(t, c)}
+              </option>
             ))}
-          </datalist>
+          </select>
         </div>
 
         <div>

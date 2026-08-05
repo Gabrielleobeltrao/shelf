@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NUTRITION_OPTIONS } from "../../lib/nutrition";
 import { useI18n } from "../../lib/i18n";
-import { categoryLabel, locationLabel } from "../../lib/labels";
+import { categoryLabel, locationLabel, unitLabel } from "../../lib/labels";
 import { BackIcon, CartIcon, MinusIcon, PencilIcon, PlusIcon, TrashIcon } from "../icons";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
@@ -136,7 +136,7 @@ export function ItemViewModal({
             <MinusIcon className="h-4 w-4" />
           </button>
           <span className="min-w-20 text-center text-xl font-semibold tabular-nums">
-            {item.quantity} {item.unit}
+            {item.quantity} {unitLabel(t, item.unit)}
           </span>
           <button
             onClick={() => onStep(1)}

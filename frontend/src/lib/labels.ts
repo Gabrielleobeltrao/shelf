@@ -17,3 +17,8 @@ export function locationLabel(t: Dict, location?: string | null): string {
   if (!location) return "";
   return t.locations[location] ?? location;
 }
+
+export function unitLabel(t: Dict, unit?: string | null): string {
+  if (!unit) return "";
+  return t.units.labels[unit] ?? unit;
+}

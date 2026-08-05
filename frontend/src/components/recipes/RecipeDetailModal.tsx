@@ -9,7 +9,7 @@ import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 import { Switch } from "../ui/Switch";
 import { RECIPE_TAGS } from "../../lib/recipeTags";
 import { useI18n } from "../../lib/i18n";
-import { tagLabel } from "../../lib/labels";
+import { tagLabel, unitLabel } from "../../lib/labels";
 
 function FieldLabel({ children }: { children: string }) {
   return <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted">{children}</label>;
@@ -318,7 +318,7 @@ export function RecipeDetailModal({
               >
                 {[...new Set([row.unit, ...UNIT_SUGGESTIONS])].filter(Boolean).map((u) => (
                   <option key={u} value={u}>
-                    {u}
+                    {unitLabel(t, u)}
                   </option>
                 ))}
               </select>

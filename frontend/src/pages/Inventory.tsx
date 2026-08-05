@@ -6,7 +6,7 @@ import type { ProductSearchResult } from "../lib/openFoodFacts";
 import { getExpirationWarning, isExpired } from "../lib/expiration";
 import { BarcodeIcon, CartIcon, MinusIcon, PlusIcon, SearchIcon } from "../components/icons";
 import { getCategoryIcon } from "../lib/categoryIcon";
-import { categoryLabel, locationLabel } from "../lib/labels";
+import { categoryLabel, locationLabel, unitLabel } from "../lib/labels";
 import { EmptyState } from "../components/ui/EmptyState";
 import { Fab } from "../components/ui/Fab";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
@@ -465,7 +465,7 @@ export function Inventory() {
                             <MinusIcon className="h-3.5 w-3.5" />
                           </button>
                           <span className="min-w-14 whitespace-nowrap text-center text-sm font-medium">
-                            {item.quantity} {item.unit}
+                            {item.quantity} {unitLabel(t, item.unit)}
                           </span>
                           <button
                             onClick={() => handleStep(item, 1)}

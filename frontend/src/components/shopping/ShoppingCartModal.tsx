@@ -5,6 +5,7 @@ import { EmptyState } from "../ui/EmptyState";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 import { EmptyShelfIllustration } from "../illustrations";
 import { useI18n } from "../../lib/i18n";
+import { unitLabel } from "../../lib/labels";
 
 type ShoppingListEntry = {
   _id: string;
@@ -179,7 +180,7 @@ export function ShoppingCartModal({ open, onClose }: Props) {
                         <MinusIcon className="h-3 w-3" />
                       </button>
                       <span className="min-w-14 whitespace-nowrap text-center text-sm text-muted">
-                        {buyQuantities[entry._id] ?? 0} {entry.unit}
+                        {buyQuantities[entry._id] ?? 0} {unitLabel(t, entry.unit)}
                       </span>
                       <button
                         onClick={() => adjustBuyQuantity(entry._id, 1)}

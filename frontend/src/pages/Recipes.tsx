@@ -10,7 +10,7 @@ import { EmptyState } from "../components/ui/EmptyState";
 import { FabMenu } from "../components/ui/FabMenu";
 import { AddToCollectionMenu } from "../components/recipes/AddToCollectionMenu";
 import { useI18n } from "../lib/i18n";
-import { tagLabel } from "../lib/labels";
+import { tagLabel, unitLabel } from "../lib/labels";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 
@@ -424,7 +424,7 @@ export function Recipes() {
                               : "text-muted"
                           }
                         >
-                          {row.quantity} {row.unit} de {row.name || t.recipes.removedItem}
+                          {row.quantity} {unitLabel(t, row.unit)} {t.units.of} {row.name || t.recipes.removedItem}
                         </li>
                       ))}
                     </ul>

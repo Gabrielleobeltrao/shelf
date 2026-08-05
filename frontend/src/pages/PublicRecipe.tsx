@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { API_URL } from "../lib/api";
 import { useI18n } from "../lib/i18n";
-import { tagLabel } from "../lib/labels";
+import { tagLabel, unitLabel } from "../lib/labels";
 import { BackIcon, BookmarkIcon, ChatIcon, CheckIcon, CookedIcon, MenuIcon, MinusIcon, PencilIcon, PlusIcon, StarIcon } from "../components/icons";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 import { EmptyState } from "../components/ui/EmptyState";
@@ -345,7 +345,7 @@ export function PublicRecipe() {
                 <ul className="space-y-0.5 text-sm">
                   {data.recipe.ingredients.map((row, index) => (
                     <li key={index} className="text-muted">
-                      {formatQuantity(row.quantity * scale, row.unit)} {row.unit} de {row.name || t.publicRecipe.removedItem}
+                      {formatQuantity(row.quantity * scale, row.unit)} {unitLabel(t, row.unit)} {t.units.of} {row.name || t.publicRecipe.removedItem}
                     </li>
                   ))}
                 </ul>
