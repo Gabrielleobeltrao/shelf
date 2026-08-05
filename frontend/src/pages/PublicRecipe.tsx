@@ -4,6 +4,7 @@ import { API_URL } from "../lib/api";
 import { useI18n } from "../lib/i18n";
 import { tagLabel, unitLabel } from "../lib/labels";
 import { hasEnoughStock } from "../lib/units";
+import { normalizeName } from "../lib/text";
 import { BackIcon, BookmarkIcon, CartIcon, ChatIcon, CheckIcon, CookedIcon, MenuIcon, MinusIcon, PencilIcon, PlusIcon, StarIcon } from "../components/icons";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 import { EmptyState } from "../components/ui/EmptyState";
@@ -103,10 +104,6 @@ function formatQuantity(n: number, unit: string): string {
 
 // Recipes are shared without their owner's itemIds, so "Cozinhar agora"
 // matches ingredients to your pantry by name — accent- and case-insensitive.
-function normalizeName(s: string): string {
-  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
-}
-
 type StockItem = { _id: string; name: string; quantity: number; unit: string };
 
 async function apiCall(path: string, options?: RequestInit) {

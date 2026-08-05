@@ -6,6 +6,7 @@ import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 import { EmptyShelfIllustration } from "../illustrations";
 import { useI18n } from "../../lib/i18n";
 import { unitLabel } from "../../lib/labels";
+import { normalizeName } from "../../lib/text";
 
 type ShoppingListEntry = {
   _id: string;
@@ -18,7 +19,9 @@ type ShoppingListEntry = {
 
 type StockItem = {
   _id: string;
+  name: string;
   quantity: number;
+  unit: string;
 };
 
 type Props = {
@@ -29,7 +32,7 @@ type Props = {
 export function ShoppingCartModal({ open, onClose }: Props) {
   const { t } = useI18n();
   const [entries, setEntries] = useState<ShoppingListEntry[]>([]);
-  const [stockById, setStockById] = useState<Map<string, StockItem>>(new Map());
+  const [stockItems, setStockItems] = useState<StockItem[]>([]);
   const [buyQuantities, setBuyQuantities] = useState<Record<string, number>>({});
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
@@ -46,7 +49,7 @@ export function ShoppingCartModal({ open, onClose }: Props) {
     ])
       .then(([entriesData, itemsData]) => {
         setEntries(entriesData);
-        setStockById(new Map(itemsData.map((item) => [item._id, item])));
+        setStockItems(itemsData);
         setBuyQuantities(Object.fromEntries(entriesData.map((entry) => [entry._id, 1])));
       })
       .finally(() => setLoading(false));
@@ -75,20 +78,46 @@ export function ShoppingCartModal({ open, onClose }: Props) {
 
   // Struck-through entries get their quantity added to stock and leave the
   // list; whatever wasn't struck stays for the next shopping trip.
+  //
+  // A restock entry (from the pantry) carries sourceItemId, so we bump that
+  // item. A brand-new product (e.g. a missing ingredient added from a recipe)
+  // has none: we match it to an existing item by name, or create one. The
+  // local maps are updated as we go so repeated buys of the same product in a
+  // single trip merge instead of piling up duplicates.
   async function handleFinishPurchase() {
     const bought = entries.filter((entry) => checkedIds.has(entry._id));
     if (bought.length === 0) return;
 
     setFinishing(true);
     try {
+      const itemsById = new Map(stockItems.map((item) => [item._id, { ...item }]));
+      const idByName = new Map(stockItems.map((item) => [normalizeName(item.name), item._id]));
+
       for (const entry of bought) {
         const buyQuantity = buyQuantities[entry._id] ?? 0;
-        const stockItem = entry.sourceItemId ? stockById.get(entry.sourceItemId) : undefined;
 
-        if (stockItem && buyQuantity > 0) {
-          await api.patch(`/api/items/${stockItem._id}`, {
-            quantity: stockItem.quantity + buyQuantity,
-          });
+        if (buyQuantity > 0) {
+          const linkedId =
+            entry.sourceItemId && itemsById.has(entry.sourceItemId)
+              ? entry.sourceItemId
+              : idByName.get(normalizeName(entry.name));
+
+          if (linkedId) {
+            const target = itemsById.get(linkedId)!;
+            const newQuantity = target.quantity + buyQuantity;
+            await api.patch(`/api/items/${linkedId}`, { quantity: newQuantity });
+            target.quantity = newQuantity;
+          } else {
+            const created = await api.post<StockItem>("/api/items", {
+              name: entry.name,
+              quantity: buyQuantity,
+              unit: entry.unit,
+              brand: entry.brand,
+              imageUrl: entry.imageUrl,
+            });
+            itemsById.set(created._id, { ...created });
+            idByName.set(normalizeName(entry.name), created._id);
+          }
         }
 
         await api.delete(`/api/shopping-list/${entry._id}`);
