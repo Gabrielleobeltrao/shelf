@@ -272,6 +272,8 @@ export const pt = {
     title: "Lista de compras",
     emptyTitle: "Sua lista está vazia",
     emptyDesc: "Marque itens como 'Comprar' no estoque pra vê-los aqui.",
+    addPlaceholder: "Adicionar produto",
+    addAria: "Adicionar produto à lista",
     finish: "Compra concluída",
     finishCount: (n: number) => `Compra concluída (${n})`,
     updatingStock: "Atualizando estoque...",

@@ -37,6 +37,8 @@ export function ShoppingCartModal({ open, onClose }: Props) {
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [finishing, setFinishing] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -130,6 +132,23 @@ export function ShoppingCartModal({ open, onClose }: Props) {
     }
   }
 
+  // Add a product straight to the list. It has no sourceItemId, so buying it
+  // later creates (or tops up, by name) a pantry item — same as any new buy.
+  async function handleAdd(e: React.FormEvent) {
+    e.preventDefault();
+    const name = newName.trim();
+    if (!name || adding) return;
+    setAdding(true);
+    try {
+      const created = await api.post<ShoppingListEntry>("/api/shopping-list", { name });
+      setEntries((prev) => [created, ...prev]);
+      setBuyQuantities((prev) => ({ ...prev, [created._id]: 1 }));
+      setNewName("");
+    } finally {
+      setAdding(false);
+    }
+  }
+
   const checkedCount = entries.filter((entry) => checkedIds.has(entry._id)).length;
 
   return (
@@ -143,6 +162,25 @@ export function ShoppingCartModal({ open, onClose }: Props) {
             <CloseIcon className="h-4 w-4" />
           </button>
         </div>
+
+        <form onSubmit={handleAdd} className="mt-3 flex gap-2">
+          <input
+            type="text"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            placeholder={t.shoppingList.addPlaceholder}
+            maxLength={80}
+            className="min-w-0 flex-1 rounded-lg bg-surface-2 px-3 py-2 text-sm"
+          />
+          <button
+            type="submit"
+            disabled={adding || !newName.trim()}
+            aria-label={t.shoppingList.addAria}
+            className="flex shrink-0 items-center justify-center rounded-lg bg-primary-600 px-3 text-white disabled:opacity-50"
+          >
+            <PlusIcon className="h-4 w-4" />
+          </button>
+        </form>
 
         <div className="mt-4 flex-1 overflow-y-auto">
           {loading ? (

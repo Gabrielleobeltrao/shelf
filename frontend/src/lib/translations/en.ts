@@ -274,6 +274,8 @@ export const en: Dict = {
     title: "Shopping list",
     emptyTitle: "Your list is empty",
     emptyDesc: "Mark items as 'Buy' in the pantry to see them here.",
+    addPlaceholder: "Add product",
+    addAria: "Add product to the list",
     finish: "Purchase done",
     finishCount: (n: number) => `Purchase done (${n})`,
     updatingStock: "Updating pantry...",
