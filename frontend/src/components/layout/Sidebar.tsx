@@ -238,7 +238,10 @@ function SidebarBody({
 
       {/* Logo pinned at the top of the desktop rail (mark only when collapsed). */}
       {rail && (
-        <Link to="/" className={`flex items-center gap-3 rounded-lg px-3 py-2 ${rowJustify}`}>
+        <Link
+          to={session ? "/dashboard" : "/"}
+          className={`flex items-center gap-3 rounded-lg px-3 py-2 ${rowJustify}`}
+        >
           <ShelfLogo className="h-6 w-6 shrink-0" />
           <span className={`font-display text-lg font-semibold ${label}`}>Shelf</span>
         </Link>
