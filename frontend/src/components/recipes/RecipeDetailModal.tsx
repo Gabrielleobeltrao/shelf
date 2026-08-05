@@ -25,19 +25,7 @@ export type IngredientRow = {
   unit: string;
 };
 
-const UNIT_SUGGESTIONS = [
-  "un",
-  "g",
-  "kg",
-  "ml",
-  "L",
-  "xícara",
-  "colher de sopa",
-  "colher de chá",
-  "pitada",
-  "dente",
-  "fatia",
-];
+const UNIT_SUGGESTIONS = ["un", "g", "ml", "xícara", "colher de sopa", "colher de chá"];
 
 
 export type RecipeFormData = {
