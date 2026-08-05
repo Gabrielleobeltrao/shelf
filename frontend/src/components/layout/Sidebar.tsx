@@ -4,7 +4,7 @@ import { signOut, useSession } from "../../lib/auth-client";
 import { useI18n } from "../../lib/i18n";
 import { locationLabel } from "../../lib/labels";
 import { LOCATION_OPTIONS } from "../../lib/locations";
-import { BellIcon, CloseIcon, LoginIcon, LogoutIcon, ShelfLogo } from "../icons";
+import { CloseIcon, LoginIcon, LogoutIcon, ShelfLogo } from "../icons";
 import { LanguageSelect } from "../ui/LanguageSelect";
 
 type IconProps = { className?: string };
@@ -107,8 +107,6 @@ const publicLinks = [
 type Props = {
   open: boolean;
   onClose: () => void;
-  alertCount?: number;
-  onOpenAlerts?: () => void;
 };
 
 // The sidebar's inner content. Rendered both as the desktop rail and inside
@@ -117,14 +115,10 @@ function SidebarBody({
   variant,
   onNavigate,
   onClose,
-  alertCount = 0,
-  onOpenAlerts,
 }: {
   variant: "rail" | "overlay";
   onNavigate?: () => void;
   onClose?: () => void;
-  alertCount?: number;
-  onOpenAlerts?: () => void;
 }) {
   const { data: session } = useSession();
   const { t, lang } = useI18n();
@@ -231,28 +225,6 @@ function SidebarBody({
         {session ? (
           <>
             {navLink("/dashboard", false, DashboardNavIcon, t.nav.dashboard)}
-
-            {/* Expiration alerts — a button (opens the panel), not a route. */}
-            {onOpenAlerts && (
-              <button
-                type="button"
-                onClick={() => {
-                  onNavigate?.();
-                  onOpenAlerts();
-                }}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-ink ${rowJustify}`}
-              >
-                <span className="relative shrink-0">
-                  <BellIcon className="h-4.5 w-4.5 text-muted" />
-                  {alertCount > 0 && (
-                    <span className="absolute -right-1.5 -top-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-rust-600 px-1 text-[0.55rem] font-semibold leading-none text-white">
-                      {alertCount > 9 ? "9+" : alertCount}
-                    </span>
-                  )}
-                </span>
-                <span className={label}>{t.notifications.title}</span>
-              </button>
-            )}
 
             {/* Pantry: a collapsible section with a subpage per location. */}
             <button
@@ -369,24 +341,18 @@ function SidebarBody({
 
 // Desktop: a collapsed icon rail that expands to full width on hover, laid
 // over the content. Mobile: an overlay drawer opened by the header hamburger.
-export function Sidebar({ open, onClose, alertCount, onOpenAlerts }: Props) {
+export function Sidebar({ open, onClose }: Props) {
   return (
     <>
       <aside className="group fixed inset-y-0 left-0 z-30 hidden w-20 flex-col overflow-hidden border-r border-line bg-surface p-4 transition-[width] duration-200 ease-out hover:w-56 hover:shadow-xl lg:flex">
-        <SidebarBody variant="rail" alertCount={alertCount} onOpenAlerts={onOpenAlerts} />
+        <SidebarBody variant="rail" />
       </aside>
 
       {open && (
         <div className="fixed inset-0 z-40 flex lg:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={onClose} />
           <aside className="relative flex h-full w-52 max-w-[80vw] flex-col bg-surface p-4">
-            <SidebarBody
-              variant="overlay"
-              onNavigate={onClose}
-              onClose={onClose}
-              alertCount={alertCount}
-              onOpenAlerts={onOpenAlerts}
-            />
+            <SidebarBody variant="overlay" onNavigate={onClose} onClose={onClose} />
           </aside>
         </div>
       )}

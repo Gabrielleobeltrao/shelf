@@ -43,6 +43,7 @@ export function AppLayout() {
 
   return (
     <div className="flex min-h-svh w-full flex-col lg:pl-20">
+      {/* Mobile top bar. */}
       <Header
         left={
           <button onClick={() => setSidebarOpen(true)} aria-label={t.nav.openMenu} className="text-muted lg:hidden">
@@ -59,16 +60,16 @@ export function AppLayout() {
         }
       />
 
+      {/* Desktop top bar — notifications live here, not in the sidebar. */}
+      <div className="hidden items-center justify-end border-b border-line px-8 py-3 lg:flex">
+        <NotificationsBell count={alerts.length} onClick={() => setAlertsOpen(true)} />
+      </div>
+
       <main className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 lg:px-8">
         <Outlet context={{ openCart: () => setCartOpen(true) }} />
       </main>
 
-      <Sidebar
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        alertCount={alerts.length}
-        onOpenAlerts={() => setAlertsOpen(true)}
-      />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <ShoppingCartModal open={cartOpen} onClose={() => setCartOpen(false)} />
       <NotificationsPanel
         open={alertsOpen}
