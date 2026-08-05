@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
-import { useOutletContext, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { api } from "../lib/api";
 import { lookupProduct } from "../lib/openFoodFacts";
 import type { ProductSearchResult } from "../lib/openFoodFacts";
@@ -69,7 +69,6 @@ function toFormData(item: Item): Partial<ItemFormData> {
 
 export function Inventory() {
   const { t } = useI18n();
-  const { openCart } = useOutletContext<{ openCart: () => void }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
@@ -298,21 +297,14 @@ export function Inventory() {
     <div className="space-y-4 pb-16">
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold">{t.inventory.title}</h1>
-        {/* Barcode scanning only makes sense with a camera (mobile); on
-            desktop this spot opens the shopping list instead. */}
+        {/* Barcode scanning only makes sense with a camera, so it's mobile-only;
+            the shopping list lives in the header now. */}
         <button
           onClick={() => setScanning(true)}
           aria-label={t.inventory.scan}
           className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-2 text-ink lg:hidden"
         >
           <BarcodeIcon className="h-4 w-4" />
-        </button>
-        <button
-          onClick={openCart}
-          aria-label={t.nav.openCart}
-          className="hidden h-9 w-9 items-center justify-center rounded-lg bg-surface-2 text-ink lg:flex"
-        >
-          <CartIcon className="h-4 w-4" />
         </button>
       </div>
 

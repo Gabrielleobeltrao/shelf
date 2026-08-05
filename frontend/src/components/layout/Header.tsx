@@ -1,11 +1,13 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ShelfLogo } from "../icons";
+import { CartIcon, ShelfLogo } from "../icons";
 import { useSession } from "../../lib/auth-client";
+import { useI18n } from "../../lib/i18n";
 import { api } from "../../lib/api";
 import { daysUntil } from "../../lib/expiration";
 import { NotificationsBell } from "../notifications/NotificationsBell";
 import { NotificationsPanel, type AlertItem } from "../notifications/NotificationsPanel";
+import { ShoppingCartModal } from "../shopping/ShoppingCartModal";
 
 type Props = {
   left?: ReactNode;
@@ -14,10 +16,12 @@ type Props = {
 
 // The app header. On mobile it's the top bar (logo + page actions); on desktop
 // the docked sidebar handles nav, so the header collapses to a thin top strip
-// that only appears when signed in — to hold notifications. Pages inject their
-// own left/right actions; the notifications bell is added here for every page.
+// that only appears when signed in — to hold the global actions (notifications
+// and the shopping list). Pages inject their own left/right; the bell and cart
+// are added here so every signed-in page shows the same header.
 export function Header({ left, right }: Props) {
   const { data: session } = useSession();
+  const { t } = useI18n();
   const loggedIn = !!session;
   const { pathname } = useLocation();
 
@@ -25,6 +29,7 @@ export function Header({ left, right }: Props) {
   const [trackExpiration, setTrackExpiration] = useState(false);
   const [withinDays, setWithinDays] = useState(7);
   const [alertsOpen, setAlertsOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
 
   // Refetch on navigation so the badge reflects item edits, purchases and
   // threshold changes without a full reload.
@@ -51,6 +56,15 @@ export function Header({ left, right }: Props) {
         .sort((a, b) => daysUntil(a.expirationDate!) - daysUntil(b.expirationDate!))
     : [];
 
+  const actions = loggedIn && (
+    <>
+      <NotificationsBell count={alerts.length} onClick={() => setAlertsOpen(true)} />
+      <button onClick={() => setCartOpen(true)} aria-label={t.nav.openCart} className="text-muted">
+        <CartIcon className="h-6 w-6" />
+      </button>
+    </>
+  );
+
   return (
     <>
       {/* Mobile top bar. */}
@@ -63,28 +77,29 @@ export function Header({ left, right }: Props) {
         </Link>
 
         <div className="flex items-center gap-4 justify-self-end">
-          {loggedIn && (
-            <NotificationsBell count={alerts.length} onClick={() => setAlertsOpen(true)} />
-          )}
+          {actions}
           {right}
         </div>
       </header>
 
-      {/* Desktop top strip — only when signed in; notifications live here. */}
+      {/* Desktop top strip — only when signed in; global actions live here. */}
       {loggedIn && (
-        <div className="hidden items-center justify-end border-b border-line bg-surface px-8 py-3 lg:flex">
-          <NotificationsBell count={alerts.length} onClick={() => setAlertsOpen(true)} />
+        <div className="hidden items-center justify-end gap-4 border-b border-line bg-surface px-8 py-3 lg:flex">
+          {actions}
         </div>
       )}
 
       {loggedIn && (
-        <NotificationsPanel
-          open={alertsOpen}
-          onClose={() => setAlertsOpen(false)}
-          items={alerts}
-          trackExpiration={trackExpiration}
-          withinDays={withinDays}
-        />
+        <>
+          <NotificationsPanel
+            open={alertsOpen}
+            onClose={() => setAlertsOpen(false)}
+            items={alerts}
+            trackExpiration={trackExpiration}
+            withinDays={withinDays}
+          />
+          <ShoppingCartModal open={cartOpen} onClose={() => setCartOpen(false)} />
+        </>
       )}
     </>
   );
