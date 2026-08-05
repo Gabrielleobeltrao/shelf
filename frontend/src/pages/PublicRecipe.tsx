@@ -53,9 +53,12 @@ function formatCommentDate(iso: string, locale: string) {
 //  - countable (un/egg): whole numbers — no ⅛ of an egg;
 //  - metric weight/volume (g/ml/kg/L): clean decimals;
 //  - cooking measures (cup/spoon, and anything else): fractions like 1½.
-const COUNT_UNITS = new Set(["un", "und", "unid", "unidade", "unidades"]);
+const COUNT_UNITS = new Set([
+  "un", "und", "unid", "unidade", "unidades",
+  "dente", "dentes", "pitada", "pitadas",
+]);
 const METRIC_UNITS = new Set([
-  "g", "grama", "gramas", "kg", "quilo", "quilos", "mg",
+  "g", "gr", "grs", "grama", "gramas", "kg", "quilo", "quilos", "mg",
   "ml", "l", "litro", "litros", "cl", "oz", "lb",
 ]);
 const FRACTIONS: [number, string][] = [
