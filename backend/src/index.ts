@@ -14,6 +14,7 @@ import publicRecipesRouter from "./routes/public-recipes.routes.js";
 import roadmapRouter from "./routes/roadmap.routes.js";
 import collectionsRouter from "./routes/collections.routes.js";
 import publicCollectionsRouter from "./routes/public-collections.routes.js";
+import householdRouter from "./routes/household.routes.js";
 
 const app = express();
 const PORT = process.env.PORT ?? 4001;
@@ -45,6 +46,7 @@ app.use("/api/public/recipes", publicRecipesRouter);
 app.use("/api/roadmap", roadmapRouter);
 app.use("/api/collections", collectionsRouter);
 app.use("/api/public/collections", publicCollectionsRouter);
+app.use("/api/household", householdRouter);
 
 await connectDB();
 

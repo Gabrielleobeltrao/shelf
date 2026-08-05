@@ -4,6 +4,7 @@ import { deleteUser, updateUser, useSession } from "../lib/auth-client";
 import { api } from "../lib/api";
 import { Switch } from "../components/ui/Switch";
 import { NutritionFieldsModal } from "../components/settings/NutritionFieldsModal";
+import { SharedPantryCard } from "../components/settings/SharedPantryCard";
 import { LanguageSelect } from "../components/ui/LanguageSelect";
 import { MinusIcon, PlusIcon, TrashIcon } from "../components/icons";
 import { useI18n } from "../lib/i18n";
@@ -162,6 +163,8 @@ export function Settings() {
           description={t.settings.veganDesc}
         />
       </div>
+
+      <SharedPantryCard />
 
       <div className="space-y-2 rounded-2xl bg-surface-2 p-4">
         <label className="text-sm font-medium">{t.settings.language}</label>

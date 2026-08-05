@@ -27,11 +27,14 @@ const itemSchema = new Schema(
     },
     glutenFree: { type: Boolean, default: false },
     vegan: { type: Boolean, default: false },
+    // Owning household — items are scoped and shared by this. userId is kept
+    // as attribution for who added the item.
+    householdId: { type: String },
     userId: { type: String, required: true },
   },
   { timestamps: true },
 );
 
-itemSchema.index({ userId: 1, barcode: 1 });
+itemSchema.index({ householdId: 1, barcode: 1 });
 
 export const Item = model("Item", itemSchema);

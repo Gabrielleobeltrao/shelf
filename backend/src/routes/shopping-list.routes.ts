@@ -1,13 +1,17 @@
 import { Router } from "express";
 import { ShoppingListItem } from "../models/ShoppingListItem.js";
 import { requireAuth } from "../middleware/requireAuth.js";
+import { withHousehold } from "../middleware/withHousehold.js";
 
 const router = Router();
 
 router.use(requireAuth);
+router.use(withHousehold);
 
 router.get("/", async (req, res) => {
-  const entries = await ShoppingListItem.find({ userId: req.userId }).sort({ createdAt: -1 });
+  const entries = await ShoppingListItem.find({ householdId: req.householdId }).sort({
+    createdAt: -1,
+  });
   res.json(entries);
 });
 
@@ -19,13 +23,14 @@ router.post("/", async (req, res) => {
     brand,
     imageUrl,
     sourceItemId,
+    householdId: req.householdId,
     userId: req.userId,
   });
   res.status(201).json(entry);
 });
 
 router.delete("/:id", async (req, res) => {
-  await ShoppingListItem.deleteOne({ _id: req.params.id, userId: req.userId });
+  await ShoppingListItem.deleteOne({ _id: req.params.id, householdId: req.householdId });
   res.status(204).end();
 });
 

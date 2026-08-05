@@ -1,13 +1,15 @@
 import { Router } from "express";
 import { Item } from "../models/Item.js";
 import { requireAuth } from "../middleware/requireAuth.js";
+import { withHousehold } from "../middleware/withHousehold.js";
 
 const router = Router();
 
 router.use(requireAuth);
+router.use(withHousehold);
 
 router.get("/", async (req, res) => {
-  const items = await Item.find({ userId: req.userId }).sort({ createdAt: -1 });
+  const items = await Item.find({ householdId: req.householdId }).sort({ createdAt: -1 });
   res.json(items);
 });
 
@@ -41,6 +43,7 @@ router.post("/", async (req, res) => {
     nutrition,
     glutenFree,
     vegan,
+    householdId: req.householdId,
     userId: req.userId,
   });
   res.status(201).json(item);
@@ -63,7 +66,7 @@ router.patch("/:id", async (req, res) => {
     vegan,
   } = req.body;
   const item = await Item.findOneAndUpdate(
-    { _id: req.params.id, userId: req.userId },
+    { _id: req.params.id, householdId: req.householdId },
     {
       $set: {
         name,
@@ -93,7 +96,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
-  await Item.deleteOne({ _id: req.params.id, userId: req.userId });
+  await Item.deleteOne({ _id: req.params.id, householdId: req.householdId });
   res.status(204).end();
 });
 
