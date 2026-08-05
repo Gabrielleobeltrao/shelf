@@ -7,6 +7,8 @@ import { EmptyShelfIllustration } from "../illustrations";
 import { useI18n } from "../../lib/i18n";
 import { unitLabel } from "../../lib/labels";
 import { normalizeName } from "../../lib/text";
+import { ProductSearchModal } from "../inventory/ProductSearchModal";
+import type { ProductSearchResult } from "../../lib/openFoodFacts";
 
 type ShoppingListEntry = {
   _id: string;
@@ -39,8 +41,8 @@ export function ShoppingCartModal({ open, onClose }: Props) {
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [finishing, setFinishing] = useState(false);
-  const [newName, setNewName] = useState("");
   const [adding, setAdding] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -141,46 +143,37 @@ export function ShoppingCartModal({ open, onClose }: Props) {
       const created = await api.post<ShoppingListEntry>("/api/shopping-list", payload);
       setEntries((prev) => [created, ...prev]);
       setBuyQuantities((prev) => ({ ...prev, [created._id]: 1 }));
-      setNewName("");
     } finally {
       setAdding(false);
     }
   }
 
-  // Free typing: a plain product with no sourceItemId, so buying it later
-  // creates (or tops up, by name) a pantry item — same as any new buy.
-  async function handleAdd(e: React.FormEvent) {
-    e.preventDefault();
-    const name = newName.trim();
-    if (name) await addEntry({ name });
-  }
-
-  // Picking a pantry match carries its unit/brand/photo and links back to the
-  // item, so buying it tops that exact item up.
-  function handlePickSuggestion(item: StockItem) {
-    addEntry({
-      name: item.name,
-      unit: item.unit,
-      brand: item.brand,
-      imageUrl: item.imageUrl,
-      sourceItemId: item._id,
+  // A product from the search (Open Food Facts or a pantry match). Local items
+  // link back via sourceItemId so buying tops that exact item up; a database
+  // product has none, so buying creates (or tops up by name) a pantry item.
+  async function handleSelectProduct(product: ProductSearchResult) {
+    setSearchOpen(false);
+    if (!product.name) return;
+    await addEntry({
+      name: product.name,
+      brand: product.brand ?? undefined,
+      imageUrl: product.imageUrl ?? undefined,
+      unit: "un",
+      sourceItemId: product.source === "local" ? product.localItemId : undefined,
     });
   }
 
-  // Suggest pantry items matching what's typed, skipping ones already listed.
-  const query = normalizeName(newName);
-  const listedSourceIds = new Set(
-    entries.map((e) => e.sourceItemId).filter(Boolean) as string[],
-  );
-  const suggestions = query
-    ? stockItems
-        .filter((item) => !listedSourceIds.has(item._id) && normalizeName(item.name).includes(query))
-        .slice(0, 6)
-    : [];
+  // "Add manually" carries whatever was typed as a plain free-text product.
+  async function handleAddManually(query: string) {
+    setSearchOpen(false);
+    const name = query.trim();
+    if (name) await addEntry({ name });
+  }
 
   const checkedCount = entries.filter((entry) => checkedIds.has(entry._id)).length;
 
   return (
+    <>
     <div className="fixed inset-0 z-40 flex justify-end">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
@@ -192,48 +185,15 @@ export function ShoppingCartModal({ open, onClose }: Props) {
           </button>
         </div>
 
-        <div className="relative mt-3">
-          <form onSubmit={handleAdd} className="flex gap-2">
-            <input
-              type="text"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              placeholder={t.shoppingList.addPlaceholder}
-              maxLength={80}
-              className="min-w-0 flex-1 rounded-lg bg-surface-2 px-3 py-2 text-sm"
-            />
-            <button
-              type="submit"
-              disabled={adding || !newName.trim()}
-              aria-label={t.shoppingList.addAria}
-              className="flex shrink-0 items-center justify-center rounded-lg bg-primary-600 px-3 text-white disabled:opacity-50"
-            >
-              <PlusIcon className="h-4 w-4" />
-            </button>
-          </form>
-
-          {suggestions.length > 0 && (
-            <ul className="absolute inset-x-0 top-full z-10 mt-1 max-h-56 overflow-y-auto rounded-lg border border-line bg-surface py-1 shadow-lg">
-              {suggestions.map((item) => (
-                <li key={item._id}>
-                  <button
-                    type="button"
-                    onClick={() => handlePickSuggestion(item)}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-surface-2"
-                  >
-                    <PhotoOrFallback
-                      src={item.imageUrl}
-                      imgClassName="h-7 w-7 shrink-0 rounded object-cover"
-                      fallback={<div className="h-7 w-7 shrink-0 rounded bg-surface-2" />}
-                    />
-                    <span className="min-w-0 flex-1 truncate text-sm">{item.name}</span>
-                    <span className="shrink-0 text-xs text-muted">{unitLabel(t, item.unit)}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <button
+          type="button"
+          onClick={() => setSearchOpen(true)}
+          disabled={adding}
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-primary-600 py-2.5 text-sm font-medium text-primary-600 disabled:opacity-50"
+        >
+          <PlusIcon className="h-4 w-4" />
+          {t.shoppingList.addPlaceholder}
+        </button>
 
         <div className="mt-4 flex-1 overflow-y-auto">
           {loading ? (
@@ -339,5 +299,15 @@ export function ShoppingCartModal({ open, onClose }: Props) {
         )}
       </aside>
     </div>
+
+    {searchOpen && (
+      <ProductSearchModal
+        onSelect={handleSelectProduct}
+        onAddManually={handleAddManually}
+        onClose={() => setSearchOpen(false)}
+        localItems={stockItems}
+      />
+    )}
+    </>
   );
 }

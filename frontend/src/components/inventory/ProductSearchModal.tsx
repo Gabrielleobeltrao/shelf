@@ -19,7 +19,7 @@ export type LocalStockItem = {
 type Props = {
   title?: string;
   onSelect: (product: ProductSearchResult) => void;
-  onAddManually?: () => void;
+  onAddManually?: (query: string) => void;
   onClose: () => void;
   localItems?: LocalStockItem[];
 };
@@ -110,7 +110,7 @@ export function ProductSearchModal({ title, onSelect, onAddManually, onClose, lo
         {onAddManually && (
           <button
             type="button"
-            onClick={onAddManually}
+            onClick={() => onAddManually(query)}
             className="w-full rounded-lg border border-primary-600 py-2.5 font-medium text-primary-600"
           >
             {t.productSearch.addManually}
