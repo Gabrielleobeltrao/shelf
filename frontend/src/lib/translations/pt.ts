@@ -135,6 +135,7 @@ export const pt = {
     notFoundNoManual: "Tente outro nome.",
     inStockSection: "Já no seu estoque",
     searchSection: "Buscar produto",
+    typeToSearch: "Digite o nome do produto pra buscar.",
   },
   barcode: {
     title: "Escanear código de barras",

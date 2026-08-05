@@ -137,6 +137,7 @@ export const en: Dict = {
     notFoundNoManual: "Try another name.",
     inStockSection: "Already in your pantry",
     searchSection: "Search product",
+    typeToSearch: "Type a product name to search.",
   },
   barcode: {
     title: "Scan barcode",

@@ -44,15 +44,23 @@ export function ProductSearchModal({ title, onSelect, onAddManually, onClose, lo
   const [results, setResults] = useState<ProductSearchResult[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(false);
   const [retryToken, setRetryToken] = useState(0);
 
   useEffect(() => {
-    setLoading(true);
-    const delay = query.trim() ? 400 : 0;
+    // Empty query = browsing: skip the network and show the pantry instead of
+    // Open Food Facts' noisy popularity listing (which skews foreign).
+    if (!query.trim()) {
+      setResults([]);
+      setHasMore(false);
+      setError(false);
+      setLoading(false);
+      return;
+    }
 
+    setLoading(true);
     const timeout = setTimeout(() => {
       searchProducts(query, 1).then(({ products, hasMore: more, error: failed }) => {
         setResults(products);
@@ -61,16 +69,16 @@ export function ProductSearchModal({ title, onSelect, onAddManually, onClose, lo
         setError(failed);
         setLoading(false);
       });
-    }, delay);
+    }, 400);
 
     return () => clearTimeout(timeout);
   }, [query, retryToken]);
 
-  // Instant — no need to wait on a network round trip to search what the
-  // user already has. Only kicks in once they've typed something specific
-  // enough to be useful; an empty query would surface the whole pantry.
+  // Instant — no network round trip to search what the user already has.
+  // Browsing (empty query) lists the whole pantry; typing filters it.
   const localMatches = useMemo(() => {
     const term = query.trim().toLowerCase();
+    if (!term) return localItems.map(toSearchResult);
     if (term.length < 2) return [];
 
     return localItems
@@ -92,6 +100,7 @@ export function ProductSearchModal({ title, onSelect, onAddManually, onClose, lo
     setLoadingMore(false);
   }
 
+  const browsing = !query.trim();
   const noResults = localMatches.length === 0 && results.length === 0;
 
   return (
@@ -157,11 +166,15 @@ export function ProductSearchModal({ title, onSelect, onAddManually, onClose, lo
               </button>
             </div>
           ) : noResults ? (
-            <EmptyState
-              illustration={<EmptyShelfIllustration />}
-              title={t.productSearch.notFoundTitle}
-              description={onAddManually ? t.productSearch.notFoundWithManual : t.productSearch.notFoundNoManual}
-            />
+            browsing ? (
+              <p className="text-sm text-muted">{t.productSearch.typeToSearch}</p>
+            ) : (
+              <EmptyState
+                illustration={<EmptyShelfIllustration />}
+                title={t.productSearch.notFoundTitle}
+                description={onAddManually ? t.productSearch.notFoundWithManual : t.productSearch.notFoundNoManual}
+              />
+            )
           ) : (
             <>
               {results.length > 0 && localMatches.length > 0 && (

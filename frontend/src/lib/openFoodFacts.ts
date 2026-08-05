@@ -93,8 +93,12 @@ function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// Open Food Facts is French-heavy unfiltered, so scope the search to where the
+// user shops. Brazil for now; could become a per-user setting later.
+const DEFAULT_COUNTRY = "br";
+
 async function fetchPage(term: string, page: number): Promise<ProductSearchPage> {
-  const params = new URLSearchParams({ page: String(page) });
+  const params = new URLSearchParams({ page: String(page), cc: DEFAULT_COUNTRY });
   if (term) params.set("q", term);
 
   const res = await fetch(`${API_URL}/api/product-search?${params}`, { credentials: "include" });
