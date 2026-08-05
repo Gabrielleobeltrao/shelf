@@ -2,14 +2,35 @@ import { Router } from "express";
 import mongoose from "mongoose";
 import { Household, uniqueInviteCode } from "../models/Household.js";
 import { Settings } from "../models/Settings.js";
+import { HouseholdActivity } from "../models/HouseholdActivity.js";
 import { requireAuth } from "../middleware/requireAuth.js";
 import { resolveHousehold } from "../lib/household.js";
+import { logActivity } from "../lib/householdActivity.js";
+import { addConnection, removeConnection } from "../lib/householdBus.js";
 
 const router = Router();
 
 router.use(requireAuth);
 
 type HouseholdDoc = InstanceType<typeof Household>;
+
+// Resolve display names for a set of user ids from the auth user collection.
+async function userNameMap(userIds: string[]) {
+  const ids = userIds
+    .map((id) => {
+      try {
+        return new mongoose.Types.ObjectId(id);
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean) as mongoose.Types.ObjectId[];
+  const users = await mongoose.connection
+    .collection("user")
+    .find({ _id: { $in: ids } })
+    .toArray();
+  return new Map(users.map((u) => [String(u._id), (u.name as string) || (u.email as string) || "?"]));
+}
 
 // Build the client-facing view of a household, resolving member names/emails
 // from the auth user collection so the UI can show who's in the space.
@@ -53,6 +74,46 @@ async function serialize(household: HouseholdDoc, userId: string, homeId: string
 router.get("/", async (req, res) => {
   const { household, homeHouseholdId } = await resolveHousehold(req.userId!);
   res.json(await serialize(household, req.userId!, homeHouseholdId));
+});
+
+// Live updates (SSE): pushes { type: "items" | "list" } when the active
+// household changes, so clients refetch that slice in real time.
+router.get("/stream", async (req, res) => {
+  const { household } = await resolveHousehold(req.userId!);
+  const householdId = String(household._id);
+
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
+  res.flushHeaders?.();
+  res.write(`data: ${JSON.stringify({ type: "connected" })}\n\n`);
+
+  addConnection(householdId, res);
+  const ping = setInterval(() => res.write(": ping\n\n"), 25000);
+  req.on("close", () => {
+    clearInterval(ping);
+    removeConnection(householdId, res);
+  });
+});
+
+// Change history — most recent first, with actor names resolved.
+router.get("/activity", async (req, res) => {
+  const { household } = await resolveHousehold(req.userId!);
+  const entries = await HouseholdActivity.find({ householdId: String(household._id) })
+    .sort({ createdAt: -1 })
+    .limit(50)
+    .lean();
+  const names = await userNameMap([...new Set(entries.map((e) => e.userId))]);
+  res.json(
+    entries.map((e) => ({
+      id: String(e._id),
+      userName: names.get(e.userId) ?? "?",
+      action: e.action,
+      detail: e.detail ?? null,
+      at: e.createdAt,
+    })),
+  );
 });
 
 // Rename — owner only.
@@ -117,6 +178,8 @@ router.post("/join", async (req, res) => {
     await settings.save();
   }
 
+  logActivity(String(target._id), req.userId, "member_joined");
+
   const fresh = await Household.findById(target._id);
   res.json(await serialize(fresh!, req.userId!, homeHouseholdId));
 });
@@ -129,6 +192,7 @@ router.post("/leave", async (req, res) => {
     return;
   }
 
+  logActivity(String(household._id), req.userId, "member_left");
   await Household.updateOne({ _id: household._id }, { $pull: { members: { userId: req.userId } } });
 
   const settings = await Settings.findOne({ userId: req.userId });
@@ -158,7 +222,9 @@ router.delete("/members/:userId", async (req, res) => {
     return;
   }
 
+  const removedName = (await userNameMap([target])).get(target) ?? "";
   await Household.updateOne({ _id: household._id }, { $pull: { members: { userId: target } } });
+  logActivity(String(household._id), req.userId, "member_removed", removedName);
 
   // The removed user's next request falls back to their home space.
   await Settings.updateOne(

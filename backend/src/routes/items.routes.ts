@@ -2,6 +2,8 @@ import { Router } from "express";
 import { Item } from "../models/Item.js";
 import { requireAuth } from "../middleware/requireAuth.js";
 import { withHousehold } from "../middleware/withHousehold.js";
+import { publish } from "../lib/householdBus.js";
+import { logActivity } from "../lib/householdActivity.js";
 
 const router = Router();
 
@@ -46,6 +48,8 @@ router.post("/", async (req, res) => {
     householdId: req.householdId,
     userId: req.userId,
   });
+  publish(req.householdId, "items");
+  logActivity(req.householdId, req.userId, "item_added", item.name);
   res.status(201).json(item);
 });
 
@@ -92,11 +96,16 @@ router.patch("/:id", async (req, res) => {
     return;
   }
 
+  publish(req.householdId, "items");
   res.json(item);
 });
 
 router.delete("/:id", async (req, res) => {
-  await Item.deleteOne({ _id: req.params.id, householdId: req.householdId });
+  const item = await Item.findOneAndDelete({ _id: req.params.id, householdId: req.householdId });
+  if (item) {
+    publish(req.householdId, "items");
+    logActivity(req.householdId, req.userId, "item_removed", item.name);
+  }
   res.status(204).end();
 });
 

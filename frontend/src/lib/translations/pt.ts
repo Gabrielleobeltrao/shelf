@@ -350,6 +350,14 @@ export const pt = {
     leave: "Sair do estoque compartilhado",
     rename: "Renomear",
     save: "Salvar",
+    activityTitle: "Histórico",
+    activityEmpty: "Nada por aqui ainda.",
+    actItemAdded: (who: string, what: string) => `${who} adicionou ${what}`,
+    actItemRemoved: (who: string, what: string) => `${who} removeu ${what}`,
+    actListAdded: (who: string, what: string) => `${who} colocou ${what} na lista`,
+    actMemberJoined: (who: string) => `${who} entrou`,
+    actMemberLeft: (who: string) => `${who} saiu`,
+    actMemberRemoved: (who: string, what: string) => `${who} removeu ${what}`,
   },
   nutritionModal: {
     title: "Informações nutricionais",
@@ -461,7 +469,7 @@ export const pt = {
       { name: "Ajustar porções", desc: "Escale a receita na página e recalcule os ingredientes." },
       { name: "Cozinhar agora", desc: "Veja o que tem e o que falta pra receita e jogue os faltantes na lista." },
       { name: "Alertas de validade", desc: "Um sino avisa o que vai vencer, no prazo que você escolher." },
-      { name: "Estoque compartilhado", desc: "Divida o mesmo estoque e lista com a casa por convite — cada um com seu espaço pessoal." },
+      { name: "Estoque compartilhado", desc: "Divida o mesmo estoque e lista com a casa por convite — em tempo real, com histórico e espaço pessoal." },
     ],
     planned: [
       {

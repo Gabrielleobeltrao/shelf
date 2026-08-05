@@ -352,6 +352,14 @@ export const en: Dict = {
     leave: "Leave shared pantry",
     rename: "Rename",
     save: "Save",
+    activityTitle: "History",
+    activityEmpty: "Nothing here yet.",
+    actItemAdded: (who: string, what: string) => `${who} added ${what}`,
+    actItemRemoved: (who: string, what: string) => `${who} removed ${what}`,
+    actListAdded: (who: string, what: string) => `${who} put ${what} on the list`,
+    actMemberJoined: (who: string) => `${who} joined`,
+    actMemberLeft: (who: string) => `${who} left`,
+    actMemberRemoved: (who: string, what: string) => `${who} removed ${what}`,
   },
   nutritionModal: {
     title: "Nutrition facts",
@@ -463,7 +471,7 @@ export const en: Dict = {
       { name: "Scale servings", desc: "Scale a recipe on its page and recompute the ingredients." },
       { name: "Cook now", desc: "See what you have and what's missing for a recipe and add the gaps to your list." },
       { name: "Expiration alerts", desc: "A bell flags what's about to expire, on the lead time you choose." },
-      { name: "Shared pantry", desc: "Share the same pantry and list with your household by invite — everyone keeps a personal space." },
+      { name: "Shared pantry", desc: "Share the same pantry and list with your household by invite — in real time, with history and a personal space." },
     ],
     planned: [
       {

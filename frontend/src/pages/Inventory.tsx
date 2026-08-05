@@ -4,6 +4,7 @@ import { api } from "../lib/api";
 import { lookupProduct } from "../lib/openFoodFacts";
 import type { ProductSearchResult } from "../lib/openFoodFacts";
 import { getExpirationWarning, isExpired } from "../lib/expiration";
+import { useHouseholdSync, useSyncEffect } from "../lib/householdSync";
 import { BarcodeIcon, CartIcon, MinusIcon, PlusIcon, SearchIcon } from "../components/icons";
 import { getCategoryIcon } from "../lib/categoryIcon";
 import { categoryLabel, locationLabel, unitLabel } from "../lib/labels";
@@ -89,6 +90,14 @@ export function Inventory() {
   });
   const [shoppingListMap, setShoppingListMap] = useState<Map<string, string>>(new Map());
 
+  function loadShoppingMap(shoppingList: ShoppingListEntry[]) {
+    setShoppingListMap(
+      new Map(
+        shoppingList.filter((entry) => entry.sourceItemId).map((entry) => [entry.sourceItemId!, entry._id]),
+      ),
+    );
+  }
+
   useEffect(() => {
     Promise.all([
       api.get<Item[]>("/api/items"),
@@ -98,16 +107,20 @@ export function Inventory() {
       .then(([itemsData, settingsData, shoppingList]) => {
         setItems(itemsData);
         setSettingsState(settingsData);
-        setShoppingListMap(
-          new Map(
-            shoppingList
-              .filter((entry) => entry.sourceItemId)
-              .map((entry) => [entry.sourceItemId!, entry._id]),
-          ),
-        );
+        loadShoppingMap(shoppingList);
       })
       .finally(() => setLoading(false));
   }, []);
+
+  // Live sync: a housemate's change bumps a revision — refetch that slice
+  // silently (no loading flash) so the list stays current.
+  const { itemsRev, listRev } = useHouseholdSync();
+  useSyncEffect(itemsRev, () => {
+    api.get<Item[]>("/api/items").then(setItems).catch(() => {});
+  });
+  useSyncEffect(listRev, () => {
+    api.get<ShoppingListEntry[]>("/api/shopping-list").then(loadShoppingMap).catch(() => {});
+  });
 
   // The sidebar's per-location subpages drive the filter via ?local=…
   useEffect(() => {

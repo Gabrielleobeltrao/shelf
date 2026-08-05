@@ -5,6 +5,7 @@ import { useSession } from "../../lib/auth-client";
 import { useI18n } from "../../lib/i18n";
 import { api } from "../../lib/api";
 import { daysUntil } from "../../lib/expiration";
+import { useHouseholdSync } from "../../lib/householdSync";
 import { NotificationsBell } from "../notifications/NotificationsBell";
 import { NotificationsPanel, type AlertItem } from "../notifications/NotificationsPanel";
 import { ShoppingCartModal } from "../shopping/ShoppingCartModal";
@@ -24,6 +25,7 @@ export function Header({ left, right }: Props) {
   const { t } = useI18n();
   const loggedIn = !!session;
   const { pathname } = useLocation();
+  const { itemsRev } = useHouseholdSync();
 
   const [items, setItems] = useState<AlertItem[]>([]);
   const [trackExpiration, setTrackExpiration] = useState(false);
@@ -48,7 +50,7 @@ export function Header({ left, right }: Props) {
         setWithinDays(settings.expiryAlertDays ?? 7);
       })
       .catch(() => {});
-  }, [loggedIn, pathname]);
+  }, [loggedIn, pathname, itemsRev]);
 
   const alerts = trackExpiration
     ? items

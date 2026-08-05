@@ -17,8 +17,17 @@ export type Household = {
   members: HouseholdMember[];
 };
 
+export type ActivityEntry = {
+  id: string;
+  userName: string;
+  action: string;
+  detail: string | null;
+  at: string;
+};
+
 export const householdApi = {
   get: () => api.get<Household>("/api/household"),
+  activity: () => api.get<ActivityEntry[]>("/api/household/activity"),
   rename: (name: string) => api.patch<Household>("/api/household", { name }),
   rotateCode: () => api.post<Household>("/api/household/rotate-code", {}),
   join: (code: string) => api.post<Household>("/api/household/join", { code }),

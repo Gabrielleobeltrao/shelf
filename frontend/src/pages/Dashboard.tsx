@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { daysUntil, getExpirationWarning } from "../lib/expiration";
+import { useHouseholdSync, useSyncEffect } from "../lib/householdSync";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 import { useI18n } from "../lib/i18n";
 
@@ -32,6 +33,11 @@ export function Dashboard() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  const { itemsRev } = useHouseholdSync();
+  useSyncEffect(itemsRev, () => {
+    api.get<Item[]>("/api/items").then(setItems).catch(() => {});
+  });
 
   const expiringSoon = items
     .filter((item) => item.expirationDate)

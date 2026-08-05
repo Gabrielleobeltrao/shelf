@@ -7,6 +7,7 @@ import { EmptyShelfIllustration } from "../illustrations";
 import { useI18n } from "../../lib/i18n";
 import { unitLabel } from "../../lib/labels";
 import { normalizeName } from "../../lib/text";
+import { useHouseholdSync, useSyncEffect } from "../../lib/householdSync";
 import { ProductSearchModal } from "../inventory/ProductSearchModal";
 import type { ProductSearchResult } from "../../lib/openFoodFacts";
 
@@ -60,6 +61,26 @@ export function ShoppingCartModal({ open, onClose }: Props) {
       })
       .finally(() => setLoading(false));
   }, [open]);
+
+  // Live sync: refresh the open cart when a housemate changes the pantry or
+  // list, keeping the user's checks and buy quantities.
+  const { itemsRev, listRev } = useHouseholdSync();
+  function refreshSilently() {
+    Promise.all([
+      api.get<ShoppingListEntry[]>("/api/shopping-list"),
+      api.get<StockItem[]>("/api/items"),
+    ])
+      .then(([entriesData, itemsData]) => {
+        setEntries(entriesData);
+        setStockItems(itemsData);
+        setBuyQuantities((prev) =>
+          Object.fromEntries(entriesData.map((entry) => [entry._id, prev[entry._id] ?? 1])),
+        );
+      })
+      .catch(() => {});
+  }
+  useSyncEffect(itemsRev, () => open && refreshSilently());
+  useSyncEffect(listRev, () => open && refreshSilently());
 
   if (!open) return null;
 

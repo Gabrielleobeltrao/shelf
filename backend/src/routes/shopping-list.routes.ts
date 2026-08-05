@@ -2,6 +2,8 @@ import { Router } from "express";
 import { ShoppingListItem } from "../models/ShoppingListItem.js";
 import { requireAuth } from "../middleware/requireAuth.js";
 import { withHousehold } from "../middleware/withHousehold.js";
+import { publish } from "../lib/householdBus.js";
+import { logActivity } from "../lib/householdActivity.js";
 
 const router = Router();
 
@@ -26,11 +28,14 @@ router.post("/", async (req, res) => {
     householdId: req.householdId,
     userId: req.userId,
   });
+  publish(req.householdId, "list");
+  logActivity(req.householdId, req.userId, "list_added", entry.name);
   res.status(201).json(entry);
 });
 
 router.delete("/:id", async (req, res) => {
   await ShoppingListItem.deleteOne({ _id: req.params.id, householdId: req.householdId });
+  publish(req.householdId, "list");
   res.status(204).end();
 });
 

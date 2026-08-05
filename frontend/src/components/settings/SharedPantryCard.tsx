@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { householdApi, type Household } from "../../lib/household";
+import { householdApi, type ActivityEntry, type Household } from "../../lib/household";
 import { useI18n } from "../../lib/i18n";
 import { CheckIcon, CloseIcon, PencilIcon } from "../icons";
 
 export function SharedPantryCard() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [household, setHousehold] = useState<Household | null>(null);
+  const [activity, setActivity] = useState<ActivityEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [editingName, setEditingName] = useState(false);
@@ -16,11 +17,42 @@ export function SharedPantryCard() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    householdApi
-      .get()
-      .then(setHousehold)
+    Promise.all([householdApi.get(), householdApi.activity().catch(() => [])])
+      .then(([h, a]) => {
+        setHousehold(h);
+        setActivity(a);
+      })
       .finally(() => setLoading(false));
   }, []);
+
+  function describe(e: ActivityEntry): string {
+    const who = e.userName;
+    const what = e.detail ?? "";
+    switch (e.action) {
+      case "item_added":
+        return t.household.actItemAdded(who, what);
+      case "item_removed":
+        return t.household.actItemRemoved(who, what);
+      case "list_added":
+        return t.household.actListAdded(who, what);
+      case "member_joined":
+        return t.household.actMemberJoined(who);
+      case "member_left":
+        return t.household.actMemberLeft(who);
+      case "member_removed":
+        return t.household.actMemberRemoved(who, what);
+      default:
+        return who;
+    }
+  }
+
+  const timeFmt = (iso: string) =>
+    new Date(iso).toLocaleString(lang === "pt" ? "pt-BR" : "en-US", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
   async function handleRename() {
     const name = nameDraft.trim();
@@ -206,6 +238,25 @@ export function SharedPantryCard() {
               {t.household.leave}
             </button>
           )}
+
+          {/* Change history */}
+          <div className="border-t border-line pt-3">
+            <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
+              {t.household.activityTitle}
+            </p>
+            {activity.length === 0 ? (
+              <p className="text-xs text-muted">{t.household.activityEmpty}</p>
+            ) : (
+              <ul className="max-h-48 space-y-1.5 overflow-y-auto">
+                {activity.map((e) => (
+                  <li key={e.id} className="flex items-baseline justify-between gap-2 text-xs">
+                    <span className="min-w-0 truncate">{describe(e)}</span>
+                    <span className="shrink-0 text-muted">{timeFmt(e.at)}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </>
       )}
     </div>
