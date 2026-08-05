@@ -49,9 +49,44 @@ function formatCommentDate(iso: string, locale: string) {
   return date.toLocaleDateString(locale, { day: "2-digit", month: "short", year: "numeric" });
 }
 
-// Scaled ingredient amount, trimmed to at most two decimals.
+// Common cooking fractions, so scaled amounts read like a recipe (1½, ⅔)
+// instead of raw decimals (1.5, 0.667).
+const FRACTIONS: [number, string][] = [
+  [0, ""],
+  [1 / 8, "⅛"],
+  [1 / 4, "¼"],
+  [1 / 3, "⅓"],
+  [1 / 2, "½"],
+  [2 / 3, "⅔"],
+  [3 / 4, "¾"],
+  [1, ""],
+];
+
 function formatQuantity(n: number): string {
-  return String(Math.round(n * 100) / 100);
+  if (!isFinite(n) || n <= 0) return "0";
+  // Big amounts read cleaner as whole numbers than as fractions.
+  if (n >= 10) return String(Math.round(n));
+
+  let whole = Math.floor(n);
+  const frac = n - whole;
+  let label = "";
+  let best = Infinity;
+  for (const [value, glyph] of FRACTIONS) {
+    const dist = Math.abs(frac - value);
+    if (dist < best) {
+      best = dist;
+      label = glyph;
+      if (value === 1) {
+        whole += 1;
+        label = "";
+      } else if (value === 0) {
+        label = "";
+      }
+    }
+  }
+  if (whole === 0 && label === "") return String(Math.round(n * 100) / 100);
+  if (label === "") return String(whole);
+  return whole === 0 ? label : `${whole}${label}`;
 }
 
 async function apiCall(path: string, options?: RequestInit) {
