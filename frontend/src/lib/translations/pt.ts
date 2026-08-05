@@ -300,6 +300,9 @@ export const pt = {
     noLocation: "Sem local",
     recentActivity: "Atividade recente",
   },
+  offline: {
+    banner: "Você está offline — mostrando os dados salvos.",
+  },
   notifications: {
     title: "Notificações",
     bellAria: (n: number) => (n > 0 ? `Notificações (${n})` : "Notificações"),
@@ -482,6 +485,7 @@ export const pt = {
       { name: "Cozinhar agora", desc: "Veja o que tem e o que falta pra receita e jogue os faltantes na lista." },
       { name: "Alertas de validade", desc: "Um sino avisa o que vai vencer, no prazo que você escolher." },
       { name: "Estoque compartilhado", desc: "Divida o mesmo estoque e lista com a casa por convite — em tempo real, com histórico e espaço pessoal." },
+      { name: "Modo offline", desc: "Instale o Shelf como app e veja estoque, lista e receitas sem internet." },
     ],
     planned: [
       {
@@ -684,17 +688,16 @@ export const pt = {
       },
       {
         id: "offline",
-        name: "Modo offline",
-        desc: "Use estoque e receitas sem internet.",
-        objective: "Acessar o essencial mesmo sem conexão — como no meio do mercado.",
+        name: "Editar offline e sincronizar",
+        desc: "Edite sem internet e sincronize ao reconectar.",
+        objective: "Ir além de ler offline: alterar o estoque sem conexão e sincronizar depois.",
         tasks: [
-          "Guardar estoque e receitas no aparelho",
-          "Ler tudo offline",
-          "Editar offline e sincronizar depois",
-          "Resolver conflitos de sincronização",
+          "Enfileirar as edições feitas offline",
+          "Reenviar ao voltar a conexão",
+          "Resolver conflitos com o estoque compartilhado",
           "Indicar o estado da sincronização",
         ],
-        how: "O Shelf guarda seu estoque e receitas no aparelho: dá pra ver e editar sem internet, e quando a conexão volta ele sincroniza tudo — perfeito pra usar no meio do mercado.",
+        how: "Além de ver offline, você poderá editar o estoque sem internet; o Shelf guarda suas alterações e sincroniza quando a conexão volta, resolvendo conflitos com quem mexeu no mesmo item.",
       },
     ],
   },

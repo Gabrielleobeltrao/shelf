@@ -5,6 +5,7 @@ import './index.css'
 import App from './App.tsx'
 import { LanguageProvider } from './lib/i18n'
 import { HouseholdSyncProvider } from './lib/householdSync'
+import { OfflineBanner } from './components/ui/OfflineBanner'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -12,6 +13,7 @@ createRoot(document.getElementById('root')!).render(
       <LanguageProvider>
         <HouseholdSyncProvider>
           <App />
+          <OfflineBanner />
         </HouseholdSyncProvider>
       </LanguageProvider>
     </BrowserRouter>

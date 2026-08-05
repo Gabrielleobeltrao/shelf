@@ -237,7 +237,7 @@ const TINTS = [
 // Done icons run parallel to t.roadmap.done (same order, both languages).
 const DONE_ICONS: ComponentType<IconProps>[] = [
   BarcodeIcon, CalendarIcon, HeartIcon, LeafIcon, CartIcon,
-  BookIcon, ShareIcon, StarIcon, ExploreIcon, GridIcon, GlobeIcon, FolderIcon, FridgeIcon, ScaleIcon, FlameIcon, BellIcon, UsersIcon,
+  BookIcon, ShareIcon, StarIcon, ExploreIcon, GridIcon, GlobeIcon, FolderIcon, FridgeIcon, ScaleIcon, FlameIcon, BellIcon, UsersIcon, DownloadIcon,
 ];
 
 // Planned icons are keyed by feature id so they stay put as votes reorder.

@@ -302,6 +302,9 @@ export const en: Dict = {
     noLocation: "No location",
     recentActivity: "Recent activity",
   },
+  offline: {
+    banner: "You're offline — showing saved data.",
+  },
   notifications: {
     title: "Notifications",
     bellAria: (n: number) => (n > 0 ? `Notifications (${n})` : "Notifications"),
@@ -484,6 +487,7 @@ export const en: Dict = {
       { name: "Cook now", desc: "See what you have and what's missing for a recipe and add the gaps to your list." },
       { name: "Expiration alerts", desc: "A bell flags what's about to expire, on the lead time you choose." },
       { name: "Shared pantry", desc: "Share the same pantry and list with your household by invite — in real time, with history and a personal space." },
+      { name: "Offline mode", desc: "Install Shelf as an app and view your pantry, list and recipes offline." },
     ],
     planned: [
       {
@@ -686,17 +690,16 @@ export const en: Dict = {
       },
       {
         id: "offline",
-        name: "Offline mode",
-        desc: "Use pantry and recipes without internet.",
-        objective: "Reach the essentials even without a connection — like in the middle of the store.",
+        name: "Edit offline and sync",
+        desc: "Edit without internet and sync when you reconnect.",
+        objective: "Go beyond reading offline: change the pantry with no connection and sync later.",
         tasks: [
-          "Keep pantry and recipes on the device",
-          "Read everything offline",
-          "Edit offline and sync later",
-          "Resolve sync conflicts",
+          "Queue edits made offline",
+          "Replay them when the connection returns",
+          "Resolve conflicts with the shared pantry",
           "Show the sync status",
         ],
-        how: "Shelf keeps your pantry and recipes on the device: you can view and edit them without internet, and when the connection returns it syncs everything — perfect for using in the middle of the store.",
+        how: "Beyond viewing offline, you'll be able to edit the pantry without internet; Shelf keeps your changes and syncs when the connection is back, resolving conflicts with whoever touched the same item.",
       },
     ],
   },
