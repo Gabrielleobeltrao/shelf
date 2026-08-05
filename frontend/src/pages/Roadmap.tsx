@@ -246,7 +246,7 @@ const TINTS = [
 // Done icons run parallel to t.roadmap.done (same order, both languages).
 const DONE_ICONS: ComponentType<IconProps>[] = [
   BarcodeIcon, CalendarIcon, HeartIcon, LeafIcon, CartIcon,
-  BookIcon, ShareIcon, StarIcon, ExploreIcon, GridIcon, GlobeIcon, FolderIcon, FridgeIcon, ScaleIcon,
+  BookIcon, ShareIcon, StarIcon, ExploreIcon, GridIcon, GlobeIcon, FolderIcon, FridgeIcon, ScaleIcon, FlameIcon,
 ];
 
 // Planned icons are keyed by feature id so they stay put as votes reorder.
@@ -257,7 +257,6 @@ const PLANNED_ICON: Record<string, ComponentType<IconProps>> = {
   "receipt-scan": ReceiptIcon,
   "consumption-history": ChartIcon,
   "cooking-mode": CookedIcon,
-  "cook-now": FlameIcon,
   creators: StarIcon,
   cuisines: GlobeIcon,
   substitutions: SwapIcon,

@@ -218,6 +218,12 @@ export const pt = {
     notFoundTitle: "Receita não encontrada",
     notFoundDesc: "Essa receita não existe ou não está pública.",
     removedItem: "Item removido",
+    haveAllTitle: "Você tem tudo pra esta receita",
+    haveCount: (have: number, total: number) => `Você tem ${have} de ${total} ingredientes`,
+    addMissing: (n: number) => `Adicionar ${n} à lista`,
+    missingInList: "Faltantes na lista",
+    haveAria: "Você tem",
+    missingAria: "Falta",
   },
   explore: {
     title: "Explorar receitas",
@@ -413,6 +419,7 @@ export const pt = {
       { name: "Coleções de receitas", desc: "Agrupe as receitas em pastas por tema, públicas ou privadas." },
       { name: "Vários locais de estoque", desc: "Separe despensa, geladeira e freezer e filtre por local." },
       { name: "Ajustar porções", desc: "Escale a receita na página e recalcule os ingredientes." },
+      { name: "Cozinhar agora", desc: "Veja o que tem e o que falta pra receita e jogue os faltantes na lista." },
     ],
     planned: [
       {
@@ -460,20 +467,6 @@ export const pt = {
           "Preferências alimentares e alergias",
         ],
         how: "Cada pessoa terá um perfil simples (foto, nome, nome de exibição, avatar ou cor) que aparece no estoque, eventos e listas. O e-mail fica privado — a identificação é por foto e nome. Cargos definem as permissões de cada um.",
-      },
-      {
-        id: "cook-now",
-        name: "Cozinhar agora",
-        desc: "Compara a receita com o seu estoque.",
-        objective: "Descobrir na hora se dá pra fazer uma receita com o que você já tem em casa.",
-        tasks: [
-          "Botão \"Cozinhar agora\" na receita",
-          "Comparar ingredientes com o estoque",
-          "Mostrar o que tem, o que falta e substituições",
-          "Adicionar faltantes à lista de compras",
-          "Baixar do estoque ao concluir (opcional)",
-        ],
-        how: "Numa receita da comunidade, você toca em \"Cozinhar agora\" e o Shelf compara os ingredientes com o seu estoque: mostra o que já tem, o que falta e possíveis substituições, e deixa jogar os itens que faltam direto na lista de compras.",
       },
       {
         id: "cooking-mode",

@@ -220,6 +220,12 @@ export const en: Dict = {
     notFoundTitle: "Recipe not found",
     notFoundDesc: "This recipe doesn't exist or isn't public.",
     removedItem: "Removed item",
+    haveAllTitle: "You have everything for this recipe",
+    haveCount: (have: number, total: number) => `You have ${have} of ${total} ingredients`,
+    addMissing: (n: number) => `Add ${n} to list`,
+    missingInList: "Missing ones in list",
+    haveAria: "You have",
+    missingAria: "Missing",
   },
   explore: {
     title: "Explore recipes",
@@ -415,6 +421,7 @@ export const en: Dict = {
       { name: "Recipe collections", desc: "Group recipes into folders by theme, public or private." },
       { name: "Multiple pantry locations", desc: "Split pantry, fridge, and freezer and filter by location." },
       { name: "Scale servings", desc: "Scale a recipe on its page and recompute the ingredients." },
+      { name: "Cook now", desc: "See what you have and what's missing for a recipe and add the gaps to your list." },
     ],
     planned: [
       {
@@ -462,20 +469,6 @@ export const en: Dict = {
           "Dietary preferences and allergies",
         ],
         how: "Everyone gets a simple profile (photo, name, display name, avatar or color) that shows up in the pantry, events, and lists. Email stays private — people are identified by photo and name. Roles set what each person can do.",
-      },
-      {
-        id: "cook-now",
-        name: "Cook now",
-        desc: "Matches the recipe against your pantry.",
-        objective: "Instantly find out if you can make a recipe with what you already have at home.",
-        tasks: [
-          "\"Cook now\" button on the recipe",
-          "Compare ingredients with the pantry",
-          "Show what you have, what's missing, and substitutions",
-          "Add missing items to the shopping list",
-          "Deduct from the pantry when done (optional)",
-        ],
-        how: "On a community recipe you tap \"Cook now\" and Shelf compares the ingredients with your pantry: it shows what you already have, what's missing, and possible substitutions, and lets you drop the missing items straight into the shopping list.",
       },
       {
         id: "cooking-mode",

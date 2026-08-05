@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { API_URL } from "../lib/api";
 import { useI18n } from "../lib/i18n";
 import { tagLabel, unitLabel } from "../lib/labels";
-import { BackIcon, BookmarkIcon, ChatIcon, CheckIcon, CookedIcon, MenuIcon, MinusIcon, PencilIcon, PlusIcon, StarIcon } from "../components/icons";
+import { hasEnoughStock } from "../lib/units";
+import { BackIcon, BookmarkIcon, CartIcon, ChatIcon, CheckIcon, CookedIcon, MenuIcon, MinusIcon, PencilIcon, PlusIcon, StarIcon } from "../components/icons";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 import { EmptyState } from "../components/ui/EmptyState";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
@@ -100,6 +101,14 @@ function formatQuantity(n: number, unit: string): string {
   return formatFraction(n);
 }
 
+// Recipes are shared without their owner's itemIds, so "Cozinhar agora"
+// matches ingredients to your pantry by name — accent- and case-insensitive.
+function normalizeName(s: string): string {
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+}
+
+type StockItem = { _id: string; name: string; quantity: number; unit: string };
+
 async function apiCall(path: string, options?: RequestInit) {
   const res = await fetch(`${API_URL}${path}`, {
     credentials: "include",
@@ -125,6 +134,12 @@ export function PublicRecipe() {
   const [ratingHover, setRatingHover] = useState(0);
   const [servings, setServings] = useState<number | null>(null);
 
+  const [stock, setStock] = useState<StockItem[]>([]);
+  const [listNames, setListNames] = useState<Set<string>>(new Set());
+  const [addedNames, setAddedNames] = useState<Set<string>>(new Set());
+  const [cookLoaded, setCookLoaded] = useState(false);
+  const [addingList, setAddingList] = useState(false);
+
   useEffect(() => {
     if (!id) return;
     setLoading(true);
@@ -141,6 +156,79 @@ export function PublicRecipe() {
   const baseServings = data?.recipe.servings ?? 0;
   const targetServings = servings ?? baseServings;
   const scale = baseServings > 0 && targetServings > 0 ? targetServings / baseServings : 1;
+
+  // Load the signed-in user's pantry + shopping list so we can flag which
+  // ingredients they already have and which to offer for the shopping list.
+  useEffect(() => {
+    if (!data?.isLoggedIn) return;
+    let cancelled = false;
+    Promise.all([
+      apiCall("/api/items") as Promise<StockItem[]>,
+      apiCall("/api/shopping-list") as Promise<{ name: string }[]>,
+    ])
+      .then(([items, list]) => {
+        if (cancelled) return;
+        setStock(items);
+        setListNames(new Set(list.map((e) => normalizeName(e.name))));
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setCookLoaded(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [data?.isLoggedIn]);
+
+  const stockByName = useMemo(
+    () => new Map(stock.map((item) => [normalizeName(item.name), item])),
+    [stock],
+  );
+
+  // Compare each ingredient (at the chosen serving scale) against the pantry.
+  const cook = useMemo(() => {
+    const rows = data?.recipe.ingredients ?? [];
+    const status = rows.map((row): "have" | "missing" | "none" => {
+      if (!row.name?.trim()) return "none";
+      const item = stockByName.get(normalizeName(row.name));
+      if (!item) return "missing";
+      return hasEnoughStock(row.quantity * scale, row.unit, item.quantity, item.unit) === false
+        ? "missing"
+        : "have";
+    });
+    const named = status.filter((s) => s !== "none").length;
+    const have = status.filter((s) => s === "have").length;
+    const missing: { name: string; unit: string; key: string }[] = [];
+    const seen = new Set<string>();
+    rows.forEach((row, i) => {
+      if (status[i] !== "missing" || !row.name?.trim()) return;
+      const key = normalizeName(row.name);
+      if (seen.has(key)) return;
+      seen.add(key);
+      missing.push({ name: row.name, unit: row.unit, key });
+    });
+    return { status, named, have, missing };
+  }, [data, stockByName, scale]);
+
+  const addableMissing = cook.missing.filter(
+    (m) => !listNames.has(m.key) && !addedNames.has(m.key),
+  );
+
+  async function handleAddMissing() {
+    if (addableMissing.length === 0) return;
+    setAddingList(true);
+    try {
+      for (const m of addableMissing) {
+        await apiCall("/api/shopping-list", {
+          method: "POST",
+          body: JSON.stringify({ name: m.name, unit: m.unit }),
+        });
+      }
+      setAddedNames((prev) => new Set([...prev, ...addableMissing.map((m) => m.key)]));
+    } finally {
+      setAddingList(false);
+    }
+  }
 
   async function handleRate(stars: number) {
     if (!data || !id) return;
@@ -342,13 +430,50 @@ export function PublicRecipe() {
                     </div>
                   )}
                 </div>
-                <ul className="space-y-0.5 text-sm">
-                  {data.recipe.ingredients.map((row, index) => (
-                    <li key={index} className="text-muted">
-                      {formatQuantity(row.quantity * scale, row.unit)} {unitLabel(t, row.unit)} {t.units.of} {row.name || t.publicRecipe.removedItem}
-                    </li>
-                  ))}
+                <ul className="space-y-1 text-sm">
+                  {data.recipe.ingredients.map((row, index) => {
+                    const st = cook.status[index];
+                    const showStatus = data.isLoggedIn && cookLoaded && st !== "none";
+                    return (
+                      <li key={index} className="flex items-center gap-2 text-muted">
+                        {showStatus &&
+                          (st === "have" ? (
+                            <CheckIcon className="h-4 w-4 shrink-0 text-primary-600" />
+                          ) : (
+                            <CartIcon className="h-4 w-4 shrink-0 text-mustard-500" />
+                          ))}
+                        <span className={showStatus && st === "missing" ? "font-medium text-ink" : ""}>
+                          {formatQuantity(row.quantity * scale, row.unit)} {unitLabel(t, row.unit)} {t.units.of} {row.name || t.publicRecipe.removedItem}
+                        </span>
+                      </li>
+                    );
+                  })}
                 </ul>
+
+                {data.isLoggedIn && cookLoaded && cook.named > 0 && (
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-surface-2 p-3">
+                    <p className="text-sm font-medium">
+                      {cook.have === cook.named
+                        ? t.publicRecipe.haveAllTitle
+                        : t.publicRecipe.haveCount(cook.have, cook.named)}
+                    </p>
+                    {addableMissing.length > 0 ? (
+                      <button
+                        onClick={handleAddMissing}
+                        disabled={addingList}
+                        className="flex items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
+                      >
+                        <CartIcon className="h-4 w-4" />
+                        {t.publicRecipe.addMissing(addableMissing.length)}
+                      </button>
+                    ) : cook.missing.length > 0 ? (
+                      <span className="flex items-center gap-1.5 text-xs font-medium text-primary-700 dark:text-primary-400">
+                        <CheckIcon className="h-4 w-4" />
+                        {t.publicRecipe.missingInList}
+                      </span>
+                    ) : null}
+                  </div>
+                )}
               </div>
             )}
 
