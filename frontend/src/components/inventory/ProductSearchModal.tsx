@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { searchProducts } from "../../lib/openFoodFacts";
+import { COUNTRY_BY_LANG, searchProducts } from "../../lib/openFoodFacts";
 import type { ProductSearchResult } from "../../lib/openFoodFacts";
 import { CloseIcon, SearchIcon } from "../icons";
 import { EmptyState } from "../ui/EmptyState";
@@ -38,8 +38,9 @@ function toSearchResult(item: LocalStockItem): ProductSearchResult {
 }
 
 export function ProductSearchModal({ title, onSelect, onAddManually, onClose, localItems = [] }: Props) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const heading = title ?? t.productSearch.addItem;
+  const country = COUNTRY_BY_LANG[lang] ?? "br";
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<ProductSearchResult[]>([]);
   const [page, setPage] = useState(1);
@@ -62,7 +63,7 @@ export function ProductSearchModal({ title, onSelect, onAddManually, onClose, lo
 
     setLoading(true);
     const timeout = setTimeout(() => {
-      searchProducts(query, 1).then(({ products, hasMore: more, error: failed }) => {
+      searchProducts(query, 1, country).then(({ products, hasMore: more, error: failed }) => {
         setResults(products);
         setPage(1);
         setHasMore(more);
@@ -72,7 +73,7 @@ export function ProductSearchModal({ title, onSelect, onAddManually, onClose, lo
     }, 400);
 
     return () => clearTimeout(timeout);
-  }, [query, retryToken]);
+  }, [query, retryToken, country]);
 
   // Instant — no network round trip to search what the user already has.
   // Browsing (empty query) lists the whole pantry; typing filters it.
@@ -92,7 +93,7 @@ export function ProductSearchModal({ title, onSelect, onAddManually, onClose, lo
   async function handleLoadMore() {
     setLoadingMore(true);
     const nextPage = page + 1;
-    const { products, hasMore: more, error: failed } = await searchProducts(query, nextPage);
+    const { products, hasMore: more, error: failed } = await searchProducts(query, nextPage, country);
     setResults((prev) => [...prev, ...products]);
     setPage(nextPage);
     setHasMore(more);

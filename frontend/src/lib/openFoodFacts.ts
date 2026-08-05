@@ -94,11 +94,12 @@ function wait(ms: number) {
 }
 
 // Open Food Facts is French-heavy unfiltered, so scope the search to where the
-// user shops. Brazil for now; could become a per-user setting later.
-const DEFAULT_COUNTRY = "br";
+// user shops. We don't ask for a country, so we infer it from the UI language
+// (the best signal we have); could become an explicit per-user setting later.
+export const COUNTRY_BY_LANG: Record<string, string> = { pt: "br", en: "us" };
 
-async function fetchPage(term: string, page: number): Promise<ProductSearchPage> {
-  const params = new URLSearchParams({ page: String(page), cc: DEFAULT_COUNTRY });
+async function fetchPage(term: string, page: number, country: string): Promise<ProductSearchPage> {
+  const params = new URLSearchParams({ page: String(page), cc: country });
   if (term) params.set("q", term);
 
   const res = await fetch(`${API_URL}/api/product-search?${params}`, { credentials: "include" });
@@ -130,12 +131,16 @@ const RETRY_DELAYS_MS = [400, 900, 1600];
  * Our backend already retries against Open Food Facts internally, but retry
  * here too as a safety net against our own hiccups.
  */
-export async function searchProducts(query: string, page = 1): Promise<ProductSearchPage> {
+export async function searchProducts(
+  query: string,
+  page = 1,
+  country = "br",
+): Promise<ProductSearchPage> {
   const term = query.trim();
 
   for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt++) {
     try {
-      const result = await fetchPage(term, page);
+      const result = await fetchPage(term, page, country);
       if (!result.error) return result;
     } catch {
       // fall through to retry

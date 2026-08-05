@@ -17,6 +17,7 @@ const RETRY_DELAYS_MS = [400, 900, 1600];
 // Keyed by the `cc` the client sends; extend as the app reaches new markets.
 const COUNTRIES: Record<string, { tag: string; lang: string }> = {
   br: { tag: "en:brazil", lang: "pt" },
+  us: { tag: "en:united-states", lang: "en" },
 };
 
 function wait(ms: number) {
