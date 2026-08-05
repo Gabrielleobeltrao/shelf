@@ -17,8 +17,13 @@ export type ResolvedHousehold = {
  * there's no risky one-shot migration of everyone at once.
  */
 export async function resolveHousehold(userId: string): Promise<ResolvedHousehold> {
-  let settings = await Settings.findOne({ userId });
-  if (!settings) settings = await Settings.create({ userId });
+  // Upsert atomically so concurrent first-requests can't collide on the unique
+  // userId (which a findOne-then-create would).
+  let settings = await Settings.findOneAndUpdate(
+    { userId },
+    { $setOnInsert: { userId } },
+    { upsert: true, new: true },
+  );
 
   if (!settings.homeHouseholdId) {
     const home = await Household.create({
@@ -27,20 +32,31 @@ export async function resolveHousehold(userId: string): Promise<ResolvedHousehol
       members: [{ userId, role: "owner" }],
     });
     const homeId = String(home._id);
-    settings.homeHouseholdId = homeId;
-    settings.activeHouseholdId = homeId;
-    await settings.save();
-    await Item.updateMany(
-      { userId, householdId: { $exists: false } },
-      { $set: { householdId: homeId } },
+    // Claim the home slot atomically. Several first-requests fire at once (the
+    // dashboard alone loads many endpoints), and each would otherwise create a
+    // household — leaving duplicates with the pantry in one and the pointer in
+    // another. Only the winning update keeps its household and backfills; the
+    // rest delete theirs and re-read the winner.
+    const claim = await Settings.updateOne(
+      { userId, $or: [{ homeHouseholdId: { $exists: false } }, { homeHouseholdId: null }] },
+      { $set: { homeHouseholdId: homeId, activeHouseholdId: homeId } },
     );
-    await ShoppingListItem.updateMany(
-      { userId, householdId: { $exists: false } },
-      { $set: { householdId: homeId } },
-    );
+    if (claim.modifiedCount === 1) {
+      await Item.updateMany(
+        { userId, householdId: { $exists: false } },
+        { $set: { householdId: homeId } },
+      );
+      await ShoppingListItem.updateMany(
+        { userId, householdId: { $exists: false } },
+        { $set: { householdId: homeId } },
+      );
+    } else {
+      await Household.deleteOne({ _id: home._id });
+    }
+    settings = (await Settings.findOne({ userId }))!;
   }
 
-  const homeHouseholdId = settings.homeHouseholdId;
+  const homeHouseholdId = settings.homeHouseholdId as string;
   let activeId = settings.activeHouseholdId || homeHouseholdId;
   let household = await Household.findById(activeId);
 
