@@ -395,9 +395,10 @@ export function Inventory() {
             const expired = settings.trackExpiration && isExpired(item.expirationDate);
             const outOfStock = item.quantity <= 0;
             const showActions = expired || outOfStock;
-            const statusBadge =
-              (settings.trackExpiration && getExpirationWarning(t, item.expirationDate)) ||
-              (outOfStock ? t.inventory.outOfStock : null);
+            const warning = settings.trackExpiration ? getExpirationWarning(t, item.expirationDate) : null;
+            const statusBadge = warning || (outOfStock ? t.inventory.outOfStock : null);
+            // Amber for "expiring soon"; clay for expired or out of stock.
+            const badgeAmber = !!warning && !expired && !outOfStock;
             const { Icon: CategoryIcon, tint } = getCategoryIcon(item.category);
 
             return (
@@ -416,7 +417,13 @@ export function Inventory() {
                   <div className="flex items-center justify-between gap-2">
                     <p className="truncate text-base font-semibold">{item.name}</p>
                     {statusBadge && (
-                      <span className="shrink-0 rounded-full bg-rust-100 px-2 py-0.5 text-xs font-medium text-rust-700 dark:bg-rust-900/40 dark:text-rust-400">
+                      <span
+                        className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                          badgeAmber
+                            ? "bg-mustard-100 text-mustard-700 dark:bg-mustard-900/40 dark:text-mustard-400"
+                            : "bg-rust-100 text-rust-700 dark:bg-rust-900/40 dark:text-rust-400"
+                        }`}
+                      >
                         {statusBadge}
                       </span>
                     )}
@@ -454,7 +461,7 @@ export function Inventory() {
                             onClick={() => handleStep(item, 1)}
                             disabled={pendingIds.has(item._id)}
                             aria-label={t.inventory.increaseAria(item.name)}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-line bg-surface disabled:opacity-40"
+                            className="flex h-8 w-8 items-center justify-center rounded-full border border-line bg-surface disabled:opacity-40"
                           >
                             <PlusIcon className="h-3.5 w-3.5" />
                           </button>
@@ -465,7 +472,7 @@ export function Inventory() {
                             onClick={() => handleStep(item, -1)}
                             disabled={pendingIds.has(item._id) || item.quantity <= 0}
                             aria-label={t.inventory.decreaseAria(item.name)}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-line bg-surface disabled:opacity-40"
+                            className="flex h-8 w-8 items-center justify-center rounded-full border border-line bg-surface disabled:opacity-40"
                           >
                             <MinusIcon className="h-3.5 w-3.5" />
                           </button>
@@ -476,7 +483,7 @@ export function Inventory() {
                             onClick={() => handleStep(item, 1)}
                             disabled={pendingIds.has(item._id)}
                             aria-label={t.inventory.increaseAria(item.name)}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-line bg-surface disabled:opacity-40"
+                            className="flex h-8 w-8 items-center justify-center rounded-full border border-line bg-surface disabled:opacity-40"
                           >
                             <PlusIcon className="h-3.5 w-3.5" />
                           </button>
