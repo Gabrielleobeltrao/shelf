@@ -16,8 +16,8 @@ export default defineConfig({
         short_name: 'Shelf',
         description: 'Sua cozinha organizada, do estoque à receita.',
         lang: 'pt-BR',
-        theme_color: '#5c7a54',
-        background_color: '#f6f8f2',
+        theme_color: '#438f31',
+        background_color: '#f6f5f0',
         display: 'standalone',
         start_url: '/',
         icons: [
