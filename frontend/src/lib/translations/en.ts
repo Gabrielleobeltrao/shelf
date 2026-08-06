@@ -145,6 +145,7 @@ export const en: Dict = {
     changeCamera: "Switch camera",
     noCamera: "No camera found.",
     cameraError: "Couldn't access the camera.",
+    permissionDenied: "Allow camera access to scan.",
   },
   recipes: {
     title: "Recipes",

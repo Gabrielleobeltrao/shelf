@@ -143,6 +143,7 @@ export const pt = {
     changeCamera: "Trocar câmera",
     noCamera: "Nenhuma câmera encontrada.",
     cameraError: "Não foi possível acessar a câmera.",
+    permissionDenied: "Permita o acesso à câmera pra escanear.",
   },
   recipes: {
     title: "Receitas",

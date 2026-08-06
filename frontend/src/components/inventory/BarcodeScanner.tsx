@@ -15,72 +15,66 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
   onDetectedRef.current = onDetected;
   const [error, setError] = useState<string | null>(null);
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
-  const [deviceIndex, setDeviceIndex] = useState(0);
+  // null = let the browser pick the back camera via facingMode. We only use an
+  // explicit deviceId once the user switches cameras — enumerating devices
+  // up front returns empty/unusable ids until camera permission is granted,
+  // which is exactly why the old flow broke in a freshly installed PWA.
+  const [deviceId, setDeviceId] = useState<string | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
-
-    BrowserMultiFormatReader.listVideoInputDevices()
-      .then((found) => {
-        if (cancelled) return;
-
-        if (found.length === 0) {
-          setError(t.barcode.noCamera);
-          return;
-        }
-
-        setDevices(found);
-        const backIndex = found.findIndex((d) => /back|traseira|rear|environment/i.test(d.label));
-        if (backIndex >= 0) setDeviceIndex(backIndex);
-      })
-      .catch(() => setError(t.barcode.cameraError));
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (devices.length === 0) return;
-
     const reader = new BrowserMultiFormatReader();
     let controls: { stop: () => void } | undefined;
     let cancelled = false;
     let detected = false;
 
+    const video: MediaTrackConstraints = deviceId
+      ? { deviceId: { exact: deviceId } }
+      : { facingMode: { ideal: "environment" } };
+    video.width = { ideal: 1920 };
+    video.height = { ideal: 1080 };
+
     reader
-      .decodeFromConstraints(
-        {
-          video: {
-            deviceId: { exact: devices[deviceIndex].deviceId },
-            width: { ideal: 1920 },
-            height: { ideal: 1080 },
-          },
-        },
-        videoRef.current ?? undefined,
-        (result) => {
-          if (cancelled || detected || !result) return;
-          detected = true;
-          controls?.stop();
-          onDetectedRef.current(result.getText());
-        },
-      )
+      .decodeFromConstraints({ video }, videoRef.current ?? undefined, (result) => {
+        if (cancelled || detected || !result) return;
+        detected = true;
+        controls?.stop();
+        onDetectedRef.current(result.getText());
+      })
       .then((c) => {
         if (cancelled) {
           c.stop();
           return;
         }
         controls = c;
+        setError(null);
+        // Permission is granted now, so labels/ids are available — enumerate
+        // for the camera switcher.
+        BrowserMultiFormatReader.listVideoInputDevices()
+          .then((found) => {
+            if (!cancelled) setDevices(found);
+          })
+          .catch(() => {});
       })
-      .catch(() => {
-        setError(t.barcode.cameraError);
+      .catch((e: unknown) => {
+        const name = (e as { name?: string })?.name;
+        if (name === "NotAllowedError") setError(t.barcode.permissionDenied);
+        else if (name === "NotFoundError" || name === "OverconstrainedError")
+          setError(t.barcode.noCamera);
+        else setError(t.barcode.cameraError);
       });
 
     return () => {
       cancelled = true;
       controls?.stop();
     };
-  }, [devices, deviceIndex]);
+  }, [deviceId]);
+
+  // Cycle to the next camera (only meaningful once we've enumerated them).
+  function switchCamera() {
+    if (devices.length < 2) return;
+    const current = deviceId ? devices.findIndex((d) => d.deviceId === deviceId) : -1;
+    setDeviceId(devices[(current + 1) % devices.length].deviceId);
+  }
 
   return (
     <div className="fixed inset-0 z-20 flex flex-col bg-black">
@@ -116,7 +110,7 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
       <div className="absolute inset-x-0 top-4 flex justify-between px-4">
         {devices.length > 1 ? (
           <button
-            onClick={() => setDeviceIndex((i) => (i + 1) % devices.length)}
+            onClick={switchCamera}
             className="rounded-full bg-on-photo px-4 py-2 text-sm font-medium text-ink"
           >
             {t.barcode.changeCamera}
