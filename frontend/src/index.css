@@ -8,6 +8,15 @@
 @import "@fontsource/karla/600.css";
 @import "@fontsource/karla/700.css";
 
+/* iOS safe-area helpers: keep bottom-anchored UI (sheets, drawers, FAB, banner)
+   clear of the home indicator / Safari bottom bar. Needs viewport-fit=cover. */
+@utility pb-safe {
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+}
+@utility bottom-safe {
+  bottom: calc(1.5rem + env(safe-area-inset-bottom));
+}
+
 @theme {
   /* Sage — herbs/pantry accent. 100/600/700 are the exact light-mode
      reference values from the approved mockup (tint/base/deep); 400 is

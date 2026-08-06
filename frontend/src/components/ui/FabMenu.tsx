@@ -16,7 +16,7 @@ export function FabMenu({ actions, label = "Abrir ações" }: { actions: Action[
     <>
       {open && <div className="fixed inset-0 z-20" onClick={() => setOpen(false)} />}
 
-      <div className="fixed bottom-6 right-4 z-30 flex flex-col items-end gap-3 sm:right-6 lg:right-8">
+      <div className="fixed bottom-safe right-4 z-30 flex flex-col items-end gap-3 sm:right-6 lg:right-8">
         {open &&
           actions.map((action) => (
             <button

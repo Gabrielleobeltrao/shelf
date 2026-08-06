@@ -36,7 +36,7 @@ export function NutritionFieldsModal({ selected, onClose, onSave }: Props) {
     <div className="fixed inset-0 z-30 flex items-end bg-black/50" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className="max-h-[80vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-surface p-4"
+        className="max-h-[80vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-surface p-4 pb-safe"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t.nutritionModal.title}</h2>

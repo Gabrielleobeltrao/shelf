@@ -21,7 +21,7 @@ export function OfflineBanner() {
   if (!offline) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 bg-mustard-600 px-4 py-1.5 text-center text-xs font-medium text-white">
+    <div className="fixed inset-x-0 bottom-0 z-50 bg-mustard-600 px-4 py-1.5 pb-safe text-center text-xs font-medium text-white">
       {t.offline.banner}
     </div>
   );

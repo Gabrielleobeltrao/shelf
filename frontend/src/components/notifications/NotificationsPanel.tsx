@@ -25,6 +25,7 @@ type Props = {
   withinDays: number;
   onDismiss: (item: AlertItem) => void;
   onClearAll: () => void;
+  onRemoved: (item: AlertItem) => void;
 };
 
 export function NotificationsPanel({
@@ -35,12 +36,17 @@ export function NotificationsPanel({
   withinDays,
   onDismiss,
   onClearAll,
+  onRemoved,
 }: Props) {
   const { t } = useI18n();
   // Items already on the shopping list (by sourceItemId) shouldn't offer
   // "restock" again — we mark them as already listed instead.
   const [listedIds, setListedIds] = useState<Set<string>>(new Set());
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
+  // When restocking, ask whether the product was already thrown out (so we can
+  // also remove it from the pantry). `confirming` is the item being restocked.
+  const [confirming, setConfirming] = useState<AlertItem | null>(null);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -58,7 +64,10 @@ export function NotificationsPanel({
   const expired = items.filter((i) => i.expirationDate && daysUntil(i.expirationDate) < 0);
   const soon = items.filter((i) => i.expirationDate && daysUntil(i.expirationDate) >= 0);
 
-  async function handleRestock(item: AlertItem) {
+  // Add the product to the shopping list; if it was already thrown out, also
+  // remove it from the pantry.
+  async function restock(item: AlertItem, discard: boolean) {
+    setBusy(true);
     setAddedIds((prev) => new Set(prev).add(item._id));
     try {
       await api.post("/api/shopping-list", {
@@ -68,12 +77,19 @@ export function NotificationsPanel({
         imageUrl: item.imageUrl,
         sourceItemId: item._id,
       });
+      if (discard) {
+        await api.delete(`/api/items/${item._id}`);
+        onRemoved(item);
+      }
     } catch {
       setAddedIds((prev) => {
         const next = new Set(prev);
         next.delete(item._id);
         return next;
       });
+    } finally {
+      setBusy(false);
+      setConfirming(null);
     }
   }
 
@@ -99,7 +115,7 @@ export function NotificationsPanel({
           </span>
         ) : (
           <button
-            onClick={() => handleRestock(item)}
+            onClick={() => setConfirming(item)}
             className="flex shrink-0 items-center gap-1 rounded-lg bg-primary-600 px-2.5 py-1.5 text-xs font-medium text-white"
           >
             <CartIcon className="h-4 w-4" />
@@ -118,10 +134,11 @@ export function NotificationsPanel({
   }
 
   return (
+    <>
     <div className="fixed inset-0 z-40 flex justify-end">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-      <aside className="relative flex h-full w-80 max-w-[85vw] flex-col bg-surface p-4">
+      <aside className="relative flex h-full w-80 max-w-[85vw] flex-col bg-surface p-4 pb-safe">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t.notifications.title}</h2>
           <div className="flex items-center gap-3">
@@ -174,5 +191,38 @@ export function NotificationsPanel({
         </div>
       </aside>
     </div>
+
+    {confirming && (
+      <div
+        className="fixed inset-0 z-50 flex items-end bg-black/50 sm:items-center"
+        onClick={() => !busy && setConfirming(null)}
+      >
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="w-full space-y-3 rounded-t-2xl bg-surface p-4 pb-safe sm:mx-auto sm:max-w-sm sm:rounded-2xl sm:pb-4"
+        >
+          <p className="font-semibold">{confirming.name}</p>
+          <p className="text-sm text-muted">{t.notifications.restockHint}</p>
+          <p className="text-sm font-medium">{t.notifications.discardQuestion}</p>
+          <div className="space-y-2">
+            <button
+              disabled={busy}
+              onClick={() => restock(confirming, true)}
+              className="w-full rounded-lg bg-primary-600 py-2.5 text-sm font-medium text-white disabled:opacity-60"
+            >
+              {t.notifications.discardYes}
+            </button>
+            <button
+              disabled={busy}
+              onClick={() => restock(confirming, false)}
+              className="w-full rounded-lg bg-surface-2 py-2.5 text-sm font-medium disabled:opacity-60"
+            >
+              {t.notifications.discardNo}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

@@ -326,6 +326,10 @@ export const en: Dict = {
     inList: "In list",
     clearAll: "Clear all",
     dismissAria: (name: string) => `Dismiss ${name}`,
+    restockHint: "I'll add it to the shopping list.",
+    discardQuestion: "Have you already thrown this product out?",
+    discardYes: "Yes — remove from pantry",
+    discardNo: "No — I still have it",
   },
   settings: {
     title: "Settings",

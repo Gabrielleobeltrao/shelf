@@ -198,7 +198,7 @@ export function ShoppingCartModal({ open, onClose }: Props) {
     <div className="fixed inset-0 z-40 flex justify-end">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-      <aside className="relative flex h-full w-80 max-w-[85vw] flex-col bg-surface p-4">
+      <aside className="relative flex h-full w-80 max-w-[85vw] flex-col bg-surface p-4 pb-safe">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t.shoppingList.title}</h2>
           <button onClick={onClose} aria-label={t.common.close} className="text-muted">

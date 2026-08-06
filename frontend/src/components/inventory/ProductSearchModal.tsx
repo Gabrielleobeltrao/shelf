@@ -108,7 +108,7 @@ export function ProductSearchModal({ title, onSelect, onAddManually, onClose, lo
     <div className="fixed inset-0 z-40 flex items-end bg-black/50" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className="flex max-h-[85vh] w-full flex-col space-y-3 rounded-t-2xl bg-surface p-4"
+        className="flex max-h-[85vh] w-full flex-col space-y-3 rounded-t-2xl bg-surface p-4 pb-safe"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{heading}</h2>

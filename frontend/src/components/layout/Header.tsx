@@ -97,7 +97,7 @@ export function Header({ left, right }: Props) {
   return (
     <>
       {/* Mobile top bar. */}
-      <header className="grid grid-cols-3 items-center border-b border-line bg-surface px-4 py-3 sm:px-6 lg:hidden">
+      <header className="sticky top-0 z-20 grid grid-cols-3 items-center border-b border-line bg-surface px-4 py-3 sm:px-6 lg:hidden">
         <div className="justify-self-start">{left}</div>
 
         <Link
@@ -116,7 +116,7 @@ export function Header({ left, right }: Props) {
 
       {/* Desktop top strip — only when signed in; global actions live here. */}
       {loggedIn && (
-        <div className="hidden items-center justify-end gap-4 border-b border-line bg-surface px-8 py-3 lg:flex">
+        <div className="sticky top-0 z-20 hidden items-center justify-end gap-4 border-b border-line bg-surface px-8 py-3 lg:flex">
           {actions}
         </div>
       )}
@@ -131,6 +131,7 @@ export function Header({ left, right }: Props) {
             withinDays={withinDays}
             onDismiss={dismissAlert}
             onClearAll={clearAlerts}
+            onRemoved={(item) => setItems((prev) => prev.filter((i) => i._id !== item._id))}
           />
           <ShoppingCartModal open={cartOpen} onClose={() => setCartOpen(false)} />
         </>

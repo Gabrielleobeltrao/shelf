@@ -324,6 +324,10 @@ export const pt = {
     inList: "Na lista",
     clearAll: "Limpar tudo",
     dismissAria: (name: string) => `Dispensar ${name}`,
+    restockHint: "Vou adicionar à lista de compras.",
+    discardQuestion: "Você já jogou fora esse produto?",
+    discardYes: "Sim — tirar do estoque",
+    discardNo: "Não — ainda tenho",
   },
   settings: {
     title: "Configurações",
