@@ -374,7 +374,7 @@ export function Recipes() {
 
                 <div className="space-y-2 p-3">
                   <div className="flex items-center justify-between gap-2">
-                    <h2 className="font-medium">{recipe.name}</h2>
+                    <h2 className="font-display font-bold">{recipe.name}</h2>
                     {/* Saved recipes are reference-only (ingredients aren't
                         linked to the user's stock), so the stock-availability
                         badge only applies to the user's own recipes. */}
@@ -385,7 +385,7 @@ export function Recipes() {
                           {t.recipes.canMake}
                         </span>
                       ) : (
-                        <span className="shrink-0 rounded-full bg-rust-100 px-2 py-0.5 text-xs font-medium text-rust-700 dark:bg-rust-900/40 dark:text-rust-400">
+                        <span className="shrink-0 rounded-full bg-mustard-100 px-2 py-0.5 text-xs font-semibold text-mustard-700 dark:bg-mustard-900/40 dark:text-mustard-400">
                           {t.recipes.missing(missing.length)}
                         </span>
                       ))}
