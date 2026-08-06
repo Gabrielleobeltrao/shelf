@@ -86,6 +86,7 @@ export function ItemViewModal({
         onClick={(e) => e.stopPropagation()}
         className="max-h-[90vh] w-full space-y-3 overflow-y-auto rounded-t-2xl bg-surface p-4 pb-safe"
       >
+        <div className="mx-auto -mt-1 mb-1 h-1 w-9 rounded-full bg-line" />
         <div className="relative h-48 w-full overflow-hidden rounded-xl">
           <PhotoOrFallback
             src={item.imageUrl}
@@ -131,7 +132,7 @@ export function ItemViewModal({
             onClick={() => onStep(-1)}
             disabled={pending || item.quantity <= 0}
             aria-label={t.common.remove}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2 disabled:opacity-40"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface disabled:opacity-40"
           >
             <MinusIcon className="h-4 w-4" />
           </button>
@@ -142,7 +143,7 @@ export function ItemViewModal({
             onClick={() => onStep(1)}
             disabled={pending}
             aria-label={t.common.add}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2 disabled:opacity-40"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface disabled:opacity-40"
           >
             <PlusIcon className="h-4 w-4" />
           </button>
