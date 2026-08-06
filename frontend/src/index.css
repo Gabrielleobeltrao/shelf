@@ -9,6 +9,10 @@
 @import "@fontsource/figtree/600.css";
 @import "@fontsource/figtree/700.css";
 
+/* Drive dark mode from a data-theme attribute (set by the theme toggle) instead
+   of only prefers-color-scheme, so the in-app Light/Dark/System switch works. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 /* iOS safe-area helpers: keep bottom-anchored UI (sheets, drawers, FAB, banner)
    clear of the home indicator / Safari bottom bar. Needs viewport-fit=cover. */
 @utility pb-safe {
@@ -80,8 +84,10 @@
   --color-on-photo: var(--on-photo);
 }
 
+/* Light is the default; the theme provider always stamps data-theme on <html>
+   (resolving "system" to light/dark), so these two blocks cover every case. */
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
   --bg: oklch(97% 0.007 95);
   --surface: oklch(99.3% 0.003 95);
   --surface-2: oklch(94.8% 0.01 95);
@@ -91,16 +97,15 @@
   --on-photo: oklch(99.3% 0.003 95 / 0.9);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: oklch(19% 0.012 95);
-    --surface: oklch(23% 0.013 95);
-    --surface-2: oklch(27% 0.014 95);
-    --ink: oklch(94% 0.01 95);
-    --muted: oklch(68% 0.014 95);
-    --line: oklch(33% 0.014 95);
-    --on-photo: oklch(23% 0.013 95 / 0.82);
-  }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: oklch(19% 0.012 95);
+  --surface: oklch(23% 0.013 95);
+  --surface-2: oklch(27% 0.014 95);
+  --ink: oklch(94% 0.01 95);
+  --muted: oklch(68% 0.014 95);
+  --line: oklch(33% 0.014 95);
+  --on-photo: oklch(23% 0.013 95 / 0.82);
 }
 
 body {

@@ -307,6 +307,12 @@ export const pt = {
   offline: {
     banner: "Você está offline — mostrando os dados salvos.",
   },
+  theme: {
+    label: "Tema",
+    light: "Claro",
+    dark: "Escuro",
+    system: "Sistema",
+  },
   install: {
     title: "Instalar o app",
     desc: "Instale o Shelf pra abrir rápido, em tela cheia, e usar offline.",

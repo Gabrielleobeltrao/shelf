@@ -309,6 +309,12 @@ export const en: Dict = {
   offline: {
     banner: "You're offline — showing saved data.",
   },
+  theme: {
+    label: "Theme",
+    light: "Light",
+    dark: "Dark",
+    system: "System",
+  },
   install: {
     title: "Install the app",
     desc: "Install Shelf to open it fast, full screen, and use it offline.",

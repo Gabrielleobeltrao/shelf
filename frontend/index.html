@@ -7,6 +7,16 @@
     <meta name="theme-color" content="#438f31" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Shelf</title>
+    <script>
+      // Set the theme before first paint to avoid a flash of the wrong theme.
+      (function () {
+        try {
+          var t = localStorage.getItem("shelf.theme") || "system";
+          var dark = t === "dark" || (t === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

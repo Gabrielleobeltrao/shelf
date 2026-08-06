@@ -206,9 +206,11 @@ export function MenuIcon({ className }: IconProps) {
 export function ShelfLogo({ className }: IconProps) {
   return (
     <svg viewBox="0 0 22 22" fill="none" className={className}>
-      <rect x="3" y="5" width="6" height="10" rx="2" className="fill-primary-600" />
-      <rect x="11" y="7" width="6" height="8" rx="2" className="fill-ink" />
-      <rect x="2" y="16" width="18" height="2" rx="1" className="fill-ink" />
+      <rect x="3" y="5" width="6" height="10" rx="1.5" className="fill-mustard-600" />
+      <rect x="4" y="3" width="4" height="3" rx="1" className="fill-mustard-700" />
+      <rect x="11" y="7" width="6" height="8" rx="1.5" className="fill-primary-600" />
+      <rect x="12" y="5" width="4" height="3" rx="1" className="fill-primary-700" />
+      <rect x="2" y="16" width="18" height="2" rx="1" className="fill-primary-700" />
     </svg>
   );
 }
