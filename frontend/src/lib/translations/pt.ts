@@ -285,6 +285,9 @@ export const pt = {
   },
   dashboard: {
     title: "Dashboard",
+    greetMorning: (n: string) => `Bom dia${n ? `, ${n}` : ""}`,
+    greetAfternoon: (n: string) => `Boa tarde${n ? `, ${n}` : ""}`,
+    greetEvening: (n: string) => `Boa noite${n ? `, ${n}` : ""}`,
     expiringSoon: "Vencendo em breve",
     enablePrefix: "Ative o controle de validade em",
     settingsLink: "Configurações",

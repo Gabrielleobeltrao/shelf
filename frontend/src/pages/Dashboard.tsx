@@ -10,6 +10,7 @@ import { describeActivity, householdApi, type ActivityEntry, type Household } fr
 import { useHouseholdSync, useSyncEffect } from "../lib/householdSync";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 import { useI18n } from "../lib/i18n";
+import { useSession } from "../lib/auth-client";
 
 type Item = {
   _id: string;
@@ -26,6 +27,7 @@ type Recipe = { _id: string; ingredients: { name?: string; quantity: number; uni
 
 export function Dashboard() {
   const { t, lang } = useI18n();
+  const { data: session } = useSession();
   const [items, setItems] = useState<Item[]>([]);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [shoppingCount, setShoppingCount] = useState(0);
@@ -96,10 +98,19 @@ export function Dashboard() {
 
   const locale = lang === "pt" ? "pt-BR" : "en-US";
 
+  const firstName = session?.user.name?.trim().split(" ")[0] ?? "";
+  const hour = new Date().getHours();
+  const greeting =
+    hour < 12
+      ? t.dashboard.greetMorning(firstName)
+      : hour < 18
+        ? t.dashboard.greetAfternoon(firstName)
+        : t.dashboard.greetEvening(firstName);
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-lg font-semibold">{t.dashboard.title}</h1>
+        <h1 className="font-display text-xl font-bold">{greeting}</h1>
         {household && (
           <p className="text-sm text-muted">
             {household.isHome
@@ -158,22 +169,31 @@ export function Dashboard() {
               <p className="text-sm text-muted">{t.dashboard.none}</p>
             ) : (
               <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-                {attention.map((item) => (
-                  <li key={item._id} className="flex items-center gap-3 rounded-2xl bg-surface-2 p-3">
-                    <PhotoOrFallback
-                      src={item.imageUrl}
-                      imgClassName="h-10 w-10 shrink-0 rounded-lg object-cover"
-                      fallback={<div className="h-10 w-10 shrink-0 rounded-lg bg-surface" />}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate">{item.name}</p>
-                      {item.brand && <p className="truncate text-xs text-muted">{item.brand}</p>}
-                    </div>
-                    <span className="shrink-0 rounded-full bg-rust-100 px-2 py-0.5 text-xs font-medium text-rust-700 dark:bg-rust-900/40 dark:text-rust-400">
-                      {getExpirationWarning(t, item.expirationDate, withinDays)}
-                    </span>
-                  </li>
-                ))}
+                {attention.map((item) => {
+                  const isExpired = daysUntil(item.expirationDate!) < 0;
+                  return (
+                    <li key={item._id} className="flex items-center gap-3 rounded-2xl bg-surface-2 p-3">
+                      <PhotoOrFallback
+                        src={item.imageUrl}
+                        imgClassName="h-11 w-11 shrink-0 rounded-xl object-cover"
+                        fallback={<div className="h-11 w-11 shrink-0 rounded-xl bg-surface" />}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium">{item.name}</p>
+                        {item.brand && <p className="truncate text-xs text-muted">{item.brand}</p>}
+                      </div>
+                      <span
+                        className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                          isExpired
+                            ? "bg-rust-100 text-rust-700 dark:bg-rust-900/40 dark:text-rust-400"
+                            : "bg-mustard-100 text-mustard-700 dark:bg-mustard-900/40 dark:text-mustard-400"
+                        }`}
+                      >
+                        {getExpirationWarning(t, item.expirationDate, withinDays)}
+                      </span>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
@@ -220,7 +240,7 @@ function Stat({
 }) {
   const body = (
     <>
-      <p className={`text-2xl font-semibold tabular-nums ${TONES[tone] ?? TONES.ink}`}>{value}</p>
+      <p className={`font-display text-2xl font-bold tabular-nums ${TONES[tone] ?? TONES.ink}`}>{value}</p>
       <p className="mt-0.5 text-xs text-muted">{label}</p>
     </>
   );

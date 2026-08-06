@@ -287,6 +287,9 @@ export const en: Dict = {
   },
   dashboard: {
     title: "Dashboard",
+    greetMorning: (n: string) => `Good morning${n ? `, ${n}` : ""}`,
+    greetAfternoon: (n: string) => `Good afternoon${n ? `, ${n}` : ""}`,
+    greetEvening: (n: string) => `Good evening${n ? `, ${n}` : ""}`,
     expiringSoon: "Expiring soon",
     enablePrefix: "Turn on expiration tracking in",
     settingsLink: "Settings",
