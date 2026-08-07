@@ -1,5 +1,6 @@
 import { TrashIcon } from "../icons";
 import { useI18n } from "../../lib/i18n";
+import { Portal } from "./Portal";
 
 type Props = {
   title: string;
@@ -22,6 +23,7 @@ export function ConfirmDialog({
   const confirm = confirmLabel ?? t.common.delete;
   const cancel = cancelLabel ?? t.common.cancel;
   return (
+    <Portal>
     <div
       className="fixed inset-0 z-50 flex items-end bg-black/50"
       onClick={(e) => {
@@ -61,5 +63,6 @@ export function ConfirmDialog({
         </div>
       </div>
     </div>
+    </Portal>
   );
 }

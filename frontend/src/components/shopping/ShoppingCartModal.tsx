@@ -3,6 +3,7 @@ import { api } from "../../lib/api";
 import { CheckIcon, CloseIcon, MinusIcon, PlusIcon } from "../icons";
 import { EmptyState } from "../ui/EmptyState";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
+import { Portal } from "../ui/Portal";
 import { EmptyShelfIllustration } from "../illustrations";
 import { useI18n } from "../../lib/i18n";
 import { unitLabel } from "../../lib/labels";
@@ -195,6 +196,7 @@ export function ShoppingCartModal({ open, onClose }: Props) {
 
   return (
     <>
+    <Portal>
     <div className="fixed inset-0 z-40 flex justify-end">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
@@ -320,6 +322,7 @@ export function ShoppingCartModal({ open, onClose }: Props) {
         )}
       </aside>
     </div>
+    </Portal>
 
     {searchOpen && (
       <ProductSearchModal

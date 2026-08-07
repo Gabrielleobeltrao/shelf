@@ -6,6 +6,7 @@ import { daysUntil, getExpirationWarning } from "../../lib/expiration";
 import { CartIcon, CheckIcon, CloseIcon } from "../icons";
 import { EmptyState } from "../ui/EmptyState";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
+import { Portal } from "../ui/Portal";
 import { EmptyShelfIllustration } from "../illustrations";
 
 export type AlertItem = {
@@ -135,6 +136,7 @@ export function NotificationsPanel({
 
   return (
     <>
+    <Portal>
     <div className="fixed inset-0 z-40 flex justify-end">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
@@ -191,8 +193,10 @@ export function NotificationsPanel({
         </div>
       </aside>
     </div>
+    </Portal>
 
     {confirming && (
+      <Portal>
       <div
         className="fixed inset-0 z-50 flex items-end bg-black/50 sm:items-center"
         onClick={() => !busy && setConfirming(null)}
@@ -222,6 +226,7 @@ export function NotificationsPanel({
           </div>
         </div>
       </div>
+      </Portal>
     )}
     </>
   );

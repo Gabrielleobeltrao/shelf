@@ -5,6 +5,7 @@ import type { ProductSearchResult } from "../../lib/openFoodFacts";
 import { CloseIcon, PlusIcon, TrashIcon } from "../icons";
 import { BowlIllustration } from "../illustrations";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { Portal } from "../ui/Portal";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 import { Switch } from "../ui/Switch";
 import { RECIPE_TAGS } from "../../lib/recipeTags";
@@ -190,6 +191,7 @@ export function RecipeDetailModal({
   }
 
   return (
+    <Portal>
     <div className="fixed inset-0 z-30 flex items-end bg-black/50" onClick={onClose}>
       <form
         onClick={(e) => e.stopPropagation()}
@@ -439,5 +441,6 @@ export function RecipeDetailModal({
         />
       )}
     </div>
+    </Portal>
   );
 }

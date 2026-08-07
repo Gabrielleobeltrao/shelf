@@ -5,6 +5,7 @@ import { LOCATION_OPTIONS } from "../../lib/locations";
 import { CloseIcon, TrashIcon } from "../icons";
 import { Switch } from "../ui/Switch";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { Portal } from "../ui/Portal";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 import { useI18n } from "../../lib/i18n";
 import { categoryLabel, locationLabel } from "../../lib/labels";
@@ -106,6 +107,7 @@ export function ItemDetailModal({
   }
 
   return (
+    <Portal>
     <div className="fixed inset-0 z-30 flex items-end bg-black/50" onClick={onClose}>
       <form
         onClick={(e) => e.stopPropagation()}
@@ -304,5 +306,6 @@ export function ItemDetailModal({
         />
       )}
     </div>
+    </Portal>
   );
 }

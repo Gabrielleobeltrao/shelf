@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { CloseIcon, PlusIcon } from "../icons";
+import { Portal } from "./Portal";
 
 type Action = {
   label: string;
@@ -14,7 +15,11 @@ export function FabMenu({ actions, label = "Abrir ações" }: { actions: Action[
 
   return (
     <>
-      {open && <div className="fixed inset-0 z-20" onClick={() => setOpen(false)} />}
+      {open && (
+        <Portal>
+          <div className="fixed inset-0 z-20" onClick={() => setOpen(false)} />
+        </Portal>
+      )}
 
       <div className="fixed bottom-safe right-4 z-30 flex flex-col items-end gap-3 sm:right-6 lg:right-8">
         {open &&

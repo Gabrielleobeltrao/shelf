@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { collectionsApi, type CollectionListItem } from "../../lib/collections";
 import { useI18n } from "../../lib/i18n";
 import { CheckIcon, CloseIcon, PlusIcon } from "../icons";
+import { Portal } from "../ui/Portal";
 
 // Bottom-sheet menu to toggle a recipe in/out of the user's collections,
 // with an inline "new collection" that also adds the recipe.
@@ -62,6 +63,7 @@ export function AddToCollectionMenu({ recipeId, onClose }: { recipeId: string; o
   }
 
   return (
+    <Portal>
     <div className="fixed inset-0 z-40 flex items-end bg-black/50 sm:items-center" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
@@ -129,5 +131,6 @@ export function AddToCollectionMenu({ recipeId, onClose }: { recipeId: string; o
         )}
       </div>
     </div>
+    </Portal>
   );
 }

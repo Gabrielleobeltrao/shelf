@@ -2,6 +2,7 @@ import { useState, useSyncExternalStore } from "react";
 import { canInstall, isIOS, isStandalone, promptInstall, subscribeInstall } from "../../lib/pwaInstall";
 import { useI18n } from "../../lib/i18n";
 import { DownloadIcon } from "../icons";
+import { Portal } from "../ui/Portal";
 
 export function InstallCard() {
   const { t } = useI18n();
@@ -27,6 +28,7 @@ export function InstallCard() {
       </button>
 
       {iosHelp && (
+        <Portal>
         <div className="fixed inset-0 z-40 flex items-end bg-black/50" onClick={() => setIosHelp(false)}>
           <div
             onClick={(e) => e.stopPropagation()}
@@ -45,6 +47,7 @@ export function InstallCard() {
             </button>
           </div>
         </div>
+        </Portal>
       )}
     </div>
   );

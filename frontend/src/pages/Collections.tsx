@@ -6,6 +6,7 @@ import { EmptyState } from "../components/ui/EmptyState";
 import { EmptyShelfIllustration } from "../components/illustrations";
 import { Fab } from "../components/ui/Fab";
 import { Switch } from "../components/ui/Switch";
+import { Portal } from "../components/ui/Portal";
 import { CloseIcon, FolderIcon, PlusIcon } from "../components/icons";
 
 // One big cover photo (clear even on small mobile cards); the "stack" effect
@@ -120,6 +121,7 @@ function NewCollectionModal({
   }
 
   return (
+    <Portal>
     <div className="fixed inset-0 z-40 flex items-end bg-black/50 sm:items-center" onClick={onClose}>
       <form
         onSubmit={submit}
@@ -157,5 +159,6 @@ function NewCollectionModal({
         </button>
       </form>
     </div>
+    </Portal>
   );
 }

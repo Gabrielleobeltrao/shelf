@@ -2,6 +2,7 @@ import { useState } from "react";
 import { NUTRITION_OPTIONS } from "../../lib/nutrition";
 import { CloseIcon } from "../icons";
 import { useI18n } from "../../lib/i18n";
+import { Portal } from "../ui/Portal";
 
 type Props = {
   selected: string[];
@@ -33,6 +34,7 @@ export function NutritionFieldsModal({ selected, onClose, onSave }: Props) {
   }
 
   return (
+    <Portal>
     <div className="fixed inset-0 z-30 flex items-end bg-black/50" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
@@ -73,5 +75,6 @@ export function NutritionFieldsModal({ selected, onClose, onSave }: Props) {
         </button>
       </div>
     </div>
+    </Portal>
   );
 }

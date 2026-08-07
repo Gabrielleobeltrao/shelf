@@ -12,6 +12,7 @@ import { EmptyState } from "../components/ui/EmptyState";
 import { EmptyShelfIllustration, BowlIllustration } from "../components/illustrations";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
+import { Portal } from "../components/ui/Portal";
 import { BackIcon, CloseIcon, PencilIcon, PlusIcon, ShareIcon, TrashIcon } from "../components/icons";
 
 export function CollectionDetail() {
@@ -279,6 +280,7 @@ function AddRecipesModal({
   }
 
   return (
+    <Portal>
     <div className="fixed inset-0 z-40 flex items-end bg-black/50 sm:items-center" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
@@ -317,5 +319,6 @@ function AddRecipesModal({
         </div>
       </div>
     </div>
+    </Portal>
   );
 }

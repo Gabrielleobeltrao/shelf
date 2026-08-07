@@ -4,6 +4,7 @@ import { useI18n } from "../../lib/i18n";
 import { categoryLabel, locationLabel, unitLabel } from "../../lib/labels";
 import { BackIcon, CartIcon, MinusIcon, PencilIcon, PlusIcon, TrashIcon } from "../icons";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { Portal } from "../ui/Portal";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 
 type Item = {
@@ -81,6 +82,7 @@ export function ItemViewModal({
   ].filter(Boolean) as { label: string; value: string }[];
 
   return (
+    <Portal>
     <div className="fixed inset-0 z-30 flex items-end bg-black/50" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
@@ -217,5 +219,6 @@ export function ItemViewModal({
         />
       )}
     </div>
+    </Portal>
   );
 }

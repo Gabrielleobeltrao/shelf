@@ -12,6 +12,7 @@ import { AddToCollectionMenu } from "../components/recipes/AddToCollectionMenu";
 import { useI18n } from "../lib/i18n";
 import { tagLabel, unitLabel } from "../lib/labels";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
+import { Portal } from "../components/ui/Portal";
 import { BowlIllustration, EmptyShelfIllustration } from "../components/illustrations";
 
 type RecipeIngredient = {
@@ -225,7 +226,9 @@ export function Recipes() {
 
             {filterOpen && (
               <>
-                <div className="fixed inset-0 z-10" onClick={() => setFilterOpen(false)} />
+                <Portal>
+                  <div className="fixed inset-0 z-10" onClick={() => setFilterOpen(false)} />
+                </Portal>
                 <div className="absolute right-0 z-20 mt-1 w-64 space-y-3 rounded-lg border border-line bg-surface p-3 shadow-lg">
                   {hasSaved && (
                     <div>

@@ -3,6 +3,7 @@ import { COUNTRY_BY_LANG, searchProducts } from "../../lib/openFoodFacts";
 import type { ProductSearchResult } from "../../lib/openFoodFacts";
 import { CloseIcon, SearchIcon } from "../icons";
 import { EmptyState } from "../ui/EmptyState";
+import { Portal } from "../ui/Portal";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 import { EmptyShelfIllustration } from "../illustrations";
 import { useI18n } from "../../lib/i18n";
@@ -105,6 +106,7 @@ export function ProductSearchModal({ title, onSelect, onAddManually, onClose, lo
   const noResults = localMatches.length === 0 && results.length === 0;
 
   return (
+    <Portal>
     <div className="fixed inset-0 z-40 flex items-end bg-black/50" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
@@ -202,6 +204,7 @@ export function ProductSearchModal({ title, onSelect, onAddManually, onClose, lo
         </div>
       </div>
     </div>
+    </Portal>
   );
 }
 

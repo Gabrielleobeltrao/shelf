@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { BrowserMultiFormatReader } from "@zxing/browser";
 import { CloseIcon } from "../icons";
 import { useI18n } from "../../lib/i18n";
+import { Portal } from "../ui/Portal";
 
 type Props = {
   onDetected: (code: string) => void;
@@ -77,6 +78,7 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
   }
 
   return (
+    <Portal>
     <div className="fixed inset-0 z-20 flex flex-col bg-black">
       <video ref={videoRef} className="flex-1 object-cover" muted playsInline />
 
@@ -124,5 +126,6 @@ export function BarcodeScanner({ onDetected, onClose }: Props) {
         </button>
       </div>
     </div>
+    </Portal>
   );
 }
