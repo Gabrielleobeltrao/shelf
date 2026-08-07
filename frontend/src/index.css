@@ -16,7 +16,9 @@
 /* iOS safe-area helpers: keep bottom-anchored UI (sheets, drawers, FAB, banner)
    clear of the home indicator / Safari bottom bar. Needs viewport-fit=cover. */
 @utility pb-safe {
-  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  /* At least 1rem (desktop / no notch); on devices with a home indicator, use
+     the inset itself — which sits behind the indicator, so no visible gap. */
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
 @utility bottom-safe {
   bottom: calc(1.5rem + env(safe-area-inset-bottom));
