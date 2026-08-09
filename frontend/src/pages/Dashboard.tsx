@@ -123,10 +123,10 @@ export function Dashboard() {
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             <Stat to="/estoque" value={items.length} label={t.dashboard.statItems} />
             {trackExpiration && (
-              <Stat value={expiringSoon.length} label={t.dashboard.statExpiring} tone="mustard" />
+              <Stat to="/estoque?status=expiring" value={expiringSoon.length} label={t.dashboard.statExpiring} tone="mustard" />
             )}
             {trackExpiration && (
-              <Stat value={expired.length} label={t.dashboard.statExpired} tone="rust" />
+              <Stat to="/estoque?status=expired" value={expired.length} label={t.dashboard.statExpired} tone="rust" />
             )}
             <Stat value={shoppingCount} label={t.dashboard.statShopping} />
             <Stat to="/receitas?canMake=1" value={makeableCount} label={t.dashboard.statMakeable} tone="primary" />

@@ -133,6 +133,18 @@ export function Inventory() {
     setLocationFilter(searchParams.get("local") ?? "");
   }, [searchParams]);
 
+  // Deep link from the dashboard's Expiring/Expired stats:
+  // /estoque?status=expiring|expired lands here with the filter applied. Strip
+  // the param afterwards so a refresh stays clean (other params are kept).
+  useEffect(() => {
+    const status = searchParams.get("status");
+    if (status !== "expiring" && status !== "expired") return;
+    setStatusFilter(status);
+    const next = new URLSearchParams(searchParams);
+    next.delete("status");
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
+
   const categories = useMemo(() => {
     const set = new Set(items.map((item) => item.category?.trim()).filter(Boolean));
     return [...set].sort((a, b) => a!.localeCompare(b!));
