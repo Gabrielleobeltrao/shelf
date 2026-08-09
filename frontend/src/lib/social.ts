@@ -108,6 +108,10 @@ export const social = {
       `/api/feed${cursor ? `?cursor=${cursor}` : ""}`,
     ),
   userPosts: (handle: string) => api.get<PostView[]>(`/api/posts/user/${encodeURIComponent(handle)}`),
+  tagFeed: (tag: string, cursor?: string) =>
+    api.get<{ items: PostView[]; nextCursor: string | null }>(
+      `/api/posts/tag/${encodeURIComponent(tag)}${cursor ? `?cursor=${cursor}` : ""}`,
+    ),
   createPost: (data: {
     type?: string;
     visibility?: string;

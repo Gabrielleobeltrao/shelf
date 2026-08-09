@@ -20,6 +20,7 @@ import { Discover } from "./pages/Discover";
 import { Notifications } from "./pages/Notifications";
 import { Restaurants } from "./pages/Restaurants";
 import { Place } from "./pages/Place";
+import { Tag } from "./pages/Tag";
 
 // Root shows the marketing landing to logged-out visitors and sends
 // logged-in users straight into the app (Estoque).
@@ -68,6 +69,7 @@ function App() {
         <Route path="/notificacoes" element={<Notifications />} />
         <Route path="/restaurantes" element={<Restaurants />} />
         <Route path="/lugar/:id" element={<Place />} />
+        <Route path="/tag/:tag" element={<Tag />} />
         <Route path="/configuracoes" element={<Settings />} />
       </Route>
 

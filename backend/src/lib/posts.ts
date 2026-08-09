@@ -7,6 +7,15 @@ import { listUsers } from "./profiles.js";
 
 type PostDoc = InstanceType<typeof Post>;
 
+// Extract #hashtags from text (lowercased, unique, capped).
+export function extractTags(text: string): string[] {
+  const tags = new Set<string>();
+  for (const m of String(text ?? "").matchAll(/#([\p{L}0-9_]{1,50})/gu)) {
+    tags.add(m[1].toLowerCase());
+  }
+  return [...tags].slice(0, 10);
+}
+
 // Can `viewerId` see this post?
 export async function canViewPost(post: PostDoc, viewerId?: string): Promise<boolean> {
   if (post.authorId === viewerId) return true;

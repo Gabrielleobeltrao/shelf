@@ -24,6 +24,7 @@ const postSchema = new Schema(
       itemIds: { type: [String], default: undefined },
       _id: false,
     },
+    tags: { type: [String], default: [], index: true },
     likesCount: { type: Number, default: 0 },
     commentsCount: { type: Number, default: 0 },
   },

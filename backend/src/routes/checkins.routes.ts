@@ -7,6 +7,7 @@ import { PostLike } from "../models/PostLike.js";
 import { PostComment } from "../models/PostComment.js";
 import { Profile } from "../models/Profile.js";
 import { getOrCreateProfile } from "../lib/profiles.js";
+import { extractTags } from "../lib/posts.js";
 
 const router = Router();
 router.use(requireAuth);
@@ -59,6 +60,7 @@ router.post("/", async (req, res) => {
     text: String(review ?? "").slice(0, 2000),
     photos: checkin.photos,
     refs: { placeId: resolvedPlaceId, checkinId: String(checkin._id) },
+    tags: extractTags(String(review ?? "")),
   });
   checkin.postId = String(post._id);
   await checkin.save();

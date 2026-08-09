@@ -1,11 +1,12 @@
 import { Router } from "express";
+import { Types } from "mongoose";
 import { requireAuth } from "../middleware/requireAuth.js";
 import { Post } from "../models/Post.js";
 import { PostLike } from "../models/PostLike.js";
 import { PostComment } from "../models/PostComment.js";
 import { Profile } from "../models/Profile.js";
 import { Follow } from "../models/Follow.js";
-import { canViewPost, serializePosts } from "../lib/posts.js";
+import { canViewPost, serializePosts, extractTags } from "../lib/posts.js";
 import { getOrCreateProfile, usersByIds } from "../lib/profiles.js";
 import { notify } from "../lib/notify.js";
 
@@ -31,6 +32,7 @@ router.post("/", async (req, res) => {
     text: String(text ?? "").slice(0, 2000),
     photos: Array.isArray(photos) ? photos.slice(0, 6).map((p) => String(p)) : [],
     refs: refs ?? {},
+    tags: extractTags(String(text ?? "")),
   });
   await Profile.updateOne({ userId: me }, { $inc: { postsCount: 1 } });
   const [serialized] = await serializePosts([post], me);
@@ -156,6 +158,23 @@ router.delete("/:id/comments/:commentId", async (req, res) => {
   await PostComment.deleteOne({ _id: comment._id });
   await Post.updateOne({ _id: comment.postId }, { $inc: { commentsCount: -1 } });
   res.json({ ok: true });
+});
+
+// Public posts (+ your own) with a #hashtag, newest first, cursor-paginated.
+router.get("/tag/:tag", async (req, res) => {
+  const me = req.userId!;
+  const tag = req.params.tag.toLowerCase();
+  const query: Record<string, unknown> = {
+    tags: tag,
+    $or: [{ visibility: "public" }, { authorId: me }],
+  };
+  const cursor = req.query.cursor as string | undefined;
+  if (cursor && Types.ObjectId.isValid(cursor)) query._id = { $lt: new Types.ObjectId(cursor) };
+  const posts = await Post.find(query).sort({ _id: -1 }).limit(20);
+  res.json({
+    items: await serializePosts(posts, me),
+    nextCursor: posts.length === 20 ? String(posts[posts.length - 1]._id) : null,
+  });
 });
 
 // A user's posts, visibility-aware.

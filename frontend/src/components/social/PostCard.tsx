@@ -6,6 +6,7 @@ import { timeAgo } from "../../lib/timeAgo";
 import { Avatar } from "./Avatar";
 import { ChatIcon, StarIcon, TrashIcon } from "../icons";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
+import { linkify } from "../../lib/linkify";
 
 function HeartIcon({ filled, className }: { filled?: boolean; className?: string }) {
   return (
@@ -121,7 +122,7 @@ export function PostCard({ post, onDeleted }: { post: PostView; onDeleted?: (id:
         <div className="rounded-xl bg-surface px-3 py-2 text-sm font-medium">🍳 {post.recipe.name}</div>
       )}
 
-      {post.text && <p className="whitespace-pre-wrap break-words text-sm">{post.text}</p>}
+      {post.text && <p className="whitespace-pre-wrap break-words text-sm">{linkify(post.text)}</p>}
 
       {post.photos && post.photos.length > 0 && (
         <div className={`grid gap-1.5 ${post.photos.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
