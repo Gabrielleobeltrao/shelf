@@ -242,6 +242,11 @@ const DONE_ICONS: ComponentType<IconProps>[] = [
 
 // Planned icons are keyed by feature id so they stay put as votes reorder.
 const PLANNED_ICON: Record<string, ComponentType<IconProps>> = {
+  "social-feed": GridIcon,
+  "social-profile": UserIcon,
+  follow: UsersIcon,
+  checkins: ExploreIcon,
+  "public-pantry": ShareIcon,
   events: CalendarIcon,
   profiles: UserIcon,
   "receipt-scan": ReceiptIcon,
