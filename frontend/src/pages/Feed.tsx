@@ -3,8 +3,9 @@ import { social, type PostView } from "../lib/social";
 import { useI18n } from "../lib/i18n";
 import { PostCard } from "../components/social/PostCard";
 import { ComposeSheet } from "../components/social/ComposeSheet";
-import { Fab } from "../components/ui/Fab";
-import { PlusIcon } from "../components/icons";
+import { CheckinSheet } from "../components/social/CheckinSheet";
+import { FabMenu } from "../components/ui/FabMenu";
+import { PencilIcon, ExploreIcon } from "../components/icons";
 import { EmptyState } from "../components/ui/EmptyState";
 import { EmptyShelfIllustration } from "../components/illustrations";
 
@@ -14,6 +15,7 @@ export function Feed() {
   const [cursor, setCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [composing, setComposing] = useState(false);
+  const [checkin, setCheckin] = useState(false);
 
   useEffect(() => {
     social
@@ -61,13 +63,38 @@ export function Feed() {
         </div>
       )}
 
-      <Fab onClick={() => setComposing(true)} label={t.social.publish} icon={<PlusIcon className="h-6 w-6" />} />
+      <FabMenu
+        label={t.social.publish}
+        actions={[
+          {
+            label: t.social.publish,
+            icon: <PencilIcon className="h-5 w-5" />,
+            onClick: () => setComposing(true),
+          },
+          {
+            label: t.social.checkin,
+            icon: <ExploreIcon className="h-5 w-5" />,
+            onClick: () => setCheckin(true),
+          },
+        ]}
+      />
       {composing && (
         <ComposeSheet
           onClose={() => setComposing(false)}
           onPosted={(p) => {
             setItems((x) => [p, ...x]);
             setComposing(false);
+          }}
+        />
+      )}
+      {checkin && (
+        <CheckinSheet
+          onClose={() => setCheckin(false)}
+          onDone={async () => {
+            setCheckin(false);
+            const r = await social.feed();
+            setItems(r.items);
+            setCursor(r.nextCursor);
           }}
         />
       )}
