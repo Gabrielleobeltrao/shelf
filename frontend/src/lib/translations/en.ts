@@ -388,6 +388,13 @@ export const en: Dict = {
     notifAccept: (name: string) => `${name} accepted your request`,
     notifLike: (name: string) => `${name} liked your post`,
     notifComment: (name: string) => `${name} commented on your post`,
+    restaurants: "Restaurants",
+    searchRestaurants: "Search restaurants or city…",
+    reviews: "Reviews",
+    noReviews: "No reviews yet.",
+    noRestaurants: "No restaurants yet.",
+    ratingsCount: (n: number) => `${n} ${n === 1 ? "review" : "reviews"}`,
+    placeNotFound: "Place not found.",
   },
   install: {
     title: "Install the app",

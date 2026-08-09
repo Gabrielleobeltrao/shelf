@@ -386,6 +386,13 @@ export const pt = {
     notifAccept: (name: string) => `${name} aceitou sua solicitação`,
     notifLike: (name: string) => `${name} curtiu sua publicação`,
     notifComment: (name: string) => `${name} comentou sua publicação`,
+    restaurants: "Restaurantes",
+    searchRestaurants: "Buscar restaurantes ou cidade…",
+    reviews: "Avaliações",
+    noReviews: "Nenhuma avaliação ainda.",
+    noRestaurants: "Nenhum restaurante ainda.",
+    ratingsCount: (n: number) => `${n} ${n === 1 ? "avaliação" : "avaliações"}`,
+    placeNotFound: "Lugar não encontrado.",
   },
   install: {
     title: "Instalar o app",

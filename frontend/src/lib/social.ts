@@ -68,9 +68,21 @@ export type NotificationView = {
 export type PlaceCard = {
   id: string;
   name: string;
+  address?: string;
   city?: string;
+  geo?: { lat: number; lng: number };
   rating?: number | null;
   ratingCount: number;
+};
+
+export type ReviewView = {
+  id: string;
+  user?: UserCard;
+  rating?: number;
+  review: string;
+  dish: string;
+  photos: string[];
+  createdAt: string;
 };
 
 export const social = {
@@ -114,6 +126,15 @@ export const social = {
   markNotificationsRead: () => api.post("/api/notifications/read", {}),
 
   searchPlaces: (q: string) => api.get<PlaceCard[]>(`/api/places?q=${encodeURIComponent(q)}`),
+  places: (q?: string, city?: string) => {
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    if (city) params.set("city", city);
+    const qs = params.toString();
+    return api.get<PlaceCard[]>(`/api/places${qs ? `?${qs}` : ""}`);
+  },
+  place: (id: string) => api.get<PlaceCard>(`/api/places/${id}`),
+  placeReviews: (id: string) => api.get<ReviewView[]>(`/api/places/${id}/checkins`),
   createCheckin: (data: {
     placeId?: string;
     place?: { name: string; city?: string };

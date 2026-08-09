@@ -24,9 +24,13 @@ function serializePlace(p: PlaceDoc) {
 
 // Search places by name (for the check-in flow).
 router.get("/", async (req, res) => {
+  const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const q = String(req.query.q ?? "").trim();
-  const filter = q ? { name: new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i") } : {};
-  const places = await Place.find(filter).sort({ ratingCount: -1, createdAt: -1 }).limit(20);
+  const city = String(req.query.city ?? "").trim();
+  const filter: Record<string, unknown> = {};
+  if (q) filter.name = new RegExp(esc(q), "i");
+  if (city) filter.city = new RegExp(esc(city), "i");
+  const places = await Place.find(filter).sort({ ratingCount: -1, createdAt: -1 }).limit(30);
   res.json(places.map(serializePlace));
 });
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { social, type DiscoverCard } from "../lib/social";
 import { useI18n } from "../lib/i18n";
 import { UserRow } from "../components/social/UserRow";
@@ -24,7 +25,15 @@ export function Discover() {
 
   return (
     <div className="space-y-4 pb-16">
-      <h1 className="font-display text-xl font-bold">{t.social.discoverTitle}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="font-display text-xl font-bold">{t.social.discoverTitle}</h1>
+        <Link
+          to="/restaurantes"
+          className="inline-flex items-center gap-1.5 rounded-full bg-surface-2 px-3 py-1.5 text-sm font-medium"
+        >
+          🍽 {t.social.restaurants}
+        </Link>
+      </div>
       <div className="relative mx-auto max-w-xl">
         <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
         <input
