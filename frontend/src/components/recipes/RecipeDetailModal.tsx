@@ -17,7 +17,7 @@ function FieldLabel({ children }: { children: string }) {
 }
 
 const inputClass =
-  "w-full rounded-lg bg-surface-2 px-3 py-2 text-base";
+  "w-full rounded-xl bg-surface-2 px-3 py-2 text-base";
 
 export type IngredientRow = {
   itemId: string;
@@ -209,9 +209,9 @@ export function RecipeDetailModal({
         <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-line p-3">
           <PhotoOrFallback
             src={imageUrl}
-            imgClassName="h-28 w-full rounded-lg object-cover"
+            imgClassName="h-28 w-full rounded-xl object-cover"
             fallback={
-              <div className="flex h-28 w-full items-center justify-center rounded-lg bg-mustard-100 dark:bg-mustard-900/30">
+              <div className="flex h-28 w-full items-center justify-center rounded-xl bg-mustard-100 dark:bg-mustard-900/30">
                 <BowlIllustration className="h-16 w-auto" />
               </div>
             }
@@ -221,7 +221,7 @@ export function RecipeDetailModal({
             placeholder={t.recipeForm.photoUrl}
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            className="w-full rounded-lg bg-surface-2 px-3 py-2 text-sm"
+            className="w-full rounded-xl bg-surface-2 px-3 py-2 text-sm"
           />
         </div>
 
@@ -297,7 +297,7 @@ export function RecipeDetailModal({
                     unit: item?.unit ?? row.unit,
                   });
                 }}
-                className="min-w-0 flex-1 rounded-lg bg-surface-2 px-3 py-2 text-base"
+                className="min-w-0 flex-1 rounded-xl bg-surface-2 px-3 py-2 text-base"
               >
                 {availableItemsFor(index).map((item) => (
                   <option key={item._id} value={item._id}>
@@ -312,12 +312,12 @@ export function RecipeDetailModal({
                 placeholder={t.itemForm.quantity}
                 value={row.quantity}
                 onChange={(e) => updateIngredient(index, { quantity: e.target.value })}
-                className="w-16 rounded-lg bg-surface-2 px-2 py-2 text-base"
+                className="w-16 rounded-xl bg-surface-2 px-2 py-2 text-base"
               />
               <select
                 value={row.unit}
                 onChange={(e) => updateIngredient(index, { unit: e.target.value })}
-                className="w-24 shrink-0 rounded-lg bg-surface-2 px-2 py-2 text-base"
+                className="w-24 shrink-0 rounded-xl bg-surface-2 px-2 py-2 text-base"
               >
                 {[...new Set([row.unit, ...UNIT_SUGGESTIONS])].filter(Boolean).map((u) => (
                   <option key={u} value={u}>
@@ -329,7 +329,7 @@ export function RecipeDetailModal({
                 type="button"
                 onClick={() => removeIngredient(index)}
                 aria-label={t.common.remove}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rust-100 text-rust-600 dark:bg-rust-900/30"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rust-100 text-rust-600 dark:bg-rust-900/30"
               >
                 <CloseIcon className="h-3.5 w-3.5" />
               </button>
@@ -341,7 +341,7 @@ export function RecipeDetailModal({
               <button
                 type="button"
                 onClick={addIngredient}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-dashed border-primary-600 py-2 text-sm font-medium text-primary-700 dark:text-primary-400"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-dashed border-primary-600 py-2 text-sm font-medium text-primary-700 dark:text-primary-400"
               >
                 <PlusIcon className="h-3.5 w-3.5" />
                 {t.recipeForm.fromStock}
@@ -351,7 +351,7 @@ export function RecipeDetailModal({
               type="button"
               onClick={() => setProductSearchOpen(true)}
               disabled={creatingItem}
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-dashed border-primary-600 py-2 text-sm font-medium text-primary-700 disabled:opacity-60 dark:text-primary-400"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-dashed border-primary-600 py-2 text-sm font-medium text-primary-700 disabled:opacity-60 dark:text-primary-400"
             >
               <PlusIcon className="h-3.5 w-3.5" />
               {creatingItem ? t.recipeForm.adding : t.recipeForm.searchProduct}
@@ -370,13 +370,13 @@ export function RecipeDetailModal({
                 placeholder={t.recipeForm.stepPlaceholder(index + 1)}
                 value={step}
                 onChange={(e) => updateStep(index, e.target.value)}
-                className="min-w-0 flex-1 rounded-lg bg-surface-2 px-3 py-2 text-base"
+                className="min-w-0 flex-1 rounded-xl bg-surface-2 px-3 py-2 text-base"
               />
               <button
                 type="button"
                 onClick={() => removeStep(index)}
                 aria-label={t.common.remove}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rust-100 text-rust-600 dark:bg-rust-900/30"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rust-100 text-rust-600 dark:bg-rust-900/30"
               >
                 <CloseIcon className="h-3.5 w-3.5" />
               </button>
@@ -386,7 +386,7 @@ export function RecipeDetailModal({
           <button
             type="button"
             onClick={addStep}
-            className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-primary-600 py-2 text-sm font-medium text-primary-700 dark:text-primary-400"
+            className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-primary-600 py-2 text-sm font-medium text-primary-700 dark:text-primary-400"
           >
             <PlusIcon className="h-3.5 w-3.5" />
             {t.recipeForm.addStep}
@@ -408,7 +408,7 @@ export function RecipeDetailModal({
               type="button"
               onClick={() => setConfirmingDelete(true)}
               disabled={deleting}
-              className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-rust-600 py-2.5 font-medium text-rust-600 disabled:opacity-60"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-rust-600 py-2.5 font-medium text-rust-600 disabled:opacity-60"
             >
               <TrashIcon className="h-4 w-4" />
               {deleting ? t.common.deleting : t.common.delete}
@@ -417,7 +417,7 @@ export function RecipeDetailModal({
           <button
             type="submit"
             disabled={saving}
-            className="flex-1 rounded-lg bg-primary-600 py-2.5 font-medium text-white disabled:opacity-60"
+            className="flex-1 rounded-xl bg-primary-600 py-2.5 font-medium text-white disabled:opacity-60"
           >
             {saving ? t.common.saving : t.common.save}
           </button>

@@ -87,7 +87,7 @@ export function AddToCollectionMenu({ recipeId, onClose }: { recipeId: string; o
                 <button
                   key={c._id}
                   onClick={() => toggle(c)}
-                  className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm hover:bg-surface-2"
+                  className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left text-sm hover:bg-surface-2"
                 >
                   <span
                     className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
@@ -111,12 +111,12 @@ export function AddToCollectionMenu({ recipeId, onClose }: { recipeId: string; o
               onChange={(e) => setName(e.target.value)}
               placeholder={t.collections.namePlaceholder}
               maxLength={80}
-              className="min-w-0 flex-1 rounded-lg bg-surface-2 px-3 py-2 text-sm"
+              className="min-w-0 flex-1 rounded-xl bg-surface-2 px-3 py-2 text-sm"
             />
             <button
               type="submit"
               disabled={saving || !name.trim()}
-              className="shrink-0 rounded-lg bg-primary-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
+              className="shrink-0 rounded-xl bg-primary-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
             >
               {t.collections.create}
             </button>
@@ -124,7 +124,7 @@ export function AddToCollectionMenu({ recipeId, onClose }: { recipeId: string; o
         ) : (
           <button
             onClick={() => setCreating(true)}
-            className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-primary-600"
+            className="flex w-full items-center gap-2 rounded-xl px-2 py-2 text-sm font-medium text-primary-600"
           >
             <PlusIcon className="h-4 w-4" />
             {t.collections.newCollection}

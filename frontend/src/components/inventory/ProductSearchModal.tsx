@@ -128,7 +128,7 @@ export function ProductSearchModal({ title, onSelect, onAddManually, onClose, lo
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             autoFocus
-            className="w-full rounded-lg bg-surface-2 py-2 pl-9 pr-3 text-base"
+            className="w-full rounded-xl bg-surface-2 py-2 pl-9 pr-3 text-base"
           />
         </div>
 
@@ -214,12 +214,12 @@ function ProductRow({ product, onSelect }: { product: ProductSearchResult; onSel
     <button
       type="button"
       onClick={() => onSelect(product)}
-      className="flex w-full items-center gap-3 rounded-lg py-2 text-left hover:bg-surface-2"
+      className="flex w-full items-center gap-3 rounded-xl py-2 text-left hover:bg-surface-2"
     >
       <PhotoOrFallback
         src={product.imageUrl}
-        imgClassName="h-12 w-12 shrink-0 rounded-lg object-cover"
-        fallback={<div className="h-12 w-12 shrink-0 rounded-lg bg-surface" />}
+        imgClassName="h-12 w-12 shrink-0 rounded-xl object-cover"
+        fallback={<div className="h-12 w-12 shrink-0 rounded-xl bg-surface" />}
       />
       <div className="min-w-0 flex-1">
         <p className="truncate">{product.name}</p>

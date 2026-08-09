@@ -50,14 +50,14 @@ export function ConfirmDialog({
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 rounded-lg border border-line py-2.5 font-medium"
+            className="flex-1 rounded-xl border border-line py-2.5 font-medium"
           >
             {cancel}
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className="flex-1 rounded-lg bg-rust-600 py-2.5 font-medium text-white"
+            className="flex-1 rounded-xl bg-rust-600 py-2.5 font-medium text-white"
           >
             {confirm}
           </button>

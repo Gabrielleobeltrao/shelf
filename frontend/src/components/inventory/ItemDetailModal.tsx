@@ -47,7 +47,7 @@ function FieldLabel({ children }: { children: string }) {
 }
 
 const inputClass =
-  "w-full rounded-lg bg-surface-2 px-3 py-2 text-base";
+  "w-full rounded-xl bg-surface-2 px-3 py-2 text-base";
 
 export function ItemDetailModal({
   title,
@@ -125,9 +125,9 @@ export function ItemDetailModal({
         <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-line p-3">
           <PhotoOrFallback
             src={imageUrl}
-            imgClassName="h-28 w-28 rounded-lg object-cover"
+            imgClassName="h-28 w-28 rounded-xl object-cover"
             fallback={
-              <div className="flex h-28 w-28 items-center justify-center rounded-lg bg-surface-2">
+              <div className="flex h-28 w-28 items-center justify-center rounded-xl bg-surface-2">
                 <svg viewBox="0 0 32 32" fill="none" className="h-8 w-8 text-muted">
                   <rect x="4" y="10" width="24" height="16" rx="3" stroke="currentColor" strokeWidth="1.6" />
                   <circle cx="16" cy="18" r="5" stroke="currentColor" strokeWidth="1.6" />
@@ -141,7 +141,7 @@ export function ItemDetailModal({
             placeholder={t.itemForm.photoUrl}
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            className="w-full rounded-lg bg-surface-2 px-3 py-2 text-sm"
+            className="w-full rounded-xl bg-surface-2 px-3 py-2 text-sm"
           />
         </div>
 
@@ -258,7 +258,7 @@ export function ItemDetailModal({
                   onChange={(e) =>
                     setNutrition((prev) => ({ ...prev, [option.key]: e.target.value }))
                   }
-                  className="rounded-lg bg-surface-2 px-3 py-2 text-base"
+                  className="rounded-xl bg-surface-2 px-3 py-2 text-base"
                 />
               ))}
             </div>
@@ -280,7 +280,7 @@ export function ItemDetailModal({
               type="button"
               onClick={() => setConfirmingDelete(true)}
               disabled={deleting}
-              className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-rust-600 py-2.5 font-medium text-rust-600 disabled:opacity-60"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-rust-600 py-2.5 font-medium text-rust-600 disabled:opacity-60"
             >
               <TrashIcon className="h-4 w-4" />
               {deleting ? t.common.deleting : t.common.delete}
@@ -289,7 +289,7 @@ export function ItemDetailModal({
           <button
             type="submit"
             disabled={saving}
-            className="flex-1 rounded-lg bg-primary-600 py-2.5 font-medium text-white disabled:opacity-60"
+            className="flex-1 rounded-xl bg-primary-600 py-2.5 font-medium text-white disabled:opacity-60"
           >
             {saving ? t.common.saving : t.common.save}
           </button>

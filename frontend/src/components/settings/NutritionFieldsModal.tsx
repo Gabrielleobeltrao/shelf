@@ -54,7 +54,7 @@ export function NutritionFieldsModal({ selected, onClose, onSave }: Props) {
           {NUTRITION_OPTIONS.map((option) => (
             <label
               key={option.key}
-              className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm"
+              className="flex items-center gap-2 rounded-xl px-2 py-2 text-sm"
             >
               <input
                 type="checkbox"
@@ -70,7 +70,7 @@ export function NutritionFieldsModal({ selected, onClose, onSave }: Props) {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="w-full rounded-lg bg-primary-600 py-2.5 font-medium text-white disabled:opacity-60"
+          className="w-full rounded-xl bg-primary-600 py-2.5 font-medium text-white disabled:opacity-60"
         >
           {saving ? t.common.saving : t.common.save}
         </button>

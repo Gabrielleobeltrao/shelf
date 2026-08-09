@@ -203,8 +203,9 @@ export function NotificationsPanel({
       >
         <div
           onClick={(e) => e.stopPropagation()}
-          className="w-full space-y-3 rounded-t-2xl bg-surface p-4 pb-safe sm:mx-auto sm:max-w-sm sm:rounded-2xl sm:pb-4"
+          className="w-full space-y-3 rounded-t-3xl bg-surface p-4 pb-safe sm:mx-auto sm:max-w-sm sm:rounded-2xl sm:pb-4"
         >
+          <div className="mx-auto -mt-1 mb-1 h-1 w-9 rounded-full bg-line sm:hidden" />
           <p className="font-semibold">{confirming.name}</p>
           <p className="text-sm text-muted">{t.notifications.restockHint}</p>
           <p className="text-sm font-medium">{t.notifications.discardQuestion}</p>
@@ -212,14 +213,14 @@ export function NotificationsPanel({
             <button
               disabled={busy}
               onClick={() => restock(confirming, true)}
-              className="w-full rounded-lg bg-primary-600 py-2.5 text-sm font-medium text-white disabled:opacity-60"
+              className="w-full rounded-xl bg-primary-600 py-2.5 text-sm font-medium text-white disabled:opacity-60"
             >
               {t.notifications.discardYes}
             </button>
             <button
               disabled={busy}
               onClick={() => restock(confirming, false)}
-              className="w-full rounded-lg bg-surface-2 py-2.5 text-sm font-medium disabled:opacity-60"
+              className="w-full rounded-xl bg-surface-2 py-2.5 text-sm font-medium disabled:opacity-60"
             >
               {t.notifications.discardNo}
             </button>

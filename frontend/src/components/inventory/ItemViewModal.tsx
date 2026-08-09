@@ -169,7 +169,7 @@ export function ItemViewModal({
         {infoLines.length > 0 && (
           <div className="grid grid-cols-2 gap-2">
             {infoLines.map((line) => (
-              <div key={line.label} className="rounded-lg bg-surface-2 px-3 py-2">
+              <div key={line.label} className="rounded-xl bg-surface-2 px-3 py-2">
                 <p className="text-[0.65rem] font-medium uppercase tracking-wide text-muted">{line.label}</p>
                 <p className="truncate text-sm font-medium">{line.value}</p>
               </div>
@@ -184,7 +184,7 @@ export function ItemViewModal({
             </p>
             <div className="grid grid-cols-2 gap-2">
               {nutritionEntries.map(({ option, value }) => (
-                <div key={option!.key} className="rounded-lg bg-surface-2 px-3 py-2">
+                <div key={option!.key} className="rounded-xl bg-surface-2 px-3 py-2">
                   <p className="text-[0.65rem] font-medium uppercase tracking-wide text-muted">{t.nutrition[option!.key]}</p>
                   <p className="text-sm font-semibold tabular-nums">
                     {value} {option!.unit}
@@ -198,7 +198,7 @@ export function ItemViewModal({
         {showActions && (
           <button
             onClick={onToggleRestock}
-            className={`flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium ${
+            className={`flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium ${
               inShoppingList
                 ? "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-400"
                 : "bg-primary-600 text-white"
