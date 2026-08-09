@@ -13,6 +13,12 @@ const settingsSchema = new Schema(
     nutritionFields: { type: [String], default: [] },
     trackGlutenFree: { type: Boolean, default: false },
     trackVegan: { type: Boolean, default: false },
+    // Who can see the user's pantry on their profile (social layer).
+    pantryVisibility: {
+      type: String,
+      enum: ["private", "followers", "public"],
+      default: "private",
+    },
   },
   { timestamps: true },
 );
