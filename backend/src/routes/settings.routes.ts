@@ -14,6 +14,7 @@ function serialize(settings: InstanceType<typeof Settings> | null) {
     nutritionFields: settings?.nutritionFields ?? [],
     trackGlutenFree: settings?.trackGlutenFree ?? false,
     trackVegan: settings?.trackVegan ?? false,
+    pantryVisibility: settings?.pantryVisibility ?? "private",
   };
 }
 
@@ -30,6 +31,7 @@ router.patch("/", async (req, res) => {
     nutritionFields,
     trackGlutenFree,
     trackVegan,
+    pantryVisibility,
   } = req.body;
   const settings = await Settings.findOneAndUpdate(
     { userId: req.userId },
@@ -41,6 +43,7 @@ router.patch("/", async (req, res) => {
         nutritionFields,
         trackGlutenFree,
         trackVegan,
+        pantryVisibility,
       },
     },
     { new: true, upsert: true, omitUndefined: true },
