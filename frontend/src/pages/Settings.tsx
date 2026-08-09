@@ -23,8 +23,14 @@ export function Settings() {
     nutritionFields: [] as string[],
     trackGlutenFree: false,
     trackVegan: false,
+    pantryVisibility: "private" as "private" | "followers" | "public",
   });
   const [nutritionModalOpen, setNutritionModalOpen] = useState(false);
+
+  async function handlePantryVisibility(value: "private" | "followers" | "public") {
+    setSettings((prev) => ({ ...prev, pantryVisibility: value }));
+    await api.patch("/api/settings", { pantryVisibility: value });
+  }
 
   useEffect(() => {
     api.get<typeof settings>("/api/settings").then(setSettings);
@@ -169,6 +175,28 @@ export function Settings() {
       </div>
 
       <SharedPantryCard />
+
+      <div className="space-y-2 rounded-2xl bg-surface-2 p-4">
+        <label className="text-sm font-medium">{t.social.pantryVisibility}</label>
+        <div className="flex rounded-full bg-surface p-1">
+          {(["private", "followers", "public"] as const).map((v) => (
+            <button
+              key={v}
+              type="button"
+              onClick={() => handlePantryVisibility(v)}
+              className={`flex-1 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                settings.pantryVisibility === v ? "bg-ink text-surface" : "text-muted"
+              }`}
+            >
+              {v === "private"
+                ? t.social.pantryPrivate
+                : v === "followers"
+                  ? t.social.pantryFollowers
+                  : t.social.pantryPublic}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="space-y-2 rounded-2xl bg-surface-2 p-4">
         <label className="text-sm font-medium">{t.theme.label}</label>

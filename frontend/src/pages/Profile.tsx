@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { social, type ProfileView, type PostView } from "../lib/social";
+import { social, type ProfileView, type PostView, type PantryItem } from "../lib/social";
 import { api } from "../lib/api";
 import { useI18n } from "../lib/i18n";
 import { canMakeRecipe } from "../lib/recipeStock";
@@ -19,7 +19,7 @@ export function Profile() {
   const { t } = useI18n();
   const [profile, setProfile] = useState<ProfileView | null>(null);
   const [posts, setPosts] = useState<PostView[]>([]);
-  const [tab, setTab] = useState<"posts" | "kitchen">("posts");
+  const [tab, setTab] = useState<"posts" | "kitchen" | "pantry">("posts");
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -126,6 +126,9 @@ export function Profile() {
             {t.social.tabKitchen}
           </TabButton>
         )}
+        <TabButton active={tab === "pantry"} onClick={() => setTab("pantry")}>
+          {t.social.tabPantry}
+        </TabButton>
       </div>
 
       {tab === "posts" ? (
@@ -138,8 +141,10 @@ export function Profile() {
             ))}
           </div>
         )
-      ) : (
+      ) : tab === "kitchen" ? (
         <KitchenStats />
+      ) : (
+        <PantryTab handle={profile.handle} />
       )}
 
       {editing && (
@@ -210,6 +215,39 @@ function KitchenStats() {
       <Stat value={shopping} label={t.dashboard.statShopping} />
       <Stat to="/receitas?canMake=1" value={makeable} label={t.dashboard.statMakeable} tone="primary" />
     </div>
+  );
+}
+
+// Someone's pantry, shown on their profile when their visibility allows it
+// (backend returns 403 → shown as private).
+function PantryTab({ handle }: { handle: string }) {
+  const { t } = useI18n();
+  const [items, setItems] = useState<PantryItem[] | null>(null);
+  const [denied, setDenied] = useState(false);
+
+  useEffect(() => {
+    setItems(null);
+    setDenied(false);
+    social
+      .pantry(handle)
+      .then((r) => setItems(r.items))
+      .catch(() => setDenied(true));
+  }, [handle]);
+
+  if (denied) return <p className="text-sm text-muted">{t.social.emptyPantryPrivate}</p>;
+  if (items === null) return <p className="text-sm text-muted">{t.common.loading}</p>;
+  if (items.length === 0) return <p className="text-sm text-muted">{t.social.pantryEmpty}</p>;
+  return (
+    <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      {items.map((i) => (
+        <li key={i.id} className="flex items-center gap-2 rounded-xl bg-surface-2 p-3">
+          <span className="min-w-0 flex-1 truncate text-sm font-medium">{i.name}</span>
+          <span className="shrink-0 text-xs tabular-nums text-muted">
+            {i.quantity} {i.unit}
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
