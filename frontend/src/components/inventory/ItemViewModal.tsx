@@ -93,7 +93,7 @@ export function ItemViewModal({
           <PhotoOrFallback
             src={item.imageUrl}
             imgClassName="h-full w-full object-cover"
-            fallback={<div className="flex h-full w-full items-center justify-center bg-surface" />}
+            fallback={<div className="photo-fallback flex h-full w-full items-center justify-center" />}
           />
 
           <div className="absolute inset-0 flex items-start justify-between p-3">

@@ -24,6 +24,14 @@
   bottom: calc(1.5rem + env(safe-area-inset-bottom));
 }
 
+/* Photo placeholder: diagonal stripes over surface-2, so a missing item/recipe
+   image reads as an empty slot even on a surface-colored sheet (the prototype's
+   fallback pattern). */
+@utility photo-fallback {
+  background-color: var(--surface-2);
+  background-image: repeating-linear-gradient(45deg, var(--line) 0 5px, transparent 5px 10px);
+}
+
 @theme {
   /* Green — the single vivid accent, reserved for the actions that matter.
      Filled across the scale in OKLCH (hue 140). 600 is the primary action;

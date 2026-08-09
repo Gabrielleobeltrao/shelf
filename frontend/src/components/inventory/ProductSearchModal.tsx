@@ -219,7 +219,7 @@ function ProductRow({ product, onSelect }: { product: ProductSearchResult; onSel
       <PhotoOrFallback
         src={product.imageUrl}
         imgClassName="h-12 w-12 shrink-0 rounded-xl object-cover"
-        fallback={<div className="h-12 w-12 shrink-0 rounded-xl bg-surface" />}
+        fallback={<div className="photo-fallback h-12 w-12 shrink-0 rounded-xl" />}
       />
       <div className="min-w-0 flex-1">
         <p className="truncate">{product.name}</p>
