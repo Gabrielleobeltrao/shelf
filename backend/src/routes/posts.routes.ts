@@ -4,6 +4,7 @@ import { requireAuth } from "../middleware/requireAuth.js";
 import { Post } from "../models/Post.js";
 import { PostLike } from "../models/PostLike.js";
 import { PostComment } from "../models/PostComment.js";
+import { SavedPost } from "../models/SavedPost.js";
 import { Profile } from "../models/Profile.js";
 import { Follow } from "../models/Follow.js";
 import { canViewPost, serializePosts, extractTags } from "../lib/posts.js";
@@ -50,6 +51,19 @@ router.get("/explore", async (req, res) => {
     items: await serializePosts(posts, me),
     nextCursor: posts.length === 20 ? String(posts[posts.length - 1]._id) : null,
   });
+});
+
+// My saved posts (bookmarks). Before /:id.
+router.get("/saved", async (req, res) => {
+  const me = req.userId!;
+  const saved = await SavedPost.find({ userId: me }).sort({ _id: -1 }).limit(50);
+  const byId = new Map(
+    (await Post.find({ _id: { $in: saved.map((s) => s.postId) } })).map((p) => [String(p._id), p]),
+  );
+  const ordered = saved.map((s) => byId.get(s.postId)).filter(Boolean) as InstanceType<typeof Post>[];
+  const visible: InstanceType<typeof Post>[] = [];
+  for (const p of ordered) if (await canViewPost(p, me)) visible.push(p);
+  res.json(await serializePosts(visible, me));
 });
 
 // A single post.
@@ -106,6 +120,26 @@ router.delete("/:id/like", async (req, res) => {
   if (removed) await Post.updateOne({ _id: req.params.id }, { $inc: { likesCount: -1 } });
   const fresh = await Post.findById(req.params.id);
   res.json({ likes: fresh?.likesCount ?? 0, likedByMe: false });
+});
+
+// Save / unsave (bookmark).
+router.post("/:id/save", async (req, res) => {
+  const post = await Post.findById(req.params.id);
+  if (!post || !(await canViewPost(post, req.userId))) {
+    res.status(404).json({ error: "Publicação não encontrada" });
+    return;
+  }
+  try {
+    await SavedPost.create({ userId: req.userId, postId: String(post._id) });
+  } catch {
+    // already saved — idempotent
+  }
+  res.json({ savedByMe: true });
+});
+
+router.delete("/:id/save", async (req, res) => {
+  await SavedPost.findOneAndDelete({ userId: req.userId, postId: req.params.id });
+  res.json({ savedByMe: false });
 });
 
 // Comments.

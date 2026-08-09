@@ -337,6 +337,7 @@ export const pt = {
     tabPosts: "Publicações",
     tabKitchen: "Minha cozinha",
     tabPantry: "Estoque",
+    tabSaved: "Salvos",
     noPosts: "Nenhuma publicação ainda.",
     save: "Salvar",
     profileNotFound: "Perfil não encontrado.",

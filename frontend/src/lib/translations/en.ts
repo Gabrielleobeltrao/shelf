@@ -339,6 +339,7 @@ export const en: Dict = {
     tabPosts: "Posts",
     tabKitchen: "My kitchen",
     tabPantry: "Pantry",
+    tabSaved: "Saved",
     noPosts: "No posts yet.",
     save: "Save",
     profileNotFound: "Profile not found.",

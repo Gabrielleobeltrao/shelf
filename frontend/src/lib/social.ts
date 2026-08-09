@@ -34,6 +34,7 @@ export type PostView = {
   likes: number;
   comments: number;
   likedByMe: boolean;
+  savedByMe: boolean;
   isMine: boolean;
   createdAt: string;
 };
@@ -126,6 +127,9 @@ export const social = {
   deletePost: (id: string) => api.delete(`/api/posts/${id}`),
   like: (id: string) => api.post<{ likes: number; likedByMe: boolean }>(`/api/posts/${id}/like`, {}),
   unlike: (id: string) => api.delete<{ likes: number; likedByMe: boolean }>(`/api/posts/${id}/like`),
+  save: (id: string) => api.post<{ savedByMe: boolean }>(`/api/posts/${id}/save`, {}),
+  unsave: (id: string) => api.delete<{ savedByMe: boolean }>(`/api/posts/${id}/save`),
+  savedPosts: () => api.get<PostView[]>("/api/posts/saved"),
   comments: (id: string) => api.get<CommentView[]>(`/api/posts/${id}/comments`),
   addComment: (id: string, text: string) => api.post<CommentView>(`/api/posts/${id}/comments`, { text }),
   deleteComment: (id: string, commentId: string) => api.delete(`/api/posts/${id}/comments/${commentId}`),

@@ -4,7 +4,7 @@ import { social, type PostView, type CommentView } from "../../lib/social";
 import { useI18n } from "../../lib/i18n";
 import { timeAgo } from "../../lib/timeAgo";
 import { Avatar } from "./Avatar";
-import { ChatIcon, StarIcon, TrashIcon } from "../icons";
+import { ChatIcon, StarIcon, TrashIcon, BookmarkIcon } from "../icons";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 import { linkify } from "../../lib/linkify";
 
@@ -25,6 +25,7 @@ export function PostCard({ post, onDeleted }: { post: PostView; onDeleted?: (id:
   const { t, lang } = useI18n();
   const [liked, setLiked] = useState(post.likedByMe);
   const [likes, setLikes] = useState(post.likes);
+  const [saved, setSaved] = useState(post.savedByMe);
   const [commentCount, setCommentCount] = useState(post.comments);
   const [open, setOpen] = useState(false);
   const [comments, setComments] = useState<CommentView[]>([]);
@@ -41,6 +42,17 @@ export function PostCard({ post, onDeleted }: { post: PostView; onDeleted?: (id:
     } catch {
       setLiked(!next);
       setLikes((n) => n + (next ? -1 : 1));
+    }
+  }
+
+  async function toggleSave() {
+    const next = !saved;
+    setSaved(next);
+    try {
+      const r = next ? await social.save(post.id) : await social.unsave(post.id);
+      setSaved(r.savedByMe);
+    } catch {
+      setSaved(!next);
     }
   }
 
@@ -148,6 +160,13 @@ export function PostCard({ post, onDeleted }: { post: PostView; onDeleted?: (id:
         <button onClick={toggleComments} className="flex items-center gap-1.5">
           <ChatIcon className="h-5 w-5" />
           {commentCount > 0 && <span className="tabular-nums">{commentCount}</span>}
+        </button>
+        <button
+          onClick={toggleSave}
+          aria-label="save"
+          className={`ml-auto ${saved ? "text-primary-600 dark:text-primary-400" : ""}`}
+        >
+          <BookmarkIcon className="h-5 w-5" filled={saved} />
         </button>
       </div>
 

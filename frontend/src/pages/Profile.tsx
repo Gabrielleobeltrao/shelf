@@ -19,7 +19,7 @@ export function Profile() {
   const { t } = useI18n();
   const [profile, setProfile] = useState<ProfileView | null>(null);
   const [posts, setPosts] = useState<PostView[]>([]);
-  const [tab, setTab] = useState<"posts" | "kitchen" | "pantry">("posts");
+  const [tab, setTab] = useState<"posts" | "kitchen" | "pantry" | "saved">("posts");
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -131,6 +131,11 @@ export function Profile() {
         <TabButton active={tab === "pantry"} onClick={() => setTab("pantry")}>
           {t.social.tabPantry}
         </TabButton>
+        {profile.isMe && (
+          <TabButton active={tab === "saved"} onClick={() => setTab("saved")}>
+            {t.social.tabSaved}
+          </TabButton>
+        )}
       </div>
 
       {tab === "posts" ? (
@@ -145,6 +150,8 @@ export function Profile() {
         )
       ) : tab === "kitchen" ? (
         <KitchenStats />
+      ) : tab === "saved" ? (
+        <SavedTab />
       ) : (
         <PantryTab handle={profile.handle} />
       )}
@@ -262,6 +269,31 @@ function FollowRequests() {
             {t.social.reject}
           </button>
         </div>
+      ))}
+    </div>
+  );
+}
+
+// The caller's saved (bookmarked) posts.
+function SavedTab() {
+  const { t } = useI18n();
+  const [posts, setPosts] = useState<PostView[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    social
+      .savedPosts()
+      .then(setPosts)
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <p className="text-sm text-muted">{t.common.loading}</p>;
+  if (posts.length === 0) return <p className="text-sm text-muted">{t.social.noPosts}</p>;
+  return (
+    <div className="space-y-3">
+      {posts.map((p) => (
+        <PostCard key={p.id} post={p} onDeleted={(id) => setPosts((x) => x.filter((q) => q.id !== id))} />
       ))}
     </div>
   );

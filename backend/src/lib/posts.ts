@@ -1,5 +1,6 @@
 import { Post } from "../models/Post.js";
 import { PostLike } from "../models/PostLike.js";
+import { SavedPost } from "../models/SavedPost.js";
 import { Follow } from "../models/Follow.js";
 import { Recipe } from "../models/Recipe.js";
 import { Place } from "../models/Place.js";
@@ -65,9 +66,16 @@ export async function serializePosts(posts: PostDoc[], viewerId?: string) {
   );
 
   const postIds = posts.map((p) => String(p._id));
-  const liked = viewerId
-    ? new Set((await PostLike.find({ userId: viewerId, postId: { $in: postIds } })).map((l) => l.postId))
-    : new Set<string>();
+  const [liked, saved] = viewerId
+    ? await Promise.all([
+        PostLike.find({ userId: viewerId, postId: { $in: postIds } }).then(
+          (ls) => new Set(ls.map((l) => l.postId)),
+        ),
+        SavedPost.find({ userId: viewerId, postId: { $in: postIds } }).then(
+          (ss) => new Set(ss.map((s) => s.postId)),
+        ),
+      ])
+    : [new Set<string>(), new Set<string>()];
 
   return posts.map((p) => ({
     id: String(p._id),
@@ -82,6 +90,7 @@ export async function serializePosts(posts: PostDoc[], viewerId?: string) {
     likes: p.likesCount,
     comments: p.commentsCount,
     likedByMe: liked.has(String(p._id)),
+    savedByMe: saved.has(String(p._id)),
     isMine: p.authorId === viewerId,
     createdAt: p.get("createdAt"),
   }));
