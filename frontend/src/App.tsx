@@ -16,6 +16,7 @@ import { Collections } from "./pages/Collections";
 import { CollectionDetail } from "./pages/CollectionDetail";
 import { PublicCollection } from "./pages/PublicCollection";
 import { Profile } from "./pages/Profile";
+import { Discover } from "./pages/Discover";
 
 // Root shows the marketing landing to logged-out visitors and sends
 // logged-in users straight into the app (Estoque).
@@ -60,6 +61,7 @@ function App() {
         <Route path="/dashboard" element={<Navigate to="/feed" replace />} />
         <Route path="/perfil" element={<Profile />} />
         <Route path="/perfil/:handle" element={<Profile />} />
+        <Route path="/descobrir" element={<Discover />} />
         <Route path="/configuracoes" element={<Settings />} />
       </Route>
 

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { social, type PostView } from "../lib/social";
 import { useI18n } from "../lib/i18n";
 import { PostCard } from "../components/social/PostCard";
 import { ComposeSheet } from "../components/social/ComposeSheet";
 import { CheckinSheet } from "../components/social/CheckinSheet";
 import { FabMenu } from "../components/ui/FabMenu";
-import { PencilIcon, ExploreIcon } from "../components/icons";
+import { PencilIcon, ExploreIcon, SearchIcon } from "../components/icons";
 import { EmptyState } from "../components/ui/EmptyState";
 import { EmptyShelfIllustration } from "../components/illustrations";
 
@@ -37,7 +38,10 @@ export function Feed() {
 
   return (
     <div className="space-y-4 pb-16">
-      <h1 className="font-display text-xl font-bold">{t.social.feedTitle}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="font-display text-xl font-bold">{t.social.feedTitle}</h1>
+        <Link to="/descobrir" aria-label={t.social.discoverTitle} className="text-muted"><SearchIcon className="h-5 w-5" /></Link>
+      </div>
 
       {loading ? (
         <p className="text-sm text-muted">{t.common.loading}</p>

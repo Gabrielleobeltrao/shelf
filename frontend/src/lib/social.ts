@@ -1,6 +1,7 @@
 import { api } from "./api";
 
 export type UserCard = { userId: string; handle: string; name: string; avatarUrl: string };
+export type DiscoverCard = UserCard & { followState: "none" | "pending" | "accepted" };
 
 export type ProfileView = {
   userId: string;
@@ -71,6 +72,8 @@ export const social = {
   pantry: (handle: string) =>
     api.get<{ visibility: string; items: PantryItem[] }>(`/api/profile/${encodeURIComponent(handle)}/pantry`),
 
+  discover: (q?: string) =>
+    api.get<DiscoverCard[]>(`/api/profile${q ? `?q=${encodeURIComponent(q)}` : ""}`),
   follow: (userId: string) => api.post<{ status: string }>(`/api/follow/${userId}`, {}),
   unfollow: (userId: string) => api.delete(`/api/follow/${userId}`),
   followers: (userId: string) => api.get<UserCard[]>(`/api/follow/${userId}/followers`),

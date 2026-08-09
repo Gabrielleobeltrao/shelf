@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { social, type ProfileView, type PostView, type PantryItem } from "../lib/social";
+import { social, type ProfileView, type PostView, type PantryItem, type UserCard } from "../lib/social";
 import { api } from "../lib/api";
 import { useI18n } from "../lib/i18n";
 import { canMakeRecipe } from "../lib/recipeStock";
@@ -117,6 +117,8 @@ export function Profile() {
         </span>
       </div>
 
+      {profile.isMe && <FollowRequests />}
+
       <div className="flex gap-2 border-b border-line">
         <TabButton active={tab === "posts"} onClick={() => setTab("posts")}>
           {t.social.tabPosts}
@@ -214,6 +216,53 @@ function KitchenStats() {
       {trackExpiration && <Stat to="/estoque?status=expired" value={expired} label={t.dashboard.statExpired} tone="rust" />}
       <Stat value={shopping} label={t.dashboard.statShopping} />
       <Stat to="/receitas?canMake=1" value={makeable} label={t.dashboard.statMakeable} tone="primary" />
+    </div>
+  );
+}
+
+// Pending follow requests (private profile), with accept/reject.
+function FollowRequests() {
+  const { t } = useI18n();
+  const [reqs, setReqs] = useState<UserCard[]>([]);
+
+  useEffect(() => {
+    social.requests().then(setReqs).catch(() => {});
+  }, []);
+
+  if (reqs.length === 0) return null;
+
+  async function accept(id: string) {
+    await social.acceptRequest(id);
+    setReqs((r) => r.filter((x) => x.userId !== id));
+  }
+  async function reject(id: string) {
+    await social.rejectRequest(id);
+    setReqs((r) => r.filter((x) => x.userId !== id));
+  }
+
+  return (
+    <div className="space-y-2 rounded-2xl bg-surface-2 p-3">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted">{t.social.requests}</p>
+      {reqs.map((u) => (
+        <div key={u.userId} className="flex items-center gap-2">
+          <Avatar src={u.avatarUrl} name={u.name} size={32} />
+          <Link to={`/perfil/${u.handle}`} className="min-w-0 flex-1 truncate text-sm font-medium">
+            {u.name || `@${u.handle}`}
+          </Link>
+          <button
+            onClick={() => accept(u.userId)}
+            className="shrink-0 rounded-full bg-primary-600 px-3 py-1 text-xs font-medium text-white"
+          >
+            {t.social.accept}
+          </button>
+          <button
+            onClick={() => reject(u.userId)}
+            className="shrink-0 rounded-full border border-line px-3 py-1 text-xs font-medium"
+          >
+            {t.social.reject}
+          </button>
+        </div>
+      ))}
     </div>
   );
 }
