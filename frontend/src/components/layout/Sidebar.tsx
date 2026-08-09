@@ -162,7 +162,7 @@ function SidebarBody({
       end={end}
       onClick={onNavigate}
       className={({ isActive }) =>
-        `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium ${rowJustify} ${
+        `flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium ${rowJustify} ${
           isActive
             ? "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-400"
             : "text-ink"
@@ -185,7 +185,7 @@ function SidebarBody({
       end={end}
       onClick={onNavigate}
       className={({ isActive }) =>
-        `flex items-center rounded-lg py-1.5 pl-11 pr-3 text-sm ${
+        `flex items-center rounded-xl py-1.5 pl-11 pr-3 text-sm ${
           isActive ? "font-medium text-primary-700 dark:text-primary-400" : "text-muted hover:text-ink"
         }`
       }
@@ -215,7 +215,7 @@ function SidebarBody({
       {rail && (
         <Link
           to={session ? "/dashboard" : "/"}
-          className={`flex items-center gap-3 rounded-lg px-3 py-2 ${rowJustify}`}
+          className={`flex items-center gap-3 rounded-xl px-3 py-2 ${rowJustify}`}
         >
           <ShelfLogo className="h-6 w-6 shrink-0" />
           <span className={`font-display text-lg font-semibold ${label}`}>Shelf</span>
@@ -234,7 +234,7 @@ function SidebarBody({
               type="button"
               onClick={toggleRecipes}
               aria-expanded={recipesOpen}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-ink ${rowJustify}`}
+              className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-ink ${rowJustify}`}
             >
               <RecipesNavIcon className="h-4.5 w-4.5 shrink-0 text-muted" />
               <span className={label}>{t.nav.recipes}</span>
@@ -278,7 +278,7 @@ function SidebarBody({
 
             <button
               onClick={() => signOut()}
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-rust-600 ${rowJustify}`}
+              className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm font-medium text-rust-600 ${rowJustify}`}
             >
               <LogoutIcon className="h-4.5 w-4.5 shrink-0" />
               <span className={label}>{t.nav.logout}</span>
@@ -289,7 +289,7 @@ function SidebarBody({
             <Link
               to="/login"
               onClick={onNavigate}
-              className={`flex items-center gap-3 rounded-lg bg-primary-600 px-3 py-2.5 text-sm font-medium text-white ${rowJustify}`}
+              className={`flex items-center gap-3 rounded-xl bg-primary-600 px-3 py-2.5 text-sm font-medium text-white ${rowJustify}`}
             >
               <LoginIcon className="h-4.5 w-4.5 shrink-0" />
               <span className={label}>{t.landing.enter}</span>

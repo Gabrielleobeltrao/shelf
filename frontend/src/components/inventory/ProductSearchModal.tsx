@@ -110,24 +110,15 @@ export function ProductSearchModal({ title, onSelect, onAddManually, onClose, lo
     <div className="fixed inset-0 z-40 flex items-end bg-black/50" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className="flex max-h-[85vh] w-full flex-col space-y-3 rounded-t-2xl bg-surface p-4 pb-safe"
+        className="flex max-h-[85vh] w-full flex-col space-y-3 rounded-t-3xl bg-surface p-4 pb-safe"
       >
+        <div className="mx-auto -mt-1 h-1 w-9 rounded-full bg-line" />
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{heading}</h2>
           <button onClick={onClose} aria-label={t.common.close} className="text-muted">
             <CloseIcon className="h-4 w-4" />
           </button>
         </div>
-
-        {onAddManually && (
-          <button
-            type="button"
-            onClick={() => onAddManually(query)}
-            className="w-full rounded-lg border border-primary-600 py-2.5 font-medium text-primary-600"
-          >
-            {t.productSearch.addManually}
-          </button>
-        )}
 
         <div className="relative">
           <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
@@ -202,6 +193,16 @@ export function ProductSearchModal({ title, onSelect, onAddManually, onClose, lo
             </>
           )}
         </div>
+
+        {onAddManually && (
+          <button
+            type="button"
+            onClick={() => onAddManually(query)}
+            className="w-full rounded-xl border border-primary-600 py-2.5 font-medium text-primary-600"
+          >
+            {t.productSearch.addManually}
+          </button>
+        )}
       </div>
     </div>
     </Portal>

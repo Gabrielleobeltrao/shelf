@@ -67,8 +67,9 @@ export function AddToCollectionMenu({ recipeId, onClose }: { recipeId: string; o
     <div className="fixed inset-0 z-40 flex items-end bg-black/50 sm:items-center" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full space-y-2 rounded-t-2xl bg-surface p-4 pb-safe sm:mx-auto sm:max-w-sm sm:rounded-2xl sm:pb-4"
+        className="w-full space-y-2 rounded-t-3xl bg-surface p-4 pb-safe sm:mx-auto sm:max-w-sm sm:rounded-2xl sm:pb-4"
       >
+        <div className="mx-auto -mt-1 mb-1 h-1 w-9 rounded-full bg-line sm:hidden" />
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold">{t.collections.addToCollection}</h2>
           <button onClick={onClose} aria-label={t.common.close} className="text-muted">

@@ -33,8 +33,9 @@ export function ConfirmDialog({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full space-y-5 rounded-t-2xl bg-surface p-5"
+        className="w-full space-y-5 rounded-t-3xl bg-surface p-5"
       >
+        <div className="mx-auto -mt-1 h-1 w-9 rounded-full bg-line" />
         <div className="flex flex-col items-center gap-3 text-center">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-rust-100 dark:bg-rust-900/40">
             <TrashIcon className="h-5 w-5 text-rust-600 dark:text-rust-400" />
