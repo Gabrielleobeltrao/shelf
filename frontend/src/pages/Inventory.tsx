@@ -7,6 +7,8 @@ import { getExpirationWarning, isExpired } from "../lib/expiration";
 import { useHouseholdSync, useSyncEffect } from "../lib/householdSync";
 import { BarcodeIcon, CartIcon, MinusIcon, PlusIcon, SearchIcon } from "../components/icons";
 import { getCategoryIcon } from "../lib/categoryIcon";
+import { getLocationIcon } from "../lib/locationIcon";
+import { LOCATION_OPTIONS } from "../lib/locations";
 import { categoryLabel, locationLabel, unitLabel } from "../lib/labels";
 import { EmptyState } from "../components/ui/EmptyState";
 import { Fab } from "../components/ui/Fab";
@@ -122,18 +124,13 @@ export function Inventory() {
     api.get<ShoppingListEntry[]>("/api/shopping-list").then(loadShoppingMap).catch(() => {});
   });
 
-  // The sidebar's per-location subpages drive the filter via ?local=…
+  // The location buttons drive the filter via ?local=… (shareable URL).
   useEffect(() => {
     setLocationFilter(searchParams.get("local") ?? "");
   }, [searchParams]);
 
   const categories = useMemo(() => {
     const set = new Set(items.map((item) => item.category?.trim()).filter(Boolean));
-    return [...set].sort((a, b) => a!.localeCompare(b!));
-  }, [items]);
-
-  const locations = useMemo(() => {
-    const set = new Set(items.map((item) => item.location?.trim()).filter(Boolean));
     return [...set].sort((a, b) => a!.localeCompare(b!));
   }, [items]);
 
@@ -334,19 +331,21 @@ export function Inventory() {
         </div>
       )}
 
-      {locations.length > 0 && (
-        <div className="-mx-1 flex gap-2 overflow-x-auto overflow-y-visible px-1 py-1.5">
-          {locations.map((location) => {
+      {items.length > 0 && (
+        <div className="grid grid-cols-3 gap-2">
+          {LOCATION_OPTIONS.map((location) => {
             const active = locationFilter === location;
+            const LocationIcon = getLocationIcon(location);
             return (
               <button
                 key={location}
                 type="button"
-                onClick={() => setSearchParams(active ? {} : { local: location! })}
-                className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${
+                onClick={() => setSearchParams(active ? {} : { local: location })}
+                className={`flex items-center justify-center gap-1.5 rounded-xl px-2 py-2.5 text-sm font-medium ${
                   active ? "bg-primary-600 text-white" : "bg-surface-2 text-muted"
                 }`}
               >
+                <LocationIcon className="h-4 w-4 shrink-0" />
                 {locationLabel(t, location)}
               </button>
             );

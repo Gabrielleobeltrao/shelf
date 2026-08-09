@@ -1,9 +1,7 @@
 import { useState, type ComponentType } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { signOut, useSession } from "../../lib/auth-client";
 import { useI18n } from "../../lib/i18n";
-import { locationLabel } from "../../lib/labels";
-import { LOCATION_OPTIONS } from "../../lib/locations";
 import { CloseIcon, LoginIcon, LogoutIcon, ShelfLogo } from "../icons";
 import { LanguageSelect } from "../ui/LanguageSelect";
 
@@ -146,11 +144,6 @@ function SidebarBody({
   const { data: session } = useSession();
   const { t, lang } = useI18n();
   const [recipesOpen, toggleRecipes] = usePersistentToggle("shelf.nav.recipesOpen", false);
-  const [stockOpen, toggleStock] = usePersistentToggle("shelf.nav.stockOpen", false);
-
-  const routerLocation = useLocation();
-  const onStock = routerLocation.pathname === "/estoque";
-  const currentLocal = new URLSearchParams(routerLocation.search).get("local") ?? "";
 
   const initial =
     session?.user.name?.[0]?.toUpperCase() ?? session?.user.email[0]?.toUpperCase() ?? "?";
@@ -201,24 +194,6 @@ function SidebarBody({
     </NavLink>
   );
 
-  // Pantry subpages differ only by the ?local query, which NavLink can't match
-  // on, so active state is computed from the current location.
-  const stockSubLink = (to: string, localValue: string, text: string) => {
-    const active = onStock && currentLocal === localValue;
-    return (
-      <Link
-        key={to}
-        to={to}
-        onClick={onNavigate}
-        className={`flex items-center rounded-lg py-1.5 pl-11 pr-3 text-sm ${
-          active ? "font-medium text-primary-700 dark:text-primary-400" : "text-muted hover:text-ink"
-        }`}
-      >
-        <span className={label}>{text}</span>
-      </Link>
-    );
-  };
-
   return (
     <>
       {/* Logo only in the mobile drawer — the desktop rail drops it. */}
@@ -252,29 +227,7 @@ function SidebarBody({
           <>
             {navLink("/dashboard", false, DashboardNavIcon, t.nav.dashboard)}
 
-            {/* Pantry: a collapsible section with a subpage per location. */}
-            <button
-              type="button"
-              onClick={toggleStock}
-              aria-expanded={stockOpen}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-ink ${rowJustify}`}
-            >
-              <InventoryNavIcon className="h-4.5 w-4.5 shrink-0 text-muted" />
-              <span className={label}>{t.nav.inventory}</span>
-              <ChevronNavIcon
-                className={`ml-auto h-4 w-4 shrink-0 text-muted transition-transform ${
-                  stockOpen ? "rotate-180" : ""
-                } ${revealOnHover}`}
-              />
-            </button>
-            {stockOpen && (
-              <div className={`flex-col gap-1 ${rail ? "hidden group-hover:flex" : "flex"}`}>
-                {stockSubLink("/estoque", "", t.inventory.allItems)}
-                {LOCATION_OPTIONS.map((l) =>
-                  stockSubLink(`/estoque?local=${encodeURIComponent(l)}`, l, locationLabel(t, l)),
-                )}
-              </div>
-            )}
+            {navLink("/estoque", true, InventoryNavIcon, t.nav.inventory)}
 
             {/* Recipes: a collapsible section with Explore as a subpage. */}
             <button
