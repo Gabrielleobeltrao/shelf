@@ -308,7 +308,7 @@ export const en: Dict = {
     statItems: "Items",
     statExpiring: "Expiring",
     statExpired: "Expired",
-    statShopping: "On the list",
+    statShopping: "In cart",
     statMakeable: "Can make",
     byLocation: "By location",
     noLocation: "No location",

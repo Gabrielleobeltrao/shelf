@@ -306,7 +306,7 @@ export const pt = {
     statItems: "Itens",
     statExpiring: "Vencendo",
     statExpired: "Vencidos",
-    statShopping: "Na lista",
+    statShopping: "No carrinho",
     statMakeable: "Dá pra fazer",
     byLocation: "Por local",
     noLocation: "Sem local",
