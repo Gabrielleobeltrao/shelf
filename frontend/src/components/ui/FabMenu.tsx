@@ -17,7 +17,7 @@ export function FabMenu({ actions, label = "Abrir ações" }: { actions: Action[
     <>
       {open && (
         <Portal>
-          <div className="fixed inset-0 z-20" onClick={() => setOpen(false)} />
+          <div className="fixed inset-0 z-20 bg-black/50" onClick={() => setOpen(false)} />
         </Portal>
       )}
 
