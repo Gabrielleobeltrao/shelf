@@ -14,6 +14,7 @@ export function Feed() {
   const { t } = useI18n();
   const [items, setItems] = useState<PostView[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
+  const [explore, setExplore] = useState<PostView[]>([]);
   const [loading, setLoading] = useState(true);
   const [composing, setComposing] = useState(false);
   const [checkin, setCheckin] = useState(false);
@@ -32,6 +33,13 @@ export function Feed() {
       .then((r) => {
         setItems(r.items);
         setCursor(r.nextCursor);
+        // New/quiet accounts see public posts so the feed is never empty.
+        if (r.items.length === 0) {
+          social
+            .explore()
+            .then((e) => setExplore(e.items))
+            .catch(() => {});
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -66,11 +74,21 @@ export function Feed() {
       {loading ? (
         <p className="text-sm text-muted">{t.common.loading}</p>
       ) : items.length === 0 ? (
-        <EmptyState
-          illustration={<EmptyShelfIllustration />}
-          title={t.social.feedEmpty}
-          description={t.social.feedEmptyHint}
-        />
+        <>
+          <EmptyState
+            illustration={<EmptyShelfIllustration />}
+            title={t.social.feedEmpty}
+            description={t.social.feedEmptyHint}
+          />
+          {explore.length > 0 && (
+            <div className="mx-auto max-w-xl space-y-3">
+              <h2 className="text-sm font-medium text-muted">{t.social.exploreHeader}</h2>
+              {explore.map((p) => (
+                <PostCard key={p.id} post={p} onDeleted={(id) => setExplore((x) => x.filter((q) => q.id !== id))} />
+              ))}
+            </div>
+          )}
+        </>
       ) : (
         <div className="mx-auto max-w-xl space-y-3">
           {items.map((p) => (

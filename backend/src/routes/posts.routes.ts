@@ -39,6 +39,19 @@ router.post("/", async (req, res) => {
   res.status(201).json(serialized);
 });
 
+// Explore: recent public posts (content discovery). Before /:id.
+router.get("/explore", async (req, res) => {
+  const me = req.userId!;
+  const query: Record<string, unknown> = { visibility: "public" };
+  const cursor = req.query.cursor as string | undefined;
+  if (cursor && Types.ObjectId.isValid(cursor)) query._id = { $lt: new Types.ObjectId(cursor) };
+  const posts = await Post.find(query).sort({ _id: -1 }).limit(20);
+  res.json({
+    items: await serializePosts(posts, me),
+    nextCursor: posts.length === 20 ? String(posts[posts.length - 1]._id) : null,
+  });
+});
+
 // A single post.
 router.get("/:id", async (req, res) => {
   const post = await Post.findById(req.params.id);

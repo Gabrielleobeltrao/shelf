@@ -394,6 +394,7 @@ export const pt = {
     ratingsCount: (n: number) => `${n} ${n === 1 ? "avaliação" : "avaliações"}`,
     placeNotFound: "Lugar não encontrado.",
     photoUrl: "URL da foto (opcional)",
+    exploreHeader: "Descubra publicações",
   },
   install: {
     title: "Instalar o app",
