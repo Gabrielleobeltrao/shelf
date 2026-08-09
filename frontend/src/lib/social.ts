@@ -145,6 +145,7 @@ export const social = {
     rating?: number;
     review?: string;
     dish?: string;
+    photos?: string[];
     visibility?: string;
   }) => api.post<{ id: string; placeId: string; postId: string }>("/api/checkins", data),
 };

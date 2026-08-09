@@ -395,6 +395,7 @@ export const en: Dict = {
     noRestaurants: "No restaurants yet.",
     ratingsCount: (n: number) => `${n} ${n === 1 ? "review" : "reviews"}`,
     placeNotFound: "Place not found.",
+    photoUrl: "Photo URL (optional)",
   },
   install: {
     title: "Install the app",

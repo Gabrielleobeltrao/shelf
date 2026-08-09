@@ -393,6 +393,7 @@ export const pt = {
     noRestaurants: "Nenhum restaurante ainda.",
     ratingsCount: (n: number) => `${n} ${n === 1 ? "avaliação" : "avaliações"}`,
     placeNotFound: "Lugar não encontrado.",
+    photoUrl: "URL da foto (opcional)",
   },
   install: {
     title: "Instalar o app",

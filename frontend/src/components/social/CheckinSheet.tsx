@@ -14,6 +14,7 @@ export function CheckinSheet({ onClose, onDone }: { onClose: () => void; onDone:
   const [rating, setRating] = useState(0);
   const [dish, setDish] = useState("");
   const [review, setReview] = useState("");
+  const [photo, setPhoto] = useState("");
   const [visibility, setVisibility] = useState<(typeof VIS)[number]>("public");
   const [saving, setSaving] = useState(false);
 
@@ -42,6 +43,7 @@ export function CheckinSheet({ onClose, onDone }: { onClose: () => void; onDone:
         rating: rating || undefined,
         dish,
         review,
+        photos: photo.trim() ? [photo.trim()] : [],
         visibility,
       });
       onDone();
@@ -143,6 +145,12 @@ export function CheckinSheet({ onClose, onDone }: { onClose: () => void; onDone:
                 placeholder={t.social.reviewPlaceholder}
                 rows={3}
                 className="w-full rounded-xl bg-surface-2 px-3 py-2 text-base"
+              />
+              <input
+                value={photo}
+                onChange={(e) => setPhoto(e.target.value)}
+                placeholder={t.social.photoUrl}
+                className="w-full rounded-xl bg-surface-2 px-3 py-2 text-sm"
               />
               <div className="flex gap-2">
                 {VIS.map((v) => (

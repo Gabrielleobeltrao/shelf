@@ -15,14 +15,20 @@ export function ComposeSheet({
 }) {
   const { t } = useI18n();
   const [text, setText] = useState("");
+  const [photo, setPhoto] = useState("");
   const [visibility, setVisibility] = useState<(typeof VIS)[number]>("public");
   const [saving, setSaving] = useState(false);
 
   async function submit() {
-    if (!text.trim()) return;
+    if (!text.trim() && !photo.trim()) return;
     setSaving(true);
     try {
-      const post = await social.createPost({ type: "text", text, visibility });
+      const post = await social.createPost({
+        type: "text",
+        text,
+        visibility,
+        photos: photo.trim() ? [photo.trim()] : [],
+      });
       onPosted(post);
     } catch {
       setSaving(false);
@@ -54,6 +60,15 @@ export function ComposeSheet({
             rows={4}
             className="w-full rounded-xl bg-surface-2 px-3 py-2 text-base"
           />
+          <input
+            value={photo}
+            onChange={(e) => setPhoto(e.target.value)}
+            placeholder={t.social.photoUrl}
+            className="w-full rounded-xl bg-surface-2 px-3 py-2 text-sm"
+          />
+          {photo.trim() && (
+            <img src={photo} alt="" className="h-40 w-full rounded-xl object-cover" />
+          )}
           <div className="flex gap-2">
             {VIS.map((v) => (
               <button
@@ -70,7 +85,7 @@ export function ComposeSheet({
           </div>
           <button
             onClick={submit}
-            disabled={saving || !text.trim()}
+            disabled={saving || (!text.trim() && !photo.trim())}
             className="w-full rounded-xl bg-primary-600 py-2.5 text-sm font-medium text-white disabled:opacity-60"
           >
             {t.social.publish}
