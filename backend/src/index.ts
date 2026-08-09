@@ -19,6 +19,8 @@ import profileRouter from "./routes/profile.routes.js";
 import followRouter from "./routes/follow.routes.js";
 import postsRouter from "./routes/posts.routes.js";
 import feedRouter from "./routes/feed.routes.js";
+import placesRouter from "./routes/places.routes.js";
+import checkinsRouter from "./routes/checkins.routes.js";
 
 const app = express();
 const PORT = process.env.PORT ?? 4001;
@@ -55,6 +57,8 @@ app.use("/api/profile", profileRouter);
 app.use("/api/follow", followRouter);
 app.use("/api/posts", postsRouter);
 app.use("/api/feed", feedRouter);
+app.use("/api/places", placesRouter);
+app.use("/api/checkins", checkinsRouter);
 
 await connectDB();
 

@@ -1,0 +1,21 @@
+import { Schema, model } from "mongoose";
+
+// A restaurant / place people check in to. Ratings are aggregated from
+// check-ins (sum + count → average).
+const placeSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    address: { type: String },
+    city: { type: String },
+    geo: { lat: Number, lng: Number, _id: false },
+    categories: { type: [String], default: [] },
+    createdBy: { type: String, required: true },
+    ratingSum: { type: Number, default: 0 },
+    ratingCount: { type: Number, default: 0 },
+  },
+  { timestamps: true },
+);
+
+placeSchema.index({ name: 1 });
+
+export const Place = model("Place", placeSchema);

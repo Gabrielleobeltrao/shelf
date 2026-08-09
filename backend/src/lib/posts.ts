@@ -2,6 +2,7 @@ import { Post } from "../models/Post.js";
 import { PostLike } from "../models/PostLike.js";
 import { Follow } from "../models/Follow.js";
 import { Recipe } from "../models/Recipe.js";
+import { Place } from "../models/Place.js";
 import { listUsers } from "./profiles.js";
 
 type PostDoc = InstanceType<typeof Post>;
@@ -35,6 +36,25 @@ export async function serializePosts(posts: PostDoc[], viewerId?: string) {
     recipes.map((r) => [String(r._id), { name: r.get("name"), imageUrl: r.get("imageUrl") }]),
   );
 
+  const placeIds = [...new Set(posts.map((p) => p.refs?.placeId).filter(Boolean) as string[])];
+  const places = placeIds.length
+    ? await Place.find({ _id: { $in: placeIds } }).select("name city ratingSum ratingCount")
+    : [];
+  const placeById = new Map(
+    places.map((p) => {
+      const count = p.get("ratingCount") as number;
+      return [
+        String(p._id),
+        {
+          id: String(p._id),
+          name: p.get("name"),
+          city: p.get("city"),
+          rating: count > 0 ? Math.round(((p.get("ratingSum") as number) / count) * 10) / 10 : null,
+        },
+      ];
+    }),
+  );
+
   const postIds = posts.map((p) => String(p._id));
   const liked = viewerId
     ? new Set((await PostLike.find({ userId: viewerId, postId: { $in: postIds } })).map((l) => l.postId))
@@ -49,6 +69,7 @@ export async function serializePosts(posts: PostDoc[], viewerId?: string) {
     photos: p.photos,
     refs: p.refs,
     recipe: p.refs?.recipeId ? recipeById.get(p.refs.recipeId) : undefined,
+    place: p.refs?.placeId ? placeById.get(p.refs.placeId) : undefined,
     likes: p.likesCount,
     comments: p.commentsCount,
     likedByMe: liked.has(String(p._id)),

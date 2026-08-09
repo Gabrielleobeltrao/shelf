@@ -2,7 +2,7 @@ import { Router } from "express";
 import { requireAuth } from "../middleware/requireAuth.js";
 import { Follow } from "../models/Follow.js";
 import { Profile } from "../models/Profile.js";
-import { getOrCreateProfile, listUsers } from "../lib/profiles.js";
+import { getOrCreateProfile, listUsers, usersByIds } from "../lib/profiles.js";
 
 const router = Router();
 router.use(requireAuth);
@@ -55,11 +55,12 @@ router.post("/:userId", async (req, res) => {
     res.status(400).json({ error: "Não dá pra seguir a si mesmo" });
     return;
   }
-  const targetProfile = await Profile.findOne({ userId: target });
-  if (!targetProfile) {
-    res.status(404).json({ error: "Perfil não encontrado" });
+  const targetUser = (await usersByIds([target])).get(target);
+  if (!targetUser) {
+    res.status(404).json({ error: "Usuário não encontrado" });
     return;
   }
+  const targetProfile = await getOrCreateProfile(target);
   await getOrCreateProfile(me);
   const existing = await Follow.findOne({ followerId: me, followingId: target });
   if (existing) {
