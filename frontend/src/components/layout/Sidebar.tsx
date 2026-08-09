@@ -268,13 +268,17 @@ function SidebarBody({
       <div className={`space-y-3 border-t border-line pt-4 ${session ? "mt-3" : "mt-auto"}`}>
         {session ? (
           <>
-            {/* Account moved here from the top; replaces the language switcher. */}
-            <div className={`flex items-center gap-3 ${rowJustify}`}>
+            {/* Account row → the user's social profile. */}
+            <Link
+              to="/perfil"
+              onClick={onNavigate}
+              className={`flex items-center gap-3 rounded-xl ${rowJustify}`}
+            >
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-100 font-display font-semibold text-primary-700 dark:bg-primary-900/40 dark:text-primary-400">
                 {initial}
               </span>
-              <p className={`truncate text-sm text-muted ${revealOnHover}`}>{session.user.email}</p>
-            </div>
+              <span className={`truncate text-sm text-muted ${revealOnHover}`}>{session.user.email}</span>
+            </Link>
 
             <button
               onClick={() => signOut()}

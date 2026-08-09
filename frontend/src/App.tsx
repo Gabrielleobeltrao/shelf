@@ -15,6 +15,7 @@ import { Roadmap } from "./pages/Roadmap";
 import { Collections } from "./pages/Collections";
 import { CollectionDetail } from "./pages/CollectionDetail";
 import { PublicCollection } from "./pages/PublicCollection";
+import { Profile } from "./pages/Profile";
 
 // Root shows the marketing landing to logged-out visitors and sends
 // logged-in users straight into the app (Estoque).
@@ -56,6 +57,8 @@ function App() {
         <Route path="/colecoes" element={<Collections />} />
         <Route path="/colecoes/:id" element={<CollectionDetail />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/perfil" element={<Profile />} />
+        <Route path="/perfil/:handle" element={<Profile />} />
         <Route path="/configuracoes" element={<Settings />} />
       </Route>
 
