@@ -117,6 +117,8 @@ export function Profile() {
         </span>
       </div>
 
+      <Badges profile={profile} />
+
       {profile.isMe && <FollowRequests />}
 
       <div className="flex gap-2 border-b border-line">
@@ -223,6 +225,32 @@ function KitchenStats() {
       {trackExpiration && <Stat to="/estoque?status=expired" value={expired} label={t.dashboard.statExpired} tone="rust" />}
       <Stat value={shopping} label={t.dashboard.statShopping} />
       <Stat to="/receitas?canMake=1" value={makeable} label={t.dashboard.statMakeable} tone="primary" />
+    </div>
+  );
+}
+
+// Lightweight gamification: badges earned from the profile's public counters.
+function Badges({ profile }: { profile: ProfileView }) {
+  const { t } = useI18n();
+  const earned = [
+    profile.posts >= 1 && { emoji: "🌱", label: t.social.badgeStarter },
+    profile.posts >= 10 && { emoji: "👨‍🍳", label: t.social.badgeChef },
+    profile.followers >= 10 && { emoji: "⭐", label: t.social.badgePopular },
+    profile.following >= 20 && { emoji: "🤝", label: t.social.badgeSocial },
+  ].filter(Boolean) as { emoji: string; label: string }[];
+
+  if (earned.length === 0) return null;
+  return (
+    <div className="flex flex-wrap gap-2">
+      {earned.map((b) => (
+        <span
+          key={b.label}
+          className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2.5 py-1 text-xs font-medium"
+        >
+          <span>{b.emoji}</span>
+          {b.label}
+        </span>
+      ))}
     </div>
   );
 }
