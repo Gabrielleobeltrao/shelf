@@ -427,6 +427,8 @@ export const pt = {
     addToList: "Repor",
     inList: "Na lista",
     clearAll: "Limpar tudo",
+    socialSection: "Social",
+    viewAll: "Ver todas",
     dismissAria: (name: string) => `Dispensar ${name}`,
     restockHint: "Vou adicionar à lista de compras.",
     discardQuestion: "Você já jogou fora esse produto?",

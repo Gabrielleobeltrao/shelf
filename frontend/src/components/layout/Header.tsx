@@ -4,6 +4,7 @@ import { CartIcon, ShelfLogo } from "../icons";
 import { useSession } from "../../lib/auth-client";
 import { useI18n } from "../../lib/i18n";
 import { api } from "../../lib/api";
+import { social, type NotificationView } from "../../lib/social";
 import { daysUntil } from "../../lib/expiration";
 import { useHouseholdSync } from "../../lib/householdSync";
 import { NotificationsBell } from "../notifications/NotificationsBell";
@@ -33,6 +34,8 @@ export function Header({ left, right }: Props) {
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [socialItems, setSocialItems] = useState<NotificationView[]>([]);
+  const [socialUnread, setSocialUnread] = useState(0);
   // Dismissed alerts (per device), keyed by item + its expiration date so a
   // re-expiring item (date changed) surfaces again.
   const [dismissed, setDismissed] = useState<Set<string>>(() => {
@@ -74,6 +77,32 @@ export function Header({ left, right }: Props) {
       .catch(() => {});
   }, [loggedIn, pathname, listRev]);
 
+  // Social notifications share the same bell — badge sums both, panel lists them.
+  useEffect(() => {
+    if (!loggedIn) {
+      setSocialItems([]);
+      setSocialUnread(0);
+      return;
+    }
+    social
+      .notifications()
+      .then((r) => {
+        setSocialItems(r.items);
+        setSocialUnread(r.unread);
+      })
+      .catch(() => {});
+  }, [loggedIn, pathname]);
+
+  // Opening the bell marks social notifications read (optimistically).
+  function openAlerts() {
+    setAlertsOpen(true);
+    if (socialUnread > 0) {
+      setSocialUnread(0);
+      setSocialItems((xs) => xs.map((n) => ({ ...n, read: true })));
+      social.markNotificationsRead().catch(() => {});
+    }
+  }
+
   const alerts = trackExpiration
     ? items
         .filter((i) => i.expirationDate && daysUntil(i.expirationDate) <= withinDays)
@@ -100,7 +129,7 @@ export function Header({ left, right }: Props) {
 
   const actions = loggedIn && (
     <>
-      <NotificationsBell count={visibleAlerts.length} onClick={() => setAlertsOpen(true)} />
+      <NotificationsBell count={visibleAlerts.length + socialUnread} onClick={openAlerts} />
       <button onClick={() => setCartOpen(true)} aria-label={t.nav.openCart} className="relative text-muted">
         <CartIcon className="h-6 w-6" />
         {cartCount > 0 && (
@@ -145,6 +174,7 @@ export function Header({ left, right }: Props) {
             open={alertsOpen}
             onClose={() => setAlertsOpen(false)}
             items={visibleAlerts}
+            social={socialItems}
             trackExpiration={trackExpiration}
             withinDays={withinDays}
             onDismiss={dismissAlert}

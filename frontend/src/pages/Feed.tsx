@@ -6,7 +6,7 @@ import { PostCard } from "../components/social/PostCard";
 import { ComposeSheet } from "../components/social/ComposeSheet";
 import { CheckinSheet } from "../components/social/CheckinSheet";
 import { FabMenu } from "../components/ui/FabMenu";
-import { PencilIcon, ExploreIcon, SearchIcon, BellIcon } from "../components/icons";
+import { PencilIcon, ExploreIcon, SearchIcon } from "../components/icons";
 import { EmptyState } from "../components/ui/EmptyState";
 import { EmptyShelfIllustration } from "../components/illustrations";
 
@@ -18,14 +18,6 @@ export function Feed() {
   const [loading, setLoading] = useState(true);
   const [composing, setComposing] = useState(false);
   const [checkin, setCheckin] = useState(false);
-  const [unread, setUnread] = useState(0);
-
-  useEffect(() => {
-    social
-      .notifications()
-      .then((r) => setUnread(r.unread))
-      .catch(() => {});
-  }, []);
 
   useEffect(() => {
     social
@@ -59,14 +51,6 @@ export function Feed() {
         <div className="flex items-center gap-4 text-muted">
           <Link to="/descobrir" aria-label={t.social.discoverTitle}>
             <SearchIcon className="h-5 w-5" />
-          </Link>
-          <Link to="/notificacoes" aria-label={t.social.notificationsTitle} className="relative">
-            <BellIcon className="h-5 w-5" />
-            {unread > 0 && (
-              <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-rust-600 px-1 text-[0.6rem] font-semibold leading-none text-white">
-                {unread > 9 ? "9+" : unread}
-              </span>
-            )}
           </Link>
         </div>
       </div>

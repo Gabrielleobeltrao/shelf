@@ -8,6 +8,9 @@ import { EmptyState } from "../ui/EmptyState";
 import { PhotoOrFallback } from "../ui/PhotoOrFallback";
 import { Portal } from "../ui/Portal";
 import { EmptyShelfIllustration } from "../illustrations";
+import { Avatar } from "../social/Avatar";
+import { timeAgo } from "../../lib/timeAgo";
+import type { NotificationView } from "../../lib/social";
 
 export type AlertItem = {
   _id: string;
@@ -22,6 +25,7 @@ type Props = {
   open: boolean;
   onClose: () => void;
   items: AlertItem[];
+  social: NotificationView[];
   trackExpiration: boolean;
   withinDays: number;
   onDismiss: (item: AlertItem) => void;
@@ -33,13 +37,14 @@ export function NotificationsPanel({
   open,
   onClose,
   items,
+  social,
   trackExpiration,
   withinDays,
   onDismiss,
   onClearAll,
   onRemoved,
 }: Props) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   // Items already on the shopping list (by sourceItemId) shouldn't offer
   // "restock" again — we mark them as already listed instead.
   const [listedIds, setListedIds] = useState<Set<string>>(new Set());
@@ -92,6 +97,17 @@ export function NotificationsPanel({
       setBusy(false);
       setConfirming(null);
     }
+  }
+
+  function socialLabel(n: NotificationView) {
+    const name = n.actor?.name || `@${n.actor?.handle ?? ""}`;
+    return n.type === "follow"
+      ? t.social.notifFollow(name)
+      : n.type === "accept"
+        ? t.social.notifAccept(name)
+        : n.type === "like"
+          ? t.social.notifLike(name)
+          : t.social.notifComment(name);
   }
 
   function row(item: AlertItem) {
@@ -155,21 +171,53 @@ export function NotificationsPanel({
           </div>
         </div>
 
-        <div className="mt-4 flex-1 overflow-y-auto">
+        <div className="mt-4 flex-1 space-y-4 overflow-y-auto">
+          {social.length > 0 && (
+            <div>
+              <div className="mb-1.5 flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted">
+                  {t.notifications.socialSection}
+                </p>
+                <Link to="/notificacoes" onClick={onClose} className="text-xs font-medium text-primary-600">
+                  {t.notifications.viewAll}
+                </Link>
+              </div>
+              <ul className="space-y-1">
+                {social.slice(0, 6).map((n) => (
+                  <li key={n.id}>
+                    <Link
+                      to={`/perfil/${n.actor?.handle ?? ""}`}
+                      onClick={onClose}
+                      className={`flex items-center gap-3 rounded-xl p-2.5 ${n.read ? "" : "bg-surface-2"}`}
+                    >
+                      <Avatar src={n.actor?.avatarUrl} name={n.actor?.name || "?"} size={36} />
+                      <p className="min-w-0 flex-1 text-sm">{socialLabel(n)}</p>
+                      <span className="shrink-0 text-xs text-muted">{timeAgo(n.createdAt, lang)}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {!trackExpiration ? (
-            <p className="text-sm text-muted">
-              {t.notifications.disabledPrefix}{" "}
-              <Link to="/configuracoes" className="text-primary-600 underline">
-                {t.notifications.disabledLink}
-              </Link>{" "}
-              {t.notifications.disabledSuffix}
-            </p>
+            social.length === 0 && (
+              <p className="text-sm text-muted">
+                {t.notifications.disabledPrefix}{" "}
+                <Link to="/configuracoes" className="text-primary-600 underline">
+                  {t.notifications.disabledLink}
+                </Link>{" "}
+                {t.notifications.disabledSuffix}
+              </p>
+            )
           ) : items.length === 0 ? (
-            <EmptyState
-              illustration={<EmptyShelfIllustration />}
-              title={t.notifications.empty}
-              description=""
-            />
+            social.length === 0 && (
+              <EmptyState
+                illustration={<EmptyShelfIllustration />}
+                title={t.notifications.empty}
+                description=""
+              />
+            )
           ) : (
             <div className="space-y-4">
               {expired.length > 0 && (
