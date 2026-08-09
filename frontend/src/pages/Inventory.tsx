@@ -3,9 +3,9 @@ import { useSearchParams } from "react-router-dom";
 import { api } from "../lib/api";
 import { lookupProduct } from "../lib/openFoodFacts";
 import type { ProductSearchResult } from "../lib/openFoodFacts";
-import { getExpirationWarning, isExpired } from "../lib/expiration";
+import { daysUntil, getExpirationWarning, isExpired } from "../lib/expiration";
 import { useHouseholdSync, useSyncEffect } from "../lib/householdSync";
-import { BarcodeIcon, CartIcon, MinusIcon, PlusIcon, SearchIcon } from "../components/icons";
+import { BarcodeIcon, CartIcon, FilterIcon, MinusIcon, PlusIcon, SearchIcon } from "../components/icons";
 import { getCategoryIcon } from "../lib/categoryIcon";
 import { getLocationIcon } from "../lib/locationIcon";
 import { LOCATION_OPTIONS } from "../lib/locations";
@@ -19,6 +19,7 @@ import type { ItemFormData } from "../components/inventory/ItemDetailModal";
 import { ItemDetailModal } from "../components/inventory/ItemDetailModal";
 import { ProductSearchModal } from "../components/inventory/ProductSearchModal";
 import { ItemViewModal } from "../components/inventory/ItemViewModal";
+import { Portal } from "../components/ui/Portal";
 
 const BarcodeScanner = lazy(() =>
   import("../components/inventory/BarcodeScanner").then((m) => ({ default: m.BarcodeScanner })),
@@ -83,8 +84,11 @@ export function Inventory() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"" | "expiring" | "expired">("");
+  const [filterOpen, setFilterOpen] = useState(false);
   const [settings, setSettingsState] = useState({
     trackExpiration: false,
+    expiryAlertDays: 7,
     trackNutrition: false,
     nutritionFields: [] as string[],
     trackGlutenFree: false,
@@ -141,6 +145,11 @@ export function Inventory() {
       .filter((item) => {
         if (categoryFilter && (item.category?.trim() || "") !== categoryFilter) return false;
         if (locationFilter && (item.location?.trim() || "") !== locationFilter) return false;
+        if (statusFilter === "expired" && !isExpired(item.expirationDate)) return false;
+        if (statusFilter === "expiring") {
+          if (!item.expirationDate || isExpired(item.expirationDate)) return false;
+          if (daysUntil(item.expirationDate) > settings.expiryAlertDays) return false;
+        }
         if (!term) return true;
         return (
           item.name.toLowerCase().includes(term) ||
@@ -148,7 +157,9 @@ export function Inventory() {
         );
       })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [items, search, categoryFilter, locationFilter]);
+  }, [items, search, categoryFilter, locationFilter, statusFilter, settings.expiryAlertDays]);
+
+  const hasActiveFilter = categoryFilter !== "" || statusFilter !== "";
 
   async function handleSave(data: ItemFormData) {
     if (!modal) return;
@@ -319,15 +330,117 @@ export function Inventory() {
       </div>
 
       {items.length > 0 && (
-        <div className="relative">
-          <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-          <input
-            type="text"
-            placeholder={t.inventory.searchPlaceholder}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg bg-surface-2 py-2 pl-9 pr-3 text-base"
-          />
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <input
+              type="text"
+              placeholder={t.inventory.searchPlaceholder}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-lg bg-surface-2 py-2 pl-9 pr-3 text-base"
+            />
+          </div>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setFilterOpen((v) => !v)}
+              aria-label={t.inventory.filter}
+              className={`relative flex h-full w-11 items-center justify-center rounded-lg bg-surface-2 ${
+                hasActiveFilter ? "text-primary-600" : "text-muted"
+              }`}
+            >
+              <FilterIcon className="h-5 w-5" />
+              {hasActiveFilter && (
+                <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-primary-600" />
+              )}
+            </button>
+
+            {filterOpen && (
+              <>
+                <Portal>
+                  <div className="fixed inset-0 z-10" onClick={() => setFilterOpen(false)} />
+                </Portal>
+                <div className="absolute right-0 z-20 mt-1 max-h-[70vh] w-64 space-y-3 overflow-y-auto rounded-lg border border-line bg-surface p-3 shadow-lg">
+                  {settings.trackExpiration && (
+                    <div>
+                      <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
+                        {t.inventory.status}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {(
+                          [
+                            ["expiring", t.inventory.filterExpiring, "mustard"],
+                            ["expired", t.inventory.filterExpired, "rust"],
+                          ] as const
+                        ).map(([value, statusLabel, tone]) => {
+                          const active = statusFilter === value;
+                          return (
+                            <button
+                              key={value}
+                              type="button"
+                              onClick={() => setStatusFilter(active ? "" : value)}
+                              className={`rounded-full px-3 py-1.5 text-xs font-medium ${
+                                active
+                                  ? tone === "mustard"
+                                    ? "bg-mustard-600 text-white"
+                                    : "bg-rust-600 text-white"
+                                  : "bg-surface-2 text-muted"
+                              }`}
+                            >
+                              {statusLabel}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {categories.length > 0 && (
+                    <div>
+                      <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
+                        {t.inventory.category}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {categories.map((category) => {
+                          const { Icon: ChipIcon, tint } = getCategoryIcon(category);
+                          const active = categoryFilter === category;
+                          return (
+                            <button
+                              key={category}
+                              type="button"
+                              onClick={() => setCategoryFilter(active ? "" : category!)}
+                              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium ${
+                                tint === "mustard"
+                                  ? "bg-mustard-100 text-mustard-700 dark:bg-mustard-900/40 dark:text-mustard-400"
+                                  : "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-400"
+                              } ${active ? "ring-2 ring-primary-600" : ""}`}
+                            >
+                              <ChipIcon className="h-4 w-4" />
+                              {categoryLabel(t, category)}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {hasActiveFilter && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCategoryFilter("");
+                        setStatusFilter("");
+                      }}
+                      className="text-xs font-medium text-primary-600"
+                    >
+                      {t.inventory.clearFilters}
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
 
@@ -347,30 +460,6 @@ export function Inventory() {
               >
                 <LocationIcon className="h-4 w-4 shrink-0" />
                 {locationLabel(t, location)}
-              </button>
-            );
-          })}
-        </div>
-      )}
-
-      {categories.length > 0 && (
-        <div className="-mx-1 flex gap-2 overflow-x-auto overflow-y-visible px-1 py-1.5">
-          {categories.map((category) => {
-            const { Icon: ChipIcon, tint } = getCategoryIcon(category);
-            const active = categoryFilter === category;
-            return (
-              <button
-                key={category}
-                type="button"
-                onClick={() => setCategoryFilter(active ? "" : category!)}
-                className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium ${
-                  tint === "mustard"
-                    ? "bg-mustard-100 text-mustard-700 dark:bg-mustard-900/40 dark:text-mustard-400"
-                    : "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-400"
-                } ${active ? "ring-2 ring-primary-600" : ""}`}
-              >
-                <ChipIcon className="h-4 w-4" />
-                {categoryLabel(t, category)}
               </button>
             );
           })}
