@@ -607,21 +607,6 @@ export const en: Dict = {
         how: "You create an event (name, date, place, guests) and manage everything on one page: items by category, each item's status, and who's responsible. Shelf cross-checks the household pantry and shows what you already have, what's missing, and what goes on the shopping list.",
       },
       {
-        id: "profiles",
-        name: "User profiles",
-        desc: "Profiles to tell who's who in the groups.",
-        objective: "Make users easy to identify across groups, pantries, and events.",
-        tasks: [
-          "Profile page",
-          "Profile photo and avatar",
-          "Display name",
-          "Per-group nickname (optional)",
-          "Roles system",
-          "Dietary preferences and allergies",
-        ],
-        how: "Everyone gets a simple profile (photo, name, display name, avatar or color) that shows up in the pantry, events, and lists. Email stays private — people are identified by photo and name. Roles set what each person can do.",
-      },
-      {
         id: "cooking-mode",
         name: "Cooking mode",
         desc: "Full-screen step-by-step, with timers.",

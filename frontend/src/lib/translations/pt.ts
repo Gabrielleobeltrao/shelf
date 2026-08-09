@@ -605,21 +605,6 @@ export const pt = {
         how: "Você cria um evento (nome, data, local, convidados) e gerencia tudo numa página só: itens por categoria, status de cada um e responsáveis. O Shelf cruza com o estoque da casa e mostra o que já tem, o que falta e o que entra na lista de compras.",
       },
       {
-        id: "profiles",
-        name: "Perfil dos usuários",
-        desc: "Perfis pra identificar quem é quem nos grupos.",
-        objective: "Tornar os usuários fáceis de identificar dentro de grupos, estoques e eventos.",
-        tasks: [
-          "Página de perfil",
-          "Foto de perfil e avatar",
-          "Nome de exibição",
-          "Apelido por grupo (opcional)",
-          "Sistema de cargos",
-          "Preferências alimentares e alergias",
-        ],
-        how: "Cada pessoa terá um perfil simples (foto, nome, nome de exibição, avatar ou cor) que aparece no estoque, eventos e listas. O e-mail fica privado — a identificação é por foto e nome. Cargos definem as permissões de cada um.",
-      },
-      {
         id: "cooking-mode",
         name: "Modo cozinha",
         desc: "Passo a passo em tela cheia, com timers.",

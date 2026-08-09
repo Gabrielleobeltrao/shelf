@@ -248,7 +248,6 @@ const PLANNED_ICON: Record<string, ComponentType<IconProps>> = {
   checkins: ExploreIcon,
   "public-pantry": ShareIcon,
   events: CalendarIcon,
-  profiles: UserIcon,
   "receipt-scan": ReceiptIcon,
   "consumption-history": ChartIcon,
   "cooking-mode": CookedIcon,
