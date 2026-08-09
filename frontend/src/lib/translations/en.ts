@@ -382,6 +382,12 @@ export const en: Dict = {
     reject: "Reject",
     noPeople: "No one found.",
     discover: "Discover",
+    notificationsTitle: "Notifications",
+    noNotifications: "No notifications.",
+    notifFollow: (name: string) => `${name} started following you`,
+    notifAccept: (name: string) => `${name} accepted your request`,
+    notifLike: (name: string) => `${name} liked your post`,
+    notifComment: (name: string) => `${name} commented on your post`,
   },
   install: {
     title: "Install the app",

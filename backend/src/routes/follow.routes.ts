@@ -3,6 +3,7 @@ import { requireAuth } from "../middleware/requireAuth.js";
 import { Follow } from "../models/Follow.js";
 import { Profile } from "../models/Profile.js";
 import { getOrCreateProfile, listUsers, usersByIds } from "../lib/profiles.js";
+import { notify } from "../lib/notify.js";
 
 const router = Router();
 router.use(requireAuth);
@@ -25,6 +26,7 @@ router.post("/requests/:userId/accept", async (req, res) => {
   }
   await Profile.updateOne({ userId: me }, { $inc: { followersCount: 1 } });
   await Profile.updateOne({ userId: req.params.userId }, { $inc: { followingCount: 1 } });
+  await notify(req.params.userId, "accept", me);
   res.json({ ok: true });
 });
 
@@ -72,6 +74,7 @@ router.post("/:userId", async (req, res) => {
   if (status === "accepted") {
     await Profile.updateOne({ userId: target }, { $inc: { followersCount: 1 } });
     await Profile.updateOne({ userId: me }, { $inc: { followingCount: 1 } });
+    await notify(target, "follow", me);
   }
   res.status(201).json({ status });
 });

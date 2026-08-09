@@ -7,6 +7,7 @@ import { Profile } from "../models/Profile.js";
 import { Follow } from "../models/Follow.js";
 import { canViewPost, serializePosts } from "../lib/posts.js";
 import { getOrCreateProfile, usersByIds } from "../lib/profiles.js";
+import { notify } from "../lib/notify.js";
 
 const router = Router();
 router.use(requireAuth);
@@ -77,6 +78,7 @@ router.post("/:id/like", async (req, res) => {
   try {
     await PostLike.create({ postId: String(post._id), userId: req.userId });
     await Post.updateOne({ _id: post._id }, { $inc: { likesCount: 1 } });
+    await notify(post.authorId, "like", req.userId!, String(post._id));
   } catch {
     // already liked — idempotent
   }
@@ -130,6 +132,7 @@ router.post("/:id/comments", async (req, res) => {
     text,
   });
   await Post.updateOne({ _id: post._id }, { $inc: { commentsCount: 1 } });
+  await notify(post.authorId, "comment", req.userId!, String(post._id));
   res.status(201).json({
     id: String(comment._id),
     userId: comment.userId,

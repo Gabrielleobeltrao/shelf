@@ -56,6 +56,15 @@ export type PantryItem = {
   imageUrl?: string;
 };
 
+export type NotificationView = {
+  id: string;
+  type: "follow" | "accept" | "like" | "comment";
+  actor?: UserCard;
+  postId?: string;
+  read: boolean;
+  createdAt: string;
+};
+
 export type PlaceCard = {
   id: string;
   name: string;
@@ -100,6 +109,9 @@ export const social = {
   comments: (id: string) => api.get<CommentView[]>(`/api/posts/${id}/comments`),
   addComment: (id: string, text: string) => api.post<CommentView>(`/api/posts/${id}/comments`, { text }),
   deleteComment: (id: string, commentId: string) => api.delete(`/api/posts/${id}/comments/${commentId}`),
+
+  notifications: () => api.get<{ unread: number; items: NotificationView[] }>("/api/notifications"),
+  markNotificationsRead: () => api.post("/api/notifications/read", {}),
 
   searchPlaces: (q: string) => api.get<PlaceCard[]>(`/api/places?q=${encodeURIComponent(q)}`),
   createCheckin: (data: {

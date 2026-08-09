@@ -380,6 +380,12 @@ export const pt = {
     reject: "Recusar",
     noPeople: "Ninguém encontrado.",
     discover: "Descobrir",
+    notificationsTitle: "Notificações",
+    noNotifications: "Sem notificações.",
+    notifFollow: (name: string) => `${name} começou a seguir você`,
+    notifAccept: (name: string) => `${name} aceitou sua solicitação`,
+    notifLike: (name: string) => `${name} curtiu sua publicação`,
+    notifComment: (name: string) => `${name} comentou sua publicação`,
   },
   install: {
     title: "Instalar o app",
