@@ -119,7 +119,7 @@ export function Header({ left, right }: Props) {
         <div className="justify-self-start">{left}</div>
 
         <Link
-          to={loggedIn ? "/dashboard" : "/"}
+          to={loggedIn ? "/feed" : "/"}
           className="flex items-center justify-self-center gap-2"
         >
           <ShelfLogo className="h-6 w-6" />

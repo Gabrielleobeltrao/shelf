@@ -8,7 +8,7 @@ import { Login } from "./pages/Login";
 import { Inventory } from "./pages/Inventory";
 import { Recipes } from "./pages/Recipes";
 import { Settings } from "./pages/Settings";
-import { Dashboard } from "./pages/Dashboard";
+import { Feed } from "./pages/Feed";
 import { PublicRecipe } from "./pages/PublicRecipe";
 import { ExploreRecipes } from "./pages/ExploreRecipes";
 import { Roadmap } from "./pages/Roadmap";
@@ -31,7 +31,7 @@ function RootRoute() {
     );
   }
 
-  return session ? <Navigate to="/estoque" replace /> : <Landing />;
+  return session ? <Navigate to="/feed" replace /> : <Landing />;
 }
 
 function App() {
@@ -56,7 +56,8 @@ function App() {
         <Route path="/receitas" element={<Recipes />} />
         <Route path="/colecoes" element={<Collections />} />
         <Route path="/colecoes/:id" element={<CollectionDetail />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/feed" element={<Feed />} />
+        <Route path="/dashboard" element={<Navigate to="/feed" replace />} />
         <Route path="/perfil" element={<Profile />} />
         <Route path="/perfil/:handle" element={<Profile />} />
         <Route path="/configuracoes" element={<Settings />} />

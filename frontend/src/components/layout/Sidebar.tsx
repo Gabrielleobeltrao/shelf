@@ -214,7 +214,7 @@ function SidebarBody({
       {/* Logo pinned at the top of the desktop rail (mark only when collapsed). */}
       {rail && (
         <Link
-          to={session ? "/dashboard" : "/"}
+          to={session ? "/feed" : "/"}
           className={`flex items-center gap-3 rounded-xl px-3 py-2 ${rowJustify}`}
         >
           <ShelfLogo className="h-6 w-6 shrink-0" />
@@ -225,7 +225,7 @@ function SidebarBody({
       <nav className="mt-4 flex flex-col gap-1">
         {session ? (
           <>
-            {navLink("/dashboard", false, DashboardNavIcon, t.nav.dashboard)}
+            {navLink("/feed", false, DashboardNavIcon, t.nav.dashboard)}
 
             {navLink("/estoque", true, InventoryNavIcon, t.nav.inventory)}
 

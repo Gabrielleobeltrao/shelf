@@ -25,7 +25,7 @@ export function Login() {
   // reactive session (instead of only right after the request) avoids the
   // race where a protected route still sees us as logged out.
   useEffect(() => {
-    if (session) navigate("/estoque", { replace: true });
+    if (session) navigate("/feed", { replace: true });
   }, [session, navigate]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -59,7 +59,7 @@ export function Login() {
     // Make sure the reactive session is populated before we move on, so the
     // protected route sees us as logged in on the first try.
     await authClient.getSession();
-    navigate("/estoque", { replace: true });
+    navigate("/feed", { replace: true });
   }
 
   return (
