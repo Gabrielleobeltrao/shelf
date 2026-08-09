@@ -402,6 +402,12 @@ export const en: Dict = {
     placeNotFound: "Place not found.",
     photoUrl: "Photo URL (optional)",
     exploreHeader: "Discover posts",
+    tabPopular: "Popular",
+    tabTopRated: "Top rated",
+    tabWantToGo: "Want to go",
+    wantToGo: "Want to go",
+    saved: "Saved",
+    emptyWishlist: "Save places you want to visit.",
   },
   install: {
     title: "Install the app",

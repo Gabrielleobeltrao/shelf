@@ -400,6 +400,12 @@ export const pt = {
     placeNotFound: "Lugar não encontrado.",
     photoUrl: "URL da foto (opcional)",
     exploreHeader: "Descubra publicações",
+    tabPopular: "Populares",
+    tabTopRated: "Melhores",
+    tabWantToGo: "Quero ir",
+    wantToGo: "Quero ir",
+    saved: "Salvo",
+    emptyWishlist: "Salve lugares que você quer visitar.",
   },
   install: {
     title: "Instalar o app",

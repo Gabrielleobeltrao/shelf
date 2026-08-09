@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { social, type PlaceCard, type ReviewView } from "../lib/social";
 import { useI18n } from "../lib/i18n";
 import { Avatar } from "../components/social/Avatar";
-import { StarIcon } from "../components/icons";
+import { StarIcon, BookmarkIcon } from "../components/icons";
 import { timeAgo } from "../lib/timeAgo";
 
 export function Stars({ value }: { value: number }) {
@@ -22,33 +22,57 @@ export function Place() {
   const [place, setPlace] = useState<PlaceCard | null>(null);
   const [reviews, setReviews] = useState<ReviewView[]>([]);
   const [notFound, setNotFound] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     Promise.all([social.place(id), social.placeReviews(id)])
       .then(([p, r]) => {
         setPlace(p);
+        setSaved(!!p.savedByMe);
         setReviews(r);
       })
       .catch(() => setNotFound(true));
   }, [id]);
+
+  async function toggleSave() {
+    const next = !saved;
+    setSaved(next);
+    try {
+      const r = next ? await social.savePlace(id) : await social.unsavePlace(id);
+      setSaved(r.savedByMe);
+    } catch {
+      setSaved(!next);
+    }
+  }
 
   if (notFound) return <p className="text-sm text-muted">{t.social.placeNotFound}</p>;
   if (!place) return <p className="text-sm text-muted">{t.common.loading}</p>;
 
   return (
     <div className="mx-auto max-w-xl space-y-4 pb-16">
-      <div>
-        <h1 className="font-display text-xl font-bold">📍 {place.name}</h1>
-        {place.city && <p className="text-sm text-muted">{place.city}</p>}
-        {place.rating != null ? (
-          <div className="mt-1 flex items-center gap-2">
-            <Stars value={place.rating} />
-            <span className="text-sm font-semibold">{place.rating}</span>
-            <span className="text-sm text-muted">· {t.social.ratingsCount(place.ratingCount)}</span>
-          </div>
-        ) : (
-          <p className="mt-1 text-sm text-muted">{t.social.noReviews}</p>
-        )}
+      <div className="flex items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <h1 className="font-display text-xl font-bold">📍 {place.name}</h1>
+          {place.city && <p className="text-sm text-muted">{place.city}</p>}
+          {place.rating != null ? (
+            <div className="mt-1 flex items-center gap-2">
+              <Stars value={place.rating} />
+              <span className="text-sm font-semibold">{place.rating}</span>
+              <span className="text-sm text-muted">· {t.social.ratingsCount(place.ratingCount)}</span>
+            </div>
+          ) : (
+            <p className="mt-1 text-sm text-muted">{t.social.noReviews}</p>
+          )}
+        </div>
+        <button
+          onClick={toggleSave}
+          className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+            saved ? "bg-primary-600 text-white" : "bg-surface-2 text-fg"
+          }`}
+        >
+          <BookmarkIcon className="h-4 w-4" filled={saved} />
+          {saved ? t.social.saved : t.social.wantToGo}
+        </button>
       </div>
 
       <h2 className="text-sm font-medium text-muted">{t.social.reviews}</h2>

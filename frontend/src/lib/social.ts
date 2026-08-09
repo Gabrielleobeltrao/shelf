@@ -74,6 +74,7 @@ export type PlaceCard = {
   geo?: { lat: number; lng: number };
   rating?: number | null;
   ratingCount: number;
+  savedByMe?: boolean;
 };
 
 export type ReviewView = {
@@ -138,14 +139,18 @@ export const social = {
   markNotificationsRead: () => api.post("/api/notifications/read", {}),
 
   searchPlaces: (q: string) => api.get<PlaceCard[]>(`/api/places?q=${encodeURIComponent(q)}`),
-  places: (q?: string, city?: string) => {
+  places: (q?: string, city?: string, sort?: "rating") => {
     const params = new URLSearchParams();
     if (q) params.set("q", q);
     if (city) params.set("city", city);
+    if (sort) params.set("sort", sort);
     const qs = params.toString();
     return api.get<PlaceCard[]>(`/api/places${qs ? `?${qs}` : ""}`);
   },
   place: (id: string) => api.get<PlaceCard>(`/api/places/${id}`),
+  savePlace: (id: string) => api.post<{ savedByMe: boolean }>(`/api/places/${id}/save`, {}),
+  unsavePlace: (id: string) => api.delete<{ savedByMe: boolean }>(`/api/places/${id}/save`),
+  savedPlaces: () => api.get<PlaceCard[]>("/api/places/saved"),
   placeReviews: (id: string) => api.get<ReviewView[]>(`/api/places/${id}/checkins`),
   createCheckin: (data: {
     placeId?: string;
