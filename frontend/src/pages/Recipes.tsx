@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../lib/api";
-import { hasEnoughStock } from "../lib/units";
+import { recipeMissing, canMakeRecipe } from "../lib/recipeStock";
 import type { RecipeFormData } from "../components/recipes/RecipeDetailModal";
 import { RecipeDetailModal } from "../components/recipes/RecipeDetailModal";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
@@ -85,6 +85,7 @@ export function Recipes() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [originFilter, setOriginFilter] = useState<"all" | "mine" | "saved">("all");
+  const [canMakeFilter, setCanMakeFilter] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [unsaving, setUnsaving] = useState<Recipe | null>(null);
   const [collectingId, setCollectingId] = useState<string | null>(null);
@@ -112,6 +113,16 @@ export function Recipes() {
     setSearchParams({}, { replace: true });
   }, [loading, recipes, searchParams, setSearchParams]);
 
+  // Deep link from the dashboard's "Can make" stat: /receitas?canMake=1 lands
+  // here with the filter pre-applied. Strip the param so a refresh stays clean.
+  useEffect(() => {
+    if (searchParams.get("canMake") !== "1") return;
+    setCanMakeFilter(true);
+    const next = new URLSearchParams(searchParams);
+    next.delete("canMake");
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
+
   const itemsById = useMemo(() => new Map(items.map((item) => [item._id, item])), [items]);
 
   const categories = useMemo(() => {
@@ -123,6 +134,7 @@ export function Recipes() {
     const term = search.trim().toLowerCase();
 
     return recipes.filter((recipe) => {
+      if (canMakeFilter && !canMakeRecipe(recipe, itemsById)) return false;
       if (categoryFilter && (recipe.category?.trim() || "") !== categoryFilter) return false;
       if (originFilter === "mine" && recipe.savedFrom) return false;
       if (originFilter === "saved" && !recipe.savedFrom) return false;
@@ -130,27 +142,19 @@ export function Recipes() {
       if (recipe.name.toLowerCase().includes(term)) return true;
       return recipe.ingredients.some((row) => row.name?.toLowerCase().includes(term));
     });
-  }, [recipes, search, categoryFilter, originFilter]);
+  }, [recipes, search, categoryFilter, originFilter, canMakeFilter, itemsById]);
 
   const hasSaved = useMemo(() => recipes.some((r) => r.savedFrom), [recipes]);
-  const hasActiveFilter = originFilter !== "all" || categoryFilter !== "";
+  const hasActiveFilter = originFilter !== "all" || categoryFilter !== "" || canMakeFilter;
 
   const PAGE_SIZE = 12;
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   // Reset back to the first page whenever the result set changes.
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [search, categoryFilter, originFilter]);
+  }, [search, categoryFilter, originFilter, canMakeFilter]);
 
   const visibleRecipes = filteredRecipes.slice(0, visibleCount);
-
-  function missingIngredients(recipe: Recipe) {
-    return recipe.ingredients.filter((row) => {
-      const stockItem = itemsById.get(row.itemId);
-      if (!stockItem) return true;
-      return hasEnoughStock(row.quantity, row.unit, stockItem.quantity, stockItem.unit) === false;
-    });
-  }
 
   async function handleSave(data: RecipeFormData) {
     if (!modal) return;
@@ -230,6 +234,21 @@ export function Recipes() {
                   <div className="fixed inset-0 z-10" onClick={() => setFilterOpen(false)} />
                 </Portal>
                 <div className="absolute right-0 z-20 mt-1 w-64 space-y-3 rounded-lg border border-line bg-surface p-3 shadow-lg">
+                  <div>
+                    <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
+                      {t.recipes.availability}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setCanMakeFilter((v) => !v)}
+                      className={`rounded-full px-3 py-1.5 text-xs font-medium ${
+                        canMakeFilter ? "bg-primary-600 text-white" : "bg-surface-2 text-muted"
+                      }`}
+                    >
+                      {t.recipes.canMakeFilter}
+                    </button>
+                  </div>
+
                   {hasSaved && (
                     <div>
                       <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">
@@ -291,6 +310,7 @@ export function Recipes() {
                       onClick={() => {
                         setOriginFilter("all");
                         setCategoryFilter("");
+                        setCanMakeFilter(false);
                       }}
                       className="text-xs font-medium text-primary-600"
                     >
@@ -317,7 +337,7 @@ export function Recipes() {
       ) : (
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {visibleRecipes.map((recipe) => {
-            const missing = missingIngredients(recipe);
+            const missing = recipeMissing(recipe.ingredients, itemsById);
             const missingIds = new Set(missing.map((row) => row.itemId));
             const steps = getSteps(recipe);
 

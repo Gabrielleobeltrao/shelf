@@ -149,6 +149,8 @@ export const pt = {
     title: "Receitas",
     searchPlaceholder: "Buscar por nome ou ingrediente",
     filter: "Filtrar receitas",
+    availability: "Disponibilidade",
+    canMakeFilter: "Dá pra fazer agora",
     origin: "Origem",
     all: "Todas",
     mine: "Minhas",

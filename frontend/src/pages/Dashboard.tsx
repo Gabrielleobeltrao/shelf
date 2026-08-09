@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { daysUntil, getExpirationWarning } from "../lib/expiration";
-import { hasEnoughStock } from "../lib/units";
-import { normalizeName } from "../lib/text";
+import { canMakeRecipe } from "../lib/recipeStock";
 import { locationLabel } from "../lib/labels";
 import { LOCATION_OPTIONS } from "../lib/locations";
 import { describeActivity, householdApi, type ActivityEntry, type Household } from "../lib/household";
@@ -23,7 +22,11 @@ type Item = {
   expirationDate?: string;
 };
 
-type Recipe = { _id: string; ingredients: { name?: string; quantity: number; unit: string }[] };
+type Recipe = {
+  _id: string;
+  savedFrom?: string;
+  ingredients: { itemId?: string; name?: string; quantity: number; unit: string }[];
+};
 
 export function Dashboard() {
   const { t, lang } = useI18n();
@@ -75,18 +78,10 @@ export function Dashboard() {
     .sort((a, b) => daysUntil(a.expirationDate!) - daysUntil(b.expirationDate!));
   const attention = [...expired, ...expiringSoon];
 
-  // How many recipes can be made right now, matching ingredients to the
-  // pantry by name (robust across personal/shared spaces).
-  const stockByName = new Map(items.map((i) => [normalizeName(i.name), i]));
-  const makeableCount = recipes.filter(
-    (r) =>
-      r.ingredients.length > 0 &&
-      r.ingredients.every((ing) => {
-        if (!ing.name?.trim()) return false;
-        const stock = stockByName.get(normalizeName(ing.name));
-        return !!stock && hasEnoughStock(ing.quantity, ing.unit, stock.quantity, stock.unit) !== false;
-      }),
-  ).length;
+  // How many recipes can be made right now — shares canMakeRecipe with the
+  // Recipes page so this count matches the ?canMake=1 filter the card links to.
+  const itemsById = new Map(items.map((i) => [i._id, i]));
+  const makeableCount = recipes.filter((r) => canMakeRecipe(r, itemsById)).length;
 
   const locationCounts = [
     ...LOCATION_OPTIONS.map((loc) => ({
@@ -134,7 +129,7 @@ export function Dashboard() {
               <Stat value={expired.length} label={t.dashboard.statExpired} tone="rust" />
             )}
             <Stat value={shoppingCount} label={t.dashboard.statShopping} />
-            <Stat to="/receitas" value={makeableCount} label={t.dashboard.statMakeable} tone="primary" />
+            <Stat to="/receitas?canMake=1" value={makeableCount} label={t.dashboard.statMakeable} tone="primary" />
           </div>
 
           {/* Breakdown by location */}

@@ -151,6 +151,8 @@ export const en: Dict = {
     title: "Recipes",
     searchPlaceholder: "Search by name or ingredient",
     filter: "Filter recipes",
+    availability: "Availability",
+    canMakeFilter: "Can make now",
     origin: "Origin",
     all: "All",
     mine: "Mine",
