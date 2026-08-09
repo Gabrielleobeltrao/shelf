@@ -32,6 +32,11 @@
   background-image: repeating-linear-gradient(45deg, var(--line) 0 5px, transparent 5px 10px);
 }
 
+/* Floating action button glow — a soft green-tinted drop shadow (prototype). */
+@utility fab-glow {
+  box-shadow: 0 12px 28px -8px oklch(50% 0.15 140 / 0.55);
+}
+
 @theme {
   /* Green — the single vivid accent, reserved for the actions that matter.
      Filled across the scale in OKLCH (hue 140). 600 is the primary action;
