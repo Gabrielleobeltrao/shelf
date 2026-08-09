@@ -1,0 +1,20 @@
+{
+  "projectId": "76c3764a-ef80-414a-9ef2-aa97d8faa3a9",
+  "shape": "package",
+  "pkg": "shelf",
+  "globalName": "Shelf",
+  "srcDir": "src/components",
+  "tsconfig": "tsconfig.app.json",
+  "cssEntry": ".ds-compiled.css",
+  "extraFonts": [
+    "node_modules/@fontsource/outfit/500.css",
+    "node_modules/@fontsource/outfit/600.css",
+    "node_modules/@fontsource/outfit/700.css",
+    "node_modules/@fontsource/outfit/800.css",
+    "node_modules/@fontsource/figtree/400.css",
+    "node_modules/@fontsource/figtree/500.css",
+    "node_modules/@fontsource/figtree/600.css",
+    "node_modules/@fontsource/figtree/700.css"
+  ],
+  "readmeHeader": ".design-sync/conventions.md"
+}
