@@ -25,13 +25,14 @@ export function Header({ left, right }: Props) {
   const { t } = useI18n();
   const loggedIn = !!session;
   const { pathname } = useLocation();
-  const { itemsRev } = useHouseholdSync();
+  const { itemsRev, listRev } = useHouseholdSync();
 
   const [items, setItems] = useState<AlertItem[]>([]);
   const [trackExpiration, setTrackExpiration] = useState(false);
   const [withinDays, setWithinDays] = useState(7);
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   // Dismissed alerts (per device), keyed by item + its expiration date so a
   // re-expiring item (date changed) surfaces again.
   const [dismissed, setDismissed] = useState<Set<string>>(() => {
@@ -61,6 +62,18 @@ export function Header({ left, right }: Props) {
       .catch(() => {});
   }, [loggedIn, pathname, itemsRev]);
 
+  // Cart badge — count of items in the shopping list, kept live via listRev.
+  useEffect(() => {
+    if (!loggedIn) {
+      setCartCount(0);
+      return;
+    }
+    api
+      .get<{ _id: string }[]>("/api/shopping-list")
+      .then((l) => setCartCount(l.length))
+      .catch(() => {});
+  }, [loggedIn, pathname, listRev]);
+
   const alerts = trackExpiration
     ? items
         .filter((i) => i.expirationDate && daysUntil(i.expirationDate) <= withinDays)
@@ -88,8 +101,13 @@ export function Header({ left, right }: Props) {
   const actions = loggedIn && (
     <>
       <NotificationsBell count={visibleAlerts.length} onClick={() => setAlertsOpen(true)} />
-      <button onClick={() => setCartOpen(true)} aria-label={t.nav.openCart} className="text-muted">
+      <button onClick={() => setCartOpen(true)} aria-label={t.nav.openCart} className="relative text-muted">
         <CartIcon className="h-6 w-6" />
+        {cartCount > 0 && (
+          <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary-600 px-1 text-[0.6rem] font-semibold leading-none text-white">
+            {cartCount > 9 ? "9+" : cartCount}
+          </span>
+        )}
       </button>
     </>
   );
@@ -133,7 +151,16 @@ export function Header({ left, right }: Props) {
             onClearAll={clearAlerts}
             onRemoved={(item) => setItems((prev) => prev.filter((i) => i._id !== item._id))}
           />
-          <ShoppingCartModal open={cartOpen} onClose={() => setCartOpen(false)} />
+          <ShoppingCartModal
+            open={cartOpen}
+            onClose={() => {
+              setCartOpen(false);
+              api
+                .get<{ _id: string }[]>("/api/shopping-list")
+                .then((l) => setCartCount(l.length))
+                .catch(() => {});
+            }}
+          />
         </>
       )}
     </>
