@@ -17,6 +17,8 @@ import publicCollectionsRouter from "./routes/public-collections.routes.js";
 import householdRouter from "./routes/household.routes.js";
 import profileRouter from "./routes/profile.routes.js";
 import followRouter from "./routes/follow.routes.js";
+import postsRouter from "./routes/posts.routes.js";
+import feedRouter from "./routes/feed.routes.js";
 
 const app = express();
 const PORT = process.env.PORT ?? 4001;
@@ -51,6 +53,8 @@ app.use("/api/public/collections", publicCollectionsRouter);
 app.use("/api/household", householdRouter);
 app.use("/api/profile", profileRouter);
 app.use("/api/follow", followRouter);
+app.use("/api/posts", postsRouter);
+app.use("/api/feed", feedRouter);
 
 await connectDB();
 
