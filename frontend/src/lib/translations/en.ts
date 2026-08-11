@@ -20,6 +20,7 @@ export const en: Dict = {
   nav: {
     home: "Home",
     dashboard: "Dashboard",
+    feed: "Feed",
     inventory: "Pantry",
     recipes: "Recipes",
     restaurants: "Restaurants",

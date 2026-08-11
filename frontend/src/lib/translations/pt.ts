@@ -18,6 +18,7 @@ export const pt = {
   nav: {
     home: "Início",
     dashboard: "Dashboard",
+    feed: "Feed",
     inventory: "Estoque",
     recipes: "Receitas",
     restaurants: "Restaurantes",

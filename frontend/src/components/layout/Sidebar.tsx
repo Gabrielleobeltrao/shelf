@@ -239,7 +239,7 @@ function SidebarBody({
       <nav className="mt-4 flex flex-col gap-1">
         {session ? (
           <>
-            {navLink("/feed", false, DashboardNavIcon, t.nav.dashboard)}
+            {navLink("/feed", false, DashboardNavIcon, t.nav.feed)}
 
             {navLink("/estoque", true, InventoryNavIcon, t.nav.inventory)}
 
