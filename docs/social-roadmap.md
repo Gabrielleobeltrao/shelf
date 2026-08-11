@@ -275,3 +275,67 @@ só mudam de origem (do perfil, não do dashboard).
 Fase 1 completa + Fase 2 (feed, compor texto+foto, curtir, comentar) + Fase 3.2 (check-in simples).
 Isso já entrega o loop social central: **seguir → ver no feed → postar comida/check-in → curtir/comentar**,
 mantendo o núcleo de cozinha intacto. Restaurantes avançados, estoque público e descoberta vêm depois.
+
+---
+
+## 10. Pesquisa de concorrentes — features e plano (ago/2026)
+
+Comparei apps dos dois mundos que o Shelf junta: **descoberta social de restaurantes**
+(Beli, Yelp, Swarm/Foursquare, The Infatuation, Dishcovery) e **cozinha/despensa**
+(Samsung Food/Whisk, Cookpad, KitchenPal, NoWaste.ai). Resumo do que eles têm e não
+temos ainda:
+
+| App | Ideias que valem pro Shelf |
+| --- | --- |
+| **Beli** | Nível de preço no filtro, listas "quero ir", **ranking do usuário/leaderboard**, tags "bom para" (encontro, grupo) e negativas ("caro demais", "serviço ruim"), score comparativo 0–10 |
+| **Yelp** | **Faixa de preço `$`–`$$$$`** (custo médio por pessoa), categorias/cozinha, horário, reservas |
+| **Swarm** | Check-in 1-toque, marcar amigos, **mapa da vida** (lugares no mapa), dicas por local |
+| **The Infatuation / Dishcovery** | **Pratos mais recomendados** por lugar, tags "perfeito para…" |
+| **Samsung Food** | **Planejador de refeições** (arrasta receita pro dia), lista de compras automática, comunidades de receita, recomendação por dieta |
+| **Cookpad** | Buscar receita por ingrediente, **foto → receita (IA)**, menu semanal |
+| **KitchenPal / NoWaste.ai** | **Escanear código de barras/recibo/foto** pra adicionar itens, sugerir receita pelo que tem, despensa compartilhada |
+
+### Backlog priorizado
+
+**Tier 1 — ganhos rápidos (dias, encaixam no que já existe)**
+
+1. **Faixa de preço `$`–`$$$$`** (o pedido do exemplo). Espelha exatamente o padrão de nota:
+   - Modelo: `Place.priceSum` + `Place.priceCount`; `CheckIn.priceLevel` (1–4, opcional).
+   - Rota: check-in aceita `priceLevel` e faz `$inc priceSum/priceCount`; `serializePlace`
+     retorna `price = round(priceSum/priceCount)` (1–4) ou `null`.
+   - UI: componente `Money` (4 ícones `$`, preenchidos até o nível) igual ao `Stars`;
+     novo `MoneyIcon` em `icons.tsx`; seletor `$ $$ $$$ $$$$` no `CheckinSheet`;
+     chip de preço no card e no detalhe; filtro "até `$$`" na aba Restaurantes.
+   - Legenda (padrão Yelp): `$` até R$40 · `$$` R$40–80 · `$$$` R$80–160 · `$$$$` R$160+ por pessoa.
+2. **Pratos mais marcados** por lugar. Já coletamos `dish` em cada check-in — só agregar:
+   `GET /api/places/:id` retorna os 3–5 pratos mais citados; chip "🍽 mais pedidos" no detalhe.
+3. **Tags "bom para"** no check-in (encontro, família, em grupo, delivery) + negativas
+   (caro, serviço). `CheckIn.tags[]` + agregação das top tags no lugar (chips).
+4. **Categoria/cozinha como filtro** na aba Restaurantes (já temos `categories[]`).
+
+**Tier 2 — médio (1–2 semanas, features novas mas com base pronta)**
+
+5. **Upload real de foto** (hoje só URL). Desbloqueia posts/check-ins/avatars de verdade —
+   pré-requisito de várias outras. Decidir storage (serviço externo vs. próprio).
+6. **Mapa de lugares / "perto de mim"** usando o `geo` que já guardamos (lib de mapa leve).
+7. **Ranking/leaderboard do usuário** (nº de check-ins/posts, itens salvos do desperdício) —
+   engajamento estilo Beli; casa com os badges de perfil que já existem.
+8. **Planejador de refeições semanal** (arrasta receita → dia) + **lista de compras automática**
+   a partir da receita/plano (estende o "restock" atual do carrinho).
+9. **Buscar receita por ingrediente** ("o que faço com abóbora?") — estende o filtro "Can make".
+10. **Perfil de dieta** (vegano, sem glúten) no usuário → filtra receitas e restaurantes
+    (já temos `vegan`/`glutenFree` nos itens).
+
+**Tier 3 — apostas grandes (IA / infra, planejar cedo)**
+
+11. **Escanear recibo/foto → itens da despensa** (visão do Claude) — já temos leitor de código
+    de barras; recibo/foto com IA é o próximo salto do onboarding de estoque.
+12. **Foto → receita** (IA) estilo Cookpad; **feed/receitas "para você"** por despensa+histórico.
+13. **Comunidades de receita** públicas (estende Collections) + descoberta por trending.
+14. **Score comparativo 0–10** (Beli): rankear comparando um lugar novo com os já avaliados.
+15. **Reservas / cardápio / horário / telefone** — campos + integração externa (Google/Foursquare),
+    ver decisão em aberto #3; casa com `imageUrl`/`description` já adicionados.
+
+### Sugestão de ordem
+Tier 1 inteiro (rápido e visível) → **5 (upload de foto)** como base → depois 6/7/8.
+Começar por **1 (faixa de preço)** por ser pequeno, isolado e já pedido.
