@@ -4,6 +4,7 @@ import { social, type PlaceCard, type ReviewView } from "../lib/social";
 import { useI18n } from "../lib/i18n";
 import { Avatar } from "../components/social/Avatar";
 import { StarIcon, BookmarkIcon } from "../components/icons";
+import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 import { timeAgo } from "../lib/timeAgo";
 
 export function Stars({ value }: { value: number }) {
@@ -50,10 +51,26 @@ export function Place() {
 
   return (
     <div className="mx-auto max-w-xl space-y-4 pb-16">
+      {(place.imageUrl || place.description) && (
+        <PhotoOrFallback
+          src={place.imageUrl}
+          imgClassName="h-48 w-full rounded-2xl object-cover"
+          fallback={
+            <div className="flex h-40 w-full items-center justify-center rounded-2xl bg-mustard-100 dark:bg-mustard-900/30">
+              <span className="text-5xl">🍽️</span>
+            </div>
+          }
+        />
+      )}
+
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
           <h1 className="font-display text-xl font-bold">📍 {place.name}</h1>
-          {place.city && <p className="text-sm text-muted">{place.city}</p>}
+          {(place.categories?.[0] || place.city) && (
+            <p className="text-sm text-muted">
+              {[place.categories?.[0], place.city].filter(Boolean).join(" · ")}
+            </p>
+          )}
           {place.rating != null ? (
             <div className="mt-1 flex items-center gap-2">
               <Stars value={place.rating} />
@@ -74,6 +91,8 @@ export function Place() {
           {saved ? t.social.saved : t.social.wantToGo}
         </button>
       </div>
+
+      {place.description && <p className="text-sm leading-relaxed">{place.description}</p>}
 
       <h2 className="text-sm font-medium text-muted">{t.social.reviews}</h2>
       {reviews.length === 0 ? (

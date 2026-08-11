@@ -7,6 +7,8 @@ const placeSchema = new Schema(
     name: { type: String, required: true },
     address: { type: String },
     city: { type: String },
+    description: { type: String, default: "" },
+    imageUrl: { type: String },
     geo: { lat: Number, lng: Number, _id: false },
     categories: { type: [String], default: [] },
     createdBy: { type: String, required: true },

@@ -71,6 +71,9 @@ export type PlaceCard = {
   name: string;
   address?: string;
   city?: string;
+  description?: string;
+  imageUrl?: string;
+  categories?: string[];
   geo?: { lat: number; lng: number };
   rating?: number | null;
   ratingCount: number;

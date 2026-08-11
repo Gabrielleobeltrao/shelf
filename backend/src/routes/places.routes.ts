@@ -16,6 +16,8 @@ function serializePlace(p: PlaceDoc) {
     name: p.name,
     address: p.address,
     city: p.city,
+    description: p.description,
+    imageUrl: p.imageUrl,
     geo: p.geo,
     categories: p.categories,
     rating: count > 0 ? Math.round((p.ratingSum / count) * 10) / 10 : null,
@@ -50,7 +52,10 @@ router.get("/", async (req, res) => {
         name: d.name,
         address: d.address,
         city: d.city,
+        description: d.description,
+        imageUrl: d.imageUrl,
         geo: d.geo,
+        categories: d.categories,
         rating: d.ratingCount > 0 ? Math.round((d.ratingSum / d.ratingCount) * 10) / 10 : null,
         ratingCount: d.ratingCount,
       })),
@@ -64,7 +69,7 @@ router.get("/", async (req, res) => {
 
 // Create a place (used when it doesn't exist yet).
 router.post("/", async (req, res) => {
-  const { name, address, city, geo, categories } = req.body ?? {};
+  const { name, address, city, geo, categories, description, imageUrl } = req.body ?? {};
   if (!name || !String(name).trim()) {
     res.status(400).json({ error: "Nome obrigatório" });
     return;
@@ -73,6 +78,8 @@ router.post("/", async (req, res) => {
     name: String(name).trim().slice(0, 120),
     address: address ? String(address).slice(0, 200) : undefined,
     city: city ? String(city).slice(0, 80) : undefined,
+    description: description ? String(description).slice(0, 500) : "",
+    imageUrl: imageUrl ? String(imageUrl).slice(0, 500) : undefined,
     geo: geo?.lat != null && geo?.lng != null ? { lat: geo.lat, lng: geo.lng } : undefined,
     categories: Array.isArray(categories) ? categories.slice(0, 6).map((c) => String(c)) : [],
     createdBy: req.userId,
