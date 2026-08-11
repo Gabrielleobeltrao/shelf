@@ -14,6 +14,9 @@ const placeSchema = new Schema(
     createdBy: { type: String, required: true },
     ratingSum: { type: Number, default: 0 },
     ratingCount: { type: Number, default: 0 },
+    // Price level aggregated from check-ins (1–4, "$"–"$$$$").
+    priceSum: { type: Number, default: 0 },
+    priceCount: { type: Number, default: 0 },
   },
   { timestamps: true },
 );

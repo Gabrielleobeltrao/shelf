@@ -406,6 +406,8 @@ export const pt = {
     wantToGo: "Quero ir",
     saved: "Salvo",
     emptyWishlist: "Salve lugares que você quer visitar.",
+    priceAny: "Qualquer preço",
+    priceLabel: "Preço",
   },
   install: {
     title: "Instalar o app",

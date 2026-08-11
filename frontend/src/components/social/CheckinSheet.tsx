@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { social, type PlaceCard } from "../../lib/social";
 import { useI18n } from "../../lib/i18n";
 import { Portal } from "../ui/Portal";
-import { CloseIcon, SearchIcon, StarIcon } from "../icons";
+import { CloseIcon, SearchIcon, StarIcon, MoneyIcon } from "../icons";
 
 const VIS = ["public", "followers", "private"] as const;
 
@@ -12,6 +12,7 @@ export function CheckinSheet({ onClose, onDone }: { onClose: () => void; onDone:
   const [results, setResults] = useState<PlaceCard[]>([]);
   const [selected, setSelected] = useState<{ id?: string; name: string; city?: string } | null>(null);
   const [rating, setRating] = useState(0);
+  const [priceLevel, setPriceLevel] = useState(0);
   const [dish, setDish] = useState("");
   const [review, setReview] = useState("");
   const [photo, setPhoto] = useState("");
@@ -41,6 +42,7 @@ export function CheckinSheet({ onClose, onDone }: { onClose: () => void; onDone:
         placeId: selected.id,
         place: selected.id ? undefined : { name: selected.name, city: selected.city },
         rating: rating || undefined,
+        priceLevel: priceLevel || undefined,
         dish,
         review,
         photos: photo.trim() ? [photo.trim()] : [],
@@ -130,6 +132,21 @@ export function CheckinSheet({ onClose, onDone }: { onClose: () => void; onDone:
                 {[1, 2, 3, 4, 5].map((n) => (
                   <button key={n} type="button" onClick={() => setRating(n)} aria-label={`${n}`}>
                     <StarIcon className={`h-6 w-6 ${n <= rating ? "text-mustard-500" : "text-line"}`} />
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="mr-1 text-xs text-muted">{t.social.priceLabel}</span>
+                {[1, 2, 3, 4].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setPriceLevel(n === priceLevel ? 0 : n)}
+                    aria-label={"$".repeat(n)}
+                  >
+                    <MoneyIcon
+                      className={`h-5 w-5 ${n <= priceLevel ? "text-primary-600 dark:text-primary-400" : "text-line"}`}
+                    />
                   </button>
                 ))}
               </div>

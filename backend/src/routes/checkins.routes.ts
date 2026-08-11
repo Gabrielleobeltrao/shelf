@@ -18,7 +18,7 @@ const VIS = ["public", "followers", "private"];
 // create on the fly. Spawns a feed Post and updates the place's rating.
 router.post("/", async (req, res) => {
   const me = req.userId!;
-  const { placeId, place, rating, review, dish, photos, visibility } = req.body ?? {};
+  const { placeId, place, rating, priceLevel, review, dish, photos, visibility } = req.body ?? {};
 
   let resolvedPlaceId = placeId ? String(placeId) : "";
   if (!resolvedPlaceId) {
@@ -41,12 +41,14 @@ router.post("/", async (req, res) => {
 
   const vis = VIS.includes(visibility) ? visibility : "public";
   const numRating = rating != null ? Math.max(1, Math.min(6, Number(rating))) : undefined;
+  const numPrice = priceLevel != null ? Math.max(1, Math.min(4, Number(priceLevel))) : undefined;
 
   await getOrCreateProfile(me);
   const checkin = await CheckIn.create({
     userId: me,
     placeId: resolvedPlaceId,
     rating: numRating,
+    priceLevel: numPrice,
     review: String(review ?? "").slice(0, 2000),
     dish: String(dish ?? "").slice(0, 120),
     photos: Array.isArray(photos) ? photos.slice(0, 6).map((p) => String(p)) : [],
@@ -66,10 +68,15 @@ router.post("/", async (req, res) => {
   await checkin.save();
   await Profile.updateOne({ userId: me }, { $inc: { postsCount: 1 } });
 
-  if (numRating) {
+  if (numRating || numPrice) {
     await Place.updateOne(
       { _id: resolvedPlaceId },
-      { $inc: { ratingSum: numRating, ratingCount: 1 } },
+      {
+        $inc: {
+          ...(numRating ? { ratingSum: numRating, ratingCount: 1 } : {}),
+          ...(numPrice ? { priceSum: numPrice, priceCount: 1 } : {}),
+        },
+      },
     );
   }
 
@@ -95,10 +102,15 @@ router.delete("/:id", async (req, res) => {
       Profile.updateOne({ userId: req.userId }, { $inc: { postsCount: -1 } }),
     ]);
   }
-  if (checkin.rating) {
+  if (checkin.rating || checkin.priceLevel) {
     await Place.updateOne(
       { _id: checkin.placeId },
-      { $inc: { ratingSum: -checkin.rating, ratingCount: -1 } },
+      {
+        $inc: {
+          ...(checkin.rating ? { ratingSum: -checkin.rating, ratingCount: -1 } : {}),
+          ...(checkin.priceLevel ? { priceSum: -checkin.priceLevel, priceCount: -1 } : {}),
+        },
+      },
     );
   }
   res.json({ ok: true });

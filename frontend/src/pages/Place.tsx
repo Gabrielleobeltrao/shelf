@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { social, type PlaceCard, type ReviewView } from "../lib/social";
 import { useI18n } from "../lib/i18n";
 import { Avatar } from "../components/social/Avatar";
-import { StarIcon, BookmarkIcon } from "../components/icons";
+import { StarIcon, BookmarkIcon, MoneyIcon } from "../components/icons";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 import { timeAgo } from "../lib/timeAgo";
 
@@ -12,6 +12,20 @@ export function Stars({ value }: { value: number }) {
     <span className="flex items-center gap-0.5">
       {[1, 2, 3, 4, 5].map((n) => (
         <StarIcon key={n} className={`h-4 w-4 ${n <= Math.round(value) ? "text-mustard-500" : "text-line"}`} />
+      ))}
+    </span>
+  );
+}
+
+// Price level "$"–"$$$$" (1–4), mirroring the Stars display.
+export function Money({ value, className = "h-3.5 w-3.5" }: { value: number; className?: string }) {
+  return (
+    <span className="flex items-center">
+      {[1, 2, 3, 4].map((n) => (
+        <MoneyIcon
+          key={n}
+          className={`${className} ${n <= value ? "text-primary-600 dark:text-primary-400" : "text-line"}`}
+        />
       ))}
     </span>
   );
@@ -72,13 +86,22 @@ export function Place() {
             </p>
           )}
           {place.rating != null ? (
-            <div className="mt-1 flex items-center gap-2">
+            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
               <Stars value={place.rating} />
               <span className="text-sm font-semibold">{place.rating}</span>
               <span className="text-sm text-muted">· {t.social.ratingsCount(place.ratingCount)}</span>
+              {place.price != null && (
+                <>
+                  <span className="text-sm text-muted">·</span>
+                  <Money value={place.price} className="h-4 w-4" />
+                </>
+              )}
             </div>
           ) : (
-            <p className="mt-1 text-sm text-muted">{t.social.noReviews}</p>
+            <div className="mt-1 flex items-center gap-2">
+              <p className="text-sm text-muted">{t.social.noReviews}</p>
+              {place.price != null && <Money value={place.price} className="h-4 w-4" />}
+            </div>
           )}
         </div>
         <button

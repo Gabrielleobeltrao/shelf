@@ -174,6 +174,21 @@ export function StarIcon({ className, filled }: IconProps & { filled?: boolean }
   );
 }
 
+export function MoneyIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path d="M10 3v14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <path
+        d="M13.2 6.3c-.5-1-1.7-1.6-3.2-1.6-1.9 0-3.2 1-3.2 2.4 0 3.1 6.4 1.6 6.4 4.8 0 1.5-1.4 2.5-3.4 2.5-1.7 0-3-.7-3.5-1.8"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function BookmarkIcon({ className, filled }: IconProps & { filled?: boolean }) {
   return (
     <svg viewBox="0 0 20 20" fill={filled ? "currentColor" : "none"} className={className}>

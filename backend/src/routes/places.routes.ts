@@ -22,6 +22,7 @@ function serializePlace(p: PlaceDoc) {
     categories: p.categories,
     rating: count > 0 ? Math.round((p.ratingSum / count) * 10) / 10 : null,
     ratingCount: count,
+    price: p.priceCount > 0 ? Math.round(p.priceSum / p.priceCount) : null,
   };
 }
 
@@ -58,6 +59,7 @@ router.get("/", async (req, res) => {
         categories: d.categories,
         rating: d.ratingCount > 0 ? Math.round((d.ratingSum / d.ratingCount) * 10) / 10 : null,
         ratingCount: d.ratingCount,
+        price: d.priceCount > 0 ? Math.round(d.priceSum / d.priceCount) : null,
       })),
     );
     return;

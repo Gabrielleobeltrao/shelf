@@ -77,6 +77,7 @@ export type PlaceCard = {
   geo?: { lat: number; lng: number };
   rating?: number | null;
   ratingCount: number;
+  price?: number | null;
   savedByMe?: boolean;
 };
 
@@ -159,6 +160,7 @@ export const social = {
     placeId?: string;
     place?: { name: string; city?: string };
     rating?: number;
+    priceLevel?: number;
     review?: string;
     dish?: string;
     photos?: string[];
