@@ -7,6 +7,8 @@ const placeSchema = new Schema(
     name: { type: String, required: true },
     address: { type: String },
     city: { type: String },
+    state: { type: String },
+    country: { type: String },
     description: { type: String, default: "" },
     imageUrl: { type: String },
     geo: { lat: Number, lng: Number, _id: false },
@@ -17,6 +19,8 @@ const placeSchema = new Schema(
     // Price level aggregated from check-ins (1–4, "$"–"$$$$").
     priceSum: { type: Number, default: 0 },
     priceCount: { type: Number, default: 0 },
+    // Tag key -> vote count, aggregated from check-ins (e.g. { romantic: 3 }).
+    tagCounts: { type: Schema.Types.Mixed, default: {} },
   },
   { timestamps: true },
 );

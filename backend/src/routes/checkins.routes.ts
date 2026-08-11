@@ -8,6 +8,7 @@ import { PostComment } from "../models/PostComment.js";
 import { Profile } from "../models/Profile.js";
 import { getOrCreateProfile } from "../lib/profiles.js";
 import { extractTags } from "../lib/posts.js";
+import { cleanPlaceTags } from "../lib/placeTags.js";
 
 const router = Router();
 router.use(requireAuth);
@@ -18,7 +19,7 @@ const VIS = ["public", "followers", "private"];
 // create on the fly. Spawns a feed Post and updates the place's rating.
 router.post("/", async (req, res) => {
   const me = req.userId!;
-  const { placeId, place, rating, priceLevel, review, dish, photos, visibility } = req.body ?? {};
+  const { placeId, place, rating, priceLevel, tags, review, dish, photos, visibility } = req.body ?? {};
 
   let resolvedPlaceId = placeId ? String(placeId) : "";
   if (!resolvedPlaceId) {
@@ -29,6 +30,8 @@ router.post("/", async (req, res) => {
     const created = await Place.create({
       name: String(place.name).trim().slice(0, 120),
       city: place.city ? String(place.city).slice(0, 80) : undefined,
+      state: place.state ? String(place.state).slice(0, 80) : undefined,
+      country: place.country ? String(place.country).slice(0, 80) : undefined,
       address: place.address ? String(place.address).slice(0, 200) : undefined,
       geo: place.geo?.lat != null && place.geo?.lng != null ? { lat: place.geo.lat, lng: place.geo.lng } : undefined,
       createdBy: me,
@@ -42,6 +45,7 @@ router.post("/", async (req, res) => {
   const vis = VIS.includes(visibility) ? visibility : "public";
   const numRating = rating != null ? Math.max(1, Math.min(6, Number(rating))) : undefined;
   const numPrice = priceLevel != null ? Math.max(1, Math.min(4, Number(priceLevel))) : undefined;
+  const cleanTags = cleanPlaceTags(tags);
 
   await getOrCreateProfile(me);
   const checkin = await CheckIn.create({
@@ -49,6 +53,7 @@ router.post("/", async (req, res) => {
     placeId: resolvedPlaceId,
     rating: numRating,
     priceLevel: numPrice,
+    tags: cleanTags,
     review: String(review ?? "").slice(0, 2000),
     dish: String(dish ?? "").slice(0, 120),
     photos: Array.isArray(photos) ? photos.slice(0, 6).map((p) => String(p)) : [],
@@ -68,17 +73,17 @@ router.post("/", async (req, res) => {
   await checkin.save();
   await Profile.updateOne({ userId: me }, { $inc: { postsCount: 1 } });
 
-  if (numRating || numPrice) {
-    await Place.updateOne(
-      { _id: resolvedPlaceId },
-      {
-        $inc: {
-          ...(numRating ? { ratingSum: numRating, ratingCount: 1 } : {}),
-          ...(numPrice ? { priceSum: numPrice, priceCount: 1 } : {}),
-        },
-      },
-    );
+  const inc: Record<string, number> = {};
+  if (numRating) {
+    inc.ratingSum = numRating;
+    inc.ratingCount = 1;
   }
+  if (numPrice) {
+    inc.priceSum = numPrice;
+    inc.priceCount = 1;
+  }
+  for (const tg of cleanTags) inc[`tagCounts.${tg}`] = 1;
+  if (Object.keys(inc).length) await Place.updateOne({ _id: resolvedPlaceId }, { $inc: inc });
 
   res.status(201).json({ id: String(checkin._id), placeId: resolvedPlaceId, postId: String(post._id) });
 });
@@ -102,17 +107,17 @@ router.delete("/:id", async (req, res) => {
       Profile.updateOne({ userId: req.userId }, { $inc: { postsCount: -1 } }),
     ]);
   }
-  if (checkin.rating || checkin.priceLevel) {
-    await Place.updateOne(
-      { _id: checkin.placeId },
-      {
-        $inc: {
-          ...(checkin.rating ? { ratingSum: -checkin.rating, ratingCount: -1 } : {}),
-          ...(checkin.priceLevel ? { priceSum: -checkin.priceLevel, priceCount: -1 } : {}),
-        },
-      },
-    );
+  const dec: Record<string, number> = {};
+  if (checkin.rating) {
+    dec.ratingSum = -checkin.rating;
+    dec.ratingCount = -1;
   }
+  if (checkin.priceLevel) {
+    dec.priceSum = -checkin.priceLevel;
+    dec.priceCount = -1;
+  }
+  for (const tg of checkin.tags ?? []) dec[`tagCounts.${tg}`] = -1;
+  if (Object.keys(dec).length) await Place.updateOne({ _id: checkin.placeId }, { $inc: dec });
   res.json({ ok: true });
 });
 

@@ -6,6 +6,7 @@ import { Avatar } from "../components/social/Avatar";
 import { StarIcon, BookmarkIcon, MoneyIcon } from "../components/icons";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
 import { CheckinSheet } from "../components/social/CheckinSheet";
+import { placeTagLabel } from "../lib/placeTags";
 import { timeAgo } from "../lib/timeAgo";
 
 export function Stars({ value }: { value: number }) {
@@ -122,7 +123,23 @@ export function Place() {
         </button>
       </div>
 
+      {place.address && (
+        <p className="text-sm text-muted">
+          📍 {[place.address, place.city, place.state, place.country].filter(Boolean).join(", ")}
+        </p>
+      )}
+
       {place.description && <p className="text-sm leading-relaxed">{place.description}</p>}
+
+      {place.tags && place.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {place.tags.map((k) => (
+            <span key={k} className="rounded-full bg-surface-2 px-2.5 py-1 text-xs font-medium">
+              {placeTagLabel(k, lang)}
+            </span>
+          ))}
+        </div>
+      )}
 
       <button
         onClick={() => setReviewing(true)}

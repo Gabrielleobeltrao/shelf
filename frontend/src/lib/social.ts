@@ -71,15 +71,20 @@ export type PlaceCard = {
   name: string;
   address?: string;
   city?: string;
+  state?: string;
+  country?: string;
   description?: string;
   imageUrl?: string;
   categories?: string[];
+  tags?: string[];
   geo?: { lat: number; lng: number };
   rating?: number | null;
   ratingCount: number;
   price?: number | null;
   savedByMe?: boolean;
 };
+
+export type Region = { country: string; state: string | null; count: number };
 
 export type ReviewView = {
   id: string;
@@ -143,14 +148,17 @@ export const social = {
   markNotificationsRead: () => api.post("/api/notifications/read", {}),
 
   searchPlaces: (q: string) => api.get<PlaceCard[]>(`/api/places?q=${encodeURIComponent(q)}`),
-  places: (q?: string, city?: string, sort?: "rating") => {
+  places: (opts: { q?: string; city?: string; country?: string; state?: string; sort?: "rating" } = {}) => {
     const params = new URLSearchParams();
-    if (q) params.set("q", q);
-    if (city) params.set("city", city);
-    if (sort) params.set("sort", sort);
+    if (opts.q) params.set("q", opts.q);
+    if (opts.city) params.set("city", opts.city);
+    if (opts.country) params.set("country", opts.country);
+    if (opts.state) params.set("state", opts.state);
+    if (opts.sort) params.set("sort", opts.sort);
     const qs = params.toString();
     return api.get<PlaceCard[]>(`/api/places${qs ? `?${qs}` : ""}`);
   },
+  regions: () => api.get<Region[]>("/api/places/regions"),
   place: (id: string) => api.get<PlaceCard>(`/api/places/${id}`),
   savePlace: (id: string) => api.post<{ savedByMe: boolean }>(`/api/places/${id}/save`, {}),
   unsavePlace: (id: string) => api.delete<{ savedByMe: boolean }>(`/api/places/${id}/save`),
@@ -158,9 +166,10 @@ export const social = {
   placeReviews: (id: string) => api.get<ReviewView[]>(`/api/places/${id}/checkins`),
   createCheckin: (data: {
     placeId?: string;
-    place?: { name: string; city?: string };
+    place?: { name: string; city?: string; state?: string; country?: string; address?: string };
     rating?: number;
     priceLevel?: number;
+    tags?: string[];
     review?: string;
     dish?: string;
     photos?: string[];

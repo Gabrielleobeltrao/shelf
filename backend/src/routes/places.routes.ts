@@ -9,6 +9,17 @@ const router = Router();
 router.use(requireAuth);
 
 type PlaceDoc = InstanceType<typeof Place>;
+
+// Top tag keys by vote count (aggregated on the place from check-ins).
+function topTags(tagCounts: unknown, n = 3): string[] {
+  if (!tagCounts || typeof tagCounts !== "object") return [];
+  return Object.entries(tagCounts as Record<string, number>)
+    .filter(([, c]) => Number(c) > 0)
+    .sort((a, b) => Number(b[1]) - Number(a[1]))
+    .slice(0, n)
+    .map(([k]) => k);
+}
+
 function serializePlace(p: PlaceDoc) {
   const count = p.ratingCount;
   return {
@@ -16,6 +27,8 @@ function serializePlace(p: PlaceDoc) {
     name: p.name,
     address: p.address,
     city: p.city,
+    state: p.state,
+    country: p.country,
     description: p.description,
     imageUrl: p.imageUrl,
     geo: p.geo,
@@ -23,6 +36,7 @@ function serializePlace(p: PlaceDoc) {
     rating: count > 0 ? Math.round((p.ratingSum / count) * 10) / 10 : null,
     ratingCount: count,
     price: p.priceCount > 0 ? Math.round(p.priceSum / p.priceCount) : null,
+    tags: topTags(p.tagCounts),
   };
 }
 
@@ -31,9 +45,13 @@ router.get("/", async (req, res) => {
   const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const q = String(req.query.q ?? "").trim();
   const city = String(req.query.city ?? "").trim();
+  const country = String(req.query.country ?? "").trim();
+  const state = String(req.query.state ?? "").trim();
   const filter: Record<string, unknown> = {};
   if (q) filter.name = new RegExp(esc(q), "i");
   if (city) filter.city = new RegExp(esc(city), "i");
+  if (country) filter.country = country;
+  if (state) filter.state = state;
 
   // Ranking by average rating (rated places first) vs. default popularity.
   if (req.query.sort === "rating") {
@@ -53,6 +71,8 @@ router.get("/", async (req, res) => {
         name: d.name,
         address: d.address,
         city: d.city,
+        state: d.state,
+        country: d.country,
         description: d.description,
         imageUrl: d.imageUrl,
         geo: d.geo,
@@ -60,6 +80,7 @@ router.get("/", async (req, res) => {
         rating: d.ratingCount > 0 ? Math.round((d.ratingSum / d.ratingCount) * 10) / 10 : null,
         ratingCount: d.ratingCount,
         price: d.priceCount > 0 ? Math.round(d.priceSum / d.priceCount) : null,
+        tags: topTags(d.tagCounts),
       })),
     );
     return;
@@ -71,7 +92,7 @@ router.get("/", async (req, res) => {
 
 // Create a place (used when it doesn't exist yet).
 router.post("/", async (req, res) => {
-  const { name, address, city, geo, categories, description, imageUrl } = req.body ?? {};
+  const { name, address, city, state, country, geo, categories, description, imageUrl } = req.body ?? {};
   if (!name || !String(name).trim()) {
     res.status(400).json({ error: "Nome obrigatório" });
     return;
@@ -80,6 +101,8 @@ router.post("/", async (req, res) => {
     name: String(name).trim().slice(0, 120),
     address: address ? String(address).slice(0, 200) : undefined,
     city: city ? String(city).slice(0, 80) : undefined,
+    state: state ? String(state).slice(0, 80) : undefined,
+    country: country ? String(country).slice(0, 80) : undefined,
     description: description ? String(description).slice(0, 500) : "",
     imageUrl: imageUrl ? String(imageUrl).slice(0, 500) : undefined,
     geo: geo?.lat != null && geo?.lng != null ? { lat: geo.lat, lng: geo.lng } : undefined,
@@ -87,6 +110,23 @@ router.post("/", async (req, res) => {
     createdBy: req.userId,
   });
   res.status(201).json(serializePlace(place));
+});
+
+// Distinct country/state pairs (for the region filters). Before /:id.
+router.get("/regions", async (_req, res) => {
+  const rows = await Place.aggregate([
+    { $match: { country: { $nin: [null, ""] } } },
+    {
+      $group: {
+        _id: { country: "$country", state: { $ifNull: ["$state", ""] } },
+        count: { $sum: 1 },
+      },
+    },
+    { $sort: { count: -1 } },
+  ]);
+  res.json(
+    rows.map((r) => ({ country: r._id.country, state: r._id.state || null, count: r.count })),
+  );
 });
 
 // My "want to go" wishlist. Before /:id.

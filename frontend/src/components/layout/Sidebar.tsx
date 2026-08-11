@@ -45,6 +45,20 @@ function ExploreNavIcon({ className }: IconProps) {
   );
 }
 
+function RestaurantsNavIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <path
+        d="M6.5 3v14M4.5 3v3.5a2 2 0 0 0 4 0V3M13 3c-1.2 0-2 1.6-2 3.5S11.8 10 13 10v7"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function RoadmapNavIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 20 20" fill="none" className={className}>
@@ -251,6 +265,8 @@ function SidebarBody({
                 {subLink("/explorar", false, t.nav.explore)}
               </div>
             )}
+
+            {navLink("/restaurantes", false, RestaurantsNavIcon, t.nav.restaurants)}
           </>
         ) : (
           publicLinks.map(({ to, key, end, Icon }) => navLink(to, end, Icon, t.nav[key]))

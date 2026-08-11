@@ -8,6 +8,7 @@ const checkInSchema = new Schema(
     placeId: { type: String, required: true },
     rating: { type: Number, min: 1, max: 6 },
     priceLevel: { type: Number, min: 1, max: 4 },
+    tags: { type: [String], default: [] },
     review: { type: String, default: "" },
     dish: { type: String, default: "" },
     photos: { type: [String], default: [] },

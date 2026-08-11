@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { social, type PlaceCard } from "../../lib/social";
 import { useI18n } from "../../lib/i18n";
+import { PLACE_TAGS } from "../../lib/placeTags";
 import { Portal } from "../ui/Portal";
 import { CloseIcon, SearchIcon, StarIcon, MoneyIcon } from "../icons";
 
@@ -15,7 +16,7 @@ export function CheckinSheet({
   onDone: () => void;
   initialPlace?: { id?: string; name: string; city?: string };
 }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<PlaceCard[]>([]);
   const [selected, setSelected] = useState<{ id?: string; name: string; city?: string } | null>(
@@ -23,11 +24,19 @@ export function CheckinSheet({
   );
   const [rating, setRating] = useState(0);
   const [priceLevel, setPriceLevel] = useState(0);
+  const [tags, setTags] = useState<string[]>([]);
+  const [city, setCity] = useState("");
+  const [stateReg, setStateReg] = useState("");
+  const [country, setCountry] = useState("");
+  const [address, setAddress] = useState("");
   const [dish, setDish] = useState("");
   const [review, setReview] = useState("");
   const [photo, setPhoto] = useState("");
   const [visibility, setVisibility] = useState<(typeof VIS)[number]>("public");
   const [saving, setSaving] = useState(false);
+
+  const toggleTag = (key: string) =>
+    setTags((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
 
   useEffect(() => {
     if (selected || !query.trim()) {
@@ -50,9 +59,18 @@ export function CheckinSheet({
     try {
       await social.createCheckin({
         placeId: selected.id,
-        place: selected.id ? undefined : { name: selected.name, city: selected.city },
+        place: selected.id
+          ? undefined
+          : {
+              name: selected.name,
+              city: city.trim() || selected.city || undefined,
+              state: stateReg.trim() || undefined,
+              country: country.trim() || undefined,
+              address: address.trim() || undefined,
+            },
         rating: rating || undefined,
         priceLevel: priceLevel || undefined,
+        tags: tags.length ? tags : undefined,
         dish,
         review,
         photos: photo.trim() ? [photo.trim()] : [],
@@ -160,6 +178,55 @@ export function CheckinSheet({
                   </button>
                 ))}
               </div>
+              {!selected.id && (
+                <div className="space-y-2">
+                  <input
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder={t.social.addressPlaceholder}
+                    className="w-full rounded-xl bg-surface-2 px-3 py-2 text-base"
+                  />
+                  <div className="grid grid-cols-3 gap-2">
+                    <input
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      placeholder={t.social.cityPlaceholder}
+                      className="rounded-xl bg-surface-2 px-3 py-2 text-sm"
+                    />
+                    <input
+                      value={stateReg}
+                      onChange={(e) => setStateReg(e.target.value)}
+                      placeholder={t.social.statePlaceholder}
+                      className="rounded-xl bg-surface-2 px-3 py-2 text-sm"
+                    />
+                    <input
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      placeholder={t.social.countryPlaceholder}
+                      className="rounded-xl bg-surface-2 px-3 py-2 text-sm"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <span className="text-xs text-muted">{t.social.tagsLabel}</span>
+                <div className="mt-1 flex flex-wrap gap-1.5">
+                  {PLACE_TAGS.map((tg) => (
+                    <button
+                      key={tg.key}
+                      type="button"
+                      onClick={() => toggleTag(tg.key)}
+                      className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                        tags.includes(tg.key) ? "bg-primary-600 text-white" : "bg-surface-2 text-muted"
+                      }`}
+                    >
+                      {tg.emoji} {lang === "pt" ? tg.pt : tg.en}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <input
                 value={dish}
                 onChange={(e) => setDish(e.target.value)}
