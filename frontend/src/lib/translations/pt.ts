@@ -408,6 +408,7 @@ export const pt = {
     emptyWishlist: "Salve lugares que você quer visitar.",
     priceAny: "Qualquer preço",
     priceLabel: "Preço",
+    leaveReview: "Avaliar",
   },
   install: {
     title: "Instalar o app",

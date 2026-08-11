@@ -6,11 +6,21 @@ import { CloseIcon, SearchIcon, StarIcon, MoneyIcon } from "../icons";
 
 const VIS = ["public", "followers", "private"] as const;
 
-export function CheckinSheet({ onClose, onDone }: { onClose: () => void; onDone: () => void }) {
+export function CheckinSheet({
+  onClose,
+  onDone,
+  initialPlace,
+}: {
+  onClose: () => void;
+  onDone: () => void;
+  initialPlace?: { id?: string; name: string; city?: string };
+}) {
   const { t } = useI18n();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<PlaceCard[]>([]);
-  const [selected, setSelected] = useState<{ id?: string; name: string; city?: string } | null>(null);
+  const [selected, setSelected] = useState<{ id?: string; name: string; city?: string } | null>(
+    initialPlace ?? null,
+  );
   const [rating, setRating] = useState(0);
   const [priceLevel, setPriceLevel] = useState(0);
   const [dish, setDish] = useState("");

@@ -5,6 +5,7 @@ import { useI18n } from "../lib/i18n";
 import { Avatar } from "../components/social/Avatar";
 import { StarIcon, BookmarkIcon, MoneyIcon } from "../components/icons";
 import { PhotoOrFallback } from "../components/ui/PhotoOrFallback";
+import { CheckinSheet } from "../components/social/CheckinSheet";
 import { timeAgo } from "../lib/timeAgo";
 
 export function Stars({ value }: { value: number }) {
@@ -38,15 +39,21 @@ export function Place() {
   const [reviews, setReviews] = useState<ReviewView[]>([]);
   const [notFound, setNotFound] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [reviewing, setReviewing] = useState(false);
 
-  useEffect(() => {
-    Promise.all([social.place(id), social.placeReviews(id)])
+  function load() {
+    return Promise.all([social.place(id), social.placeReviews(id)])
       .then(([p, r]) => {
         setPlace(p);
         setSaved(!!p.savedByMe);
         setReviews(r);
       })
       .catch(() => setNotFound(true));
+  }
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   async function toggleSave() {
@@ -117,7 +124,17 @@ export function Place() {
 
       {place.description && <p className="text-sm leading-relaxed">{place.description}</p>}
 
-      <h2 className="text-sm font-medium text-muted">{t.social.reviews}</h2>
+      <button
+        onClick={() => setReviewing(true)}
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-600 py-2.5 text-sm font-medium text-white"
+      >
+        <StarIcon className="h-4 w-4" filled />
+        {t.social.leaveReview}
+      </button>
+
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-medium text-muted">{t.social.reviews}</h2>
+      </div>
       {reviews.length === 0 ? (
         <p className="text-sm text-muted">{t.social.noReviews}</p>
       ) : (
@@ -137,6 +154,17 @@ export function Place() {
             </article>
           ))}
         </div>
+      )}
+
+      {reviewing && (
+        <CheckinSheet
+          initialPlace={{ id: place.id, name: place.name, city: place.city }}
+          onClose={() => setReviewing(false)}
+          onDone={async () => {
+            setReviewing(false);
+            await load();
+          }}
+        />
       )}
     </div>
   );

@@ -410,6 +410,7 @@ export const en: Dict = {
     emptyWishlist: "Save places you want to visit.",
     priceAny: "Any price",
     priceLabel: "Price",
+    leaveReview: "Rate",
   },
   install: {
     title: "Install the app",
